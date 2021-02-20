@@ -1,0 +1,2 @@
+opkg install pip3
+pip3 install scapy-python3
