@@ -1,6 +1,7 @@
 #! /usr/bin/env python3
 
-import datetime
+from datetime import datetime
+from pytz import timezone
 import smtplib
 import ssl
 from creds import EMAIL_KEY
@@ -20,6 +21,8 @@ recipient_email = 'test@example.com'
 # Create a secure SSL context
 context = ssl.create_default_context()
 
+# Get timezone information
+tz= timezone('EST')
 
 def send_message(subj, msg):
     """
@@ -50,8 +53,8 @@ def send_message(subj, msg):
         print(e)
         
 
-# TODO: add functionality to allow custom info, such as date, IP address, etc.
-def send_email_alert():
+
+def send_email_alert(alert_type, device_name, device_ip, device_mac, timestamp, info):
     """
     This function will send an email to notify the user about a privacy or security Vulnerability
     :return: None
@@ -69,7 +72,7 @@ def send_email_alert():
             </tr>
             <tr>
                 <td>Alert: </td>
-                <td>Security (or Privacy)</td>
+                <td>{0}</td>
             </tr>
             <tr>
             </tr>
@@ -78,23 +81,33 @@ def send_email_alert():
                 <td style="background-color:#FFE0E0;text-align:justify;padding:3px">Vulnerable</td>
             </tr>
             <tr>
-                <td>IP Address</td>
-                <td>192.168.1.100</td>
+                <td>Device Name</td>
+                <td>{1}</td>
             </tr>
             <tr class='alt'>
-                <td style="background-color:#FFE0E0;text-align:justify;padding:3px">Device Name</td>
-                <td style="background-color:#FFE0E0;text-align:justify;padding:3px">IoT Device #1</td>
+                <td style="background-color:#FFE0E0;text-align:justify;padding:3px">Device IP Address</td>
+                <td style="background-color:#FFE0E0;text-align:justify;padding:3px">{2}</td>
             </tr>
             <tr>
-                <td>Time of Alert</td>
-                <td>Feb 10, 2021, 13:52:45GMT</td>
+                <td>Device MAC Address</td>
+                <td>{3}</td>
+            </tr>
+            <tr>
+                <td style="background-color:#FFE0E0;text-align:justify;padding:3px">Time of Alert</td>
+                <td style="background-color:#FFE0E0;text-align:justify;padding:3px">{4}</td>
+            </tr>
+            <tr>
+                <td>Alert info</td>
+                <td>{5}</td>
             </tr>
         </table>
     </body>
     </html>
     """
-    send_message("Test OpenWrt Email Alert", msg)
+    formatted_msg = msg.format(str(alert_type), str(device_name), str(device_ip), str(device_mac), str(timestamp), str(info))
+    send_message("Test OpenWrt Email Alert", formatted_msg)
     
+current_time = str(datetime.now(tz))
 
 # Uncomment if you want to run this file as a standalone script
-# send_email_alert()
+#send_email_alert("Security", "Creppy Robot Camera", "192.168.100.100", "AB:CD:EF:12:34:56", current_time, "Test Information")
