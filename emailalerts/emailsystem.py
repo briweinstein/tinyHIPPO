@@ -1,63 +1,63 @@
 #! /usr/bin/env python3
 
-from datetime import datetime
-from pytz import timezone
-import smtplib
 import ssl
-from creds import EMAIL_KEY
+import json
+import smtplib
 from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
 
-smtp_server = "smtp.gmail.com"
-port = 587  # For starttls
-# TODO: change this to a real email account that we use
-sender_email = "openwrt@example.com"
+email_config_file = open('/etc/capstone-ids/config.json', 'r')
+email_config_data = json.load(email_config_file)
 
-# TODO: change this to the email that should receive the alerts
-recipient_email = 'test@example.com'
-
-# TODO: move the emails and or their creds to a config file for the OpenWrt package
+SMTP_SERVER = email_config_data['email']['smtp_server']
+EMAIL_ACCOUNT = email_config_data['email']['email_account']
+EMAIL_KEY = email_config_data['email']['email_password']
+RECIPIENT_EMAIL = email_config_data['email']['recipient_email']
+PORT = 587  # For starttls
 
 # Create a secure SSL context
 context = ssl.create_default_context()
 
-# Get timezone information
-tz= timezone('EST')
 
-def send_message(subj, msg):
+def send_message(msg):
     """
     This function will send the given message to the appropriate recipient
-    :param subj: (String) Subject of the email, usually in the format of "OpenWrt Alert - XXX"
     :param msg: (String) message to be sent
     :return: None
     """
     try:
-        server = smtplib.SMTP(smtp_server, port)
+        server = smtplib.SMTP(SMTP_SERVER, PORT)
         server.ehlo()
         server.starttls(context=context)
         server.ehlo()
-        server.login(sender_email, EMAIL_KEY)
+        server.login(EMAIL_ACCOUNT, EMAIL_KEY)
         message = MIMEMultipart("alternative")
-        message["Subject"] = "Test OpenWrt Email Alert"
+        message["Subject"] = "Capstone IDS - OpenWrt Email Alert"
         message["From"] = 'OpenWrt Alerting System'
-        message["To"] = recipient_email
+        message["To"] = RECIPIENT_EMAIL
         part1 = MIMEText(msg, 'plain')
         part2 = MIMEText(msg, 'html')
         message.attach(part1)
         message.attach(part2)
-        server.sendmail(sender_email, recipient_email, message.as_string())
-        server.quit
+        server.sendmail(EMAIL_ACCOUNT, RECIPIENT_EMAIL, message.as_string())
+        server.quit()
         print('Email was sent successfully')
     except Exception as e:
         print('Could not send email message to specified recipient.')
         print(e)
         
 
-
 def send_email_alert(alert_type, device_name, device_ip, device_mac, timestamp, info):
     """
-    This function will send an email to notify the user about a privacy or security Vulnerability
-    :return: None
+    This function will construct a proper HTML message with the appropriate information such as alert type, device name
+    IP address, MAC address, etc.
+    :param alert_type: One of 'Security' or 'Privacy'
+    :param device_name: Name of the device, i.e. 'Robot Camera'
+    :param device_ip: IP address of the device, i.e. '10.1.2.3'
+    :param device_mac: MAC address of the device, i.e. 'AA:BB:CC:DD:EE:FF'
+    :param timestamp: Timestamp of when the alert occurs
+    :param info: Any additional information related to the alert
+    :return:
     """
     msg = """\
     <html>
@@ -104,10 +104,6 @@ def send_email_alert(alert_type, device_name, device_ip, device_mac, timestamp, 
     </body>
     </html>
     """
-    formatted_msg = msg.format(str(alert_type), str(device_name), str(device_ip), str(device_mac), str(timestamp), str(info))
-    send_message("Test OpenWrt Email Alert", formatted_msg)
-    
-current_time = str(datetime.now(tz))
-
-# Uncomment if you want to run this file as a standalone script
-#send_email_alert("Security", "Creppy Robot Camera", "192.168.100.100", "AB:CD:EF:12:34:56", current_time, "Test Information")
+    formatted_msg = msg.format(str(alert_type), str(device_name), str(device_ip), str(device_mac), str(timestamp),
+                               str(info))
+    send_message(formatted_msg)
