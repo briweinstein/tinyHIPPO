@@ -1,12 +1,18 @@
 #! /usr/bin/env python3
 from scapy.all import sniff
-from scapy.utils import hexdump
-import argparse, re, sys
+from scapy.utils import raw
+import re, sys, json, time
 
-# To run this program with the IoT MAC addresses for Capstone:
-# sudo ./capture_packets.py A0:9F:10:1B:D7:05 AC:83:F3:BC:A7:61
+# Filepath to the config file to pull the MAC addresses from
+config_file_path = "config.json"
 
-# Validated MAC addresses given as input
+# Base location of where packets will be stored
+packet_base_location = "../packets_captured"
+
+# Number of packets to capture, 0 is infinite
+num_packets = 2
+
+# Validated MAC addresses given in config file
 mac_addrs = []
 
 ##############################################################################################
@@ -14,56 +20,54 @@ mac_addrs = []
 ##############################################################################################
 
 # Perform packet capture and parse in the following order:
-#   1) Parse and validate arguments
+#   1) Pull from config file and validate arguments
 #   2) Capture IoT packets only
-#   3) Parse packets
+#   3) Export packets to files as hex
 def main():
-  # 1) Parse and validate arguments
-  parse_validate_arguments()
+  # 1) Pull and validate MAC addresses
+  pull_and_validate_addrs()
 
   # Note: Steps 2 and 3 happen simultaneously in the "sniff()" call, but are separated for clarity
   # 2) Capture IoT packets only with crafted sniff
   print("Capturing IoT packets only")
-  # 3) Parse packets
-  sniff(iface="wlan0", lfilter=lambda packet: packet.src in mac_addrs, prn=packet_parse, count=2)
+  # 3) Export packets
+  sniff(iface="wlan0", lfilter=lambda packet: (packet.src in mac_addrs) or (packet.dst in mac_addrs), prn=packet_parse, count=num_packets)
 
 ##############################################################################################
-### Parse and validate arguments
+### Pull and validate MAC addresses
 ##############################################################################################
 
 # Take in a list of strings as input and confirm they are MAC addresses
-def parse_validate_arguments():
-  print("Parsing and validating arguments")
-  parser = argparse.ArgumentParser(description="Accept MAC addresses as input to an OpenWrt package.")
-  parser.add_argument("mac_addresses", nargs="+", help="A list of MAC addresses belonging to IoT devices to monitor.")
-  args = parser.parse_args()
+def pull_and_validate_addrs():
+  print("Pulling and validating MAC addresses")
+
+  with open(config_file_path, "r") as config_file:
+    config_json = json.load(config_file)
 
   # Throw an error on a bad MAC address or add it to the global MAC address storage
-  # TODO: Not sure if the package can throw errors like this @Martin
+  # TODO: The validation likely won't go in this script, but we'll keep it here for now
   global mac_addrs
-  for addr in args.mac_addresses:
+  for addr in config_json["mac_addrs"]:
     if not re.match("[0-9a-f]{2}([:])[0-9a-f]{2}(\\1[0-9a-f]{2}){4}$", addr.lower()):
       sys.exit("Provided address " + addr + " is not a vaid MAC address.")
     else:
       mac_addrs.append(addr.lower())
 
 ##############################################################################################
-### Parse packets
+### Export packets
 ##############################################################################################
 
-# Parse the IoT packets
 def packet_parse(packet):
-  print("Parsing packet")
-  print("IoT MAC Addresses: " + ", ".join(mac_addrs))
-  print(packet)
-  
-  # scapy packet stuff to try
-  packet.show()
-  print("###########################")
-  hexdump(packet)
-  print("###########################")
-  print(packet.src)
-  print("###########################")
+  if packet.dst in mac_addrs:
+    direction = "incoming"
+  else:
+    direction = "outgoing"
+
+  # The filename for this packet will be the current time
+  filename = str(time.time())
+
+  with open("/".join([packet_base_location, direction, filename]), "a") as outfile:
+    outfile.write(raw(packet).hex())
 
 ##############################################################################################
 ### Call main()
@@ -72,7 +76,6 @@ def packet_parse(packet):
 main()
 
 # Sources:
-# https://docs.python.org/3/library/argparse.html
 # https://linuxsecurityblog.com/2016/02/04/sniffing-access-points-and-mac-addresses-using-python/
 # https://stackoverflow.com/questions/24386000/how-to-filter-by-ethernet-mac-address
 # https://stackoverflow.com/questions/7629643/how-do-i-validate-the-format-of-a-mac-address
