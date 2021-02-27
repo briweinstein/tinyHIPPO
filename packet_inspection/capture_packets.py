@@ -2,6 +2,7 @@
 from scapy.all import sniff
 from scapy.utils import raw
 import re, sys, json, time
+from mitmproxy import http
 
 # Filepath to the config file to pull the MAC addresses from
 config_file_path = "config.json"
