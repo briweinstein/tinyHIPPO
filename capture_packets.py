@@ -2,6 +2,7 @@
 from scapy.all import sniff
 from scapy.utils import raw
 import re, sys, json, time
+from privacy_analysis.privacy_class import Privacy_Analysis
 
 # Filepath to the config file to pull the MAC addresses from
 config_file_path = "config.json"
@@ -58,16 +59,8 @@ def pull_and_validate_addrs():
 ##############################################################################################
 
 def packet_parse(packet):
-  if packet.dst in mac_addrs:
-    direction = "incoming"
-  else:
-    direction = "outgoing"
-
-  # The filename for this packet will be the current time
-  filename = str(time.time())
-
-  with open("/".join([packet_base_location, direction, filename]), "a") as outfile:
-    outfile.write(raw(packet).hex())
+  privacy_obj = Privacy_Analysis(packet)
+  privacy_obj.process_packet()
 
 ##############################################################################################
 ### Call main()
