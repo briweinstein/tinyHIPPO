@@ -2,7 +2,7 @@
 from scapy.all import sniff
 from scapy.utils import raw
 import re, sys, json, time
-from privacy_class import Privacy_Analysis
+from privacy_analysis.privacy_class import Privacy_Analysis
 
 # Filepath to the config file to pull the MAC addresses from
 config_file_path = "config.json"
