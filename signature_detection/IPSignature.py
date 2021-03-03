@@ -1,6 +1,8 @@
 from .Signature import Signature
 import ipaddress
 import scapy.layers.inet as net
+import requests
+from VirusTotalChecker import VirusTotalChecker
 
 
 class IPSignature(Signature):
@@ -16,9 +18,12 @@ class IPSignature(Signature):
             raise Exception
         ip_layer = packet[net.IP]
         # check whether source ip is private
-        if not ipaddress.ip_address(ip_layer.src).is_private:
+        ip_src = ipaddress.ip_address(ip_layer.src)
+        if not ip_src.is_private:
             # TODO: if not private check whether it's from a trusted source eg check virustotal
+            v = VirusTotalChecker()
             print(f'incoming packet: {ip_layer.src}')
+            return v.check_ip(ip_src)
         else:
             # TODO:if outgoing check mac addresses against config and ensure it's coming from a user verified space
             # TODO: if outgoing
