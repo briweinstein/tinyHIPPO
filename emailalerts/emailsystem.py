@@ -5,6 +5,7 @@ import json
 import smtplib
 from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
+from dashboard.alerts import alert
 
 email_config_file = open('/etc/capstone-ids/config.json', 'r')
 email_config_data = json.load(email_config_file)
@@ -45,7 +46,15 @@ def send_message(msg):
     except Exception as e:
         print('Could not send email message to specified recipient.')
         print(e)
-        
+
+def send_email_alert(alert_object: alert):
+    """
+    Overloaded function for alert object as parameter
+    :param alert_object: Alert object
+    :return:
+    """
+    send_email_alert(alert_object.type, alert_object.device_name, alert_object.device_ip,
+                     alert_object.device_mac, alert_object.timestamp, alert_object.info)
 
 def send_email_alert(alert_type, device_name, device_ip, device_mac, timestamp, info):
     """

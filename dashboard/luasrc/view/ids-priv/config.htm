@@ -1,0 +1,102 @@
+<style>
+    .collapsible {
+      background-color: #777;
+      color: white;
+      cursor: pointer;
+      padding: 18px;
+      width: 100%;
+      border: none;
+      text-align: left;
+      outline: none;
+      font-size: 15px;
+    }
+    
+    th, td {
+      padding: 8px;
+      text-align: left;
+      border-bottom: 1px solid #ddd;
+    }
+    
+    .active, .collapsible:hover {
+      background-color: #555;
+    }
+    
+    .content {
+      padding: 0 18px;
+      max-height: 0;
+      overflow: hidden;
+      transition: max-height 0.2s ease-out;
+      background-color: #f1f1f1;
+    }
+
+    .notification_table {
+      border-collapse: collapse;
+      width: 100%;
+    }
+</style>
+
+<script>
+	function saveChanges() {
+	  document.getElementById("changes_saved").innerText = "Changes saved"; 
+	}
+
+	function sendChanges() {
+		var xmlhttp = new XMLHttpRequest();
+		xmlhttp.open("POST", "/cgi-bin/luci/admin/ids_tab/config/save");
+		xmlhttp.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
+
+		// Build content from form via checked rows
+		var config = JSON.stringify({ "ip":"192.168.56.1" });
+		xmlhttp.send(config);
+		saveChanges()
+	}
+</script>
+
+<%+header%>             
+<%
+	function format_ip_neighbors(data)
+		local return_string = [[
+		<table class="notification_table" >
+			<tr>
+				<th><input type="checkbox" />    &nbsp;   </th>
+				<th>IP Address</th>
+				<th>MAC Address</th>
+				<th>Interface</th>
+			</tr>
+		]]
+
+		for line in string.gmatch(data, '[^\r\n]+') do
+			local array = {}
+			if (line ~= nil) then
+				for word in string.gmatch(line, "%S+") do
+					if (word ~= nil and word ~= '') then
+						table.insert(array, word)
+					end
+				end
+				interface = array[3]
+				ip = array[1]
+				-- Match only standard hex MAC addresses
+				mac = string.match(array[5], "(%x+:%x+:%x+:%x+:%x+:%x+)")
+				if (ip ~= nil and ip ~= '' and mac ~= nil and mac ~= '') then
+					return_string = return_string .. "<tr>" .. "\n"
+					return_string = return_string .. "<td><input type=\"checkbox\" />    &nbsp;   </td>" .. "\n"
+					return_string = return_string .. "<td>" .. ip .. "</td>" .. "\n"
+					return_string = return_string .. "<td>" .. mac .. "</td>" .. "\n"
+					return_string = return_string .. "<td>" .. interface .. "</td>" .. "\n"
+					return_string = return_string .. "</tr>" .. "\n"
+				end
+			end
+		end
+		return_string = return_string .. "</table>"
+		return return_string
+	end
+
+	local data = format_ip_neighbors(luci.sys.exec("ip neigh | grep -h \"192.\""))
+%>
+<h1><%:Configuration%></h1>
+<div>
+	<%=data%>   
+</div>       
+<button onclick="sendChanges()">Save</button> 
+<p id="changes_saved"></p>                                           
+<%+footer%>
