@@ -43,6 +43,8 @@ endef
 define Package/cids/install
 	$(INSTALL_DIR) $(1)/etc/capstone-ids
 	$(INSTALL_BIN) $(PKG_BUILD_DIR)/cids-start $(1)/etc/capstone-ids
+	$(INSTALL_BIN) $(PKG_BUILD_DIR)/config.json $(1)/etc/capstone-ids
+	$(INSTALL_BIN) $(PKG_BUILD_DIR)/check-config.py $(1)/etc/capstone-ids
 	$(INSTALL_DIR) $(1)/usr/bin
 	ln -s /etc/capstone-ids/cids-start $(1)/usr/bin/cids
 	$(INSTALL_DIR) $(1)/etc/init.d

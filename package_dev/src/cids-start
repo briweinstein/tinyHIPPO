@@ -14,9 +14,8 @@ opkg install python3
 opkg install python3-pip
 pip3 install scapy
 
-
 # Check the config file
-# TODO: this will be a simple Python script that will check the config file
+/etc/capstone-ids/check_config.py
 
 # Start the actual program
 # TODO: /etc/capstone-ids/cids-main.py
