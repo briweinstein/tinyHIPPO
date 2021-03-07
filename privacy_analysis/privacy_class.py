@@ -16,24 +16,32 @@ class Privacy_Analysis:
 
     is_TCP = self.packet.haslayer(TCP)
     is_UDP = self.packet.haslayer(UDP)
-    # TCP, UDP, or False, based on the above results
-    proto_type = TCP if is_TCP else UDP if is_UDP else False
+
+    # Perform TCP and UDP checks
+    if is_TCP or is_UDP:
+      proto_type = TCP if is_TCP else UDP
+      print(proto_type)
+
+      # Scan for using port 80 and the plaintext for privacy leaks
+      #print(ls(self.packet))
+      if (self.packet[proto_type].dport == 80) or (self.packet[proto_type].sport == 80):
+        #TODO: send_alert("Sending data over unencrypted port.")
+        self.scan_plaintext()
+
+      # Monitor suspicious ports
+      print("Monitoring suspicious ports")
+      if self.packet[proto_type].dport in suspicious_ports:
+        #TODO: send_alert("Suspicious destination port used: " + self.packet[proto_type].dport)
+        print("Alert on bad port")
 
     # If this packet contains a certificate, validate it
     #if packet.something:
       #validate_cert()
 
-    # Scan for using port 80 and the plaintext for privacy leaks
-    #print(ls(self.packet))
-    if (proto_type != False) and ((self.packet[proto_type].dport == 80) or (self.packet[proto_type].sport == 80)):
-      #TODO: send_alert("Sending data over unencrypted port.")
-      self.scan_plaintext()
 
-    # Monitor suspicious ports
-    print("Monitoring suspicious ports")
-    if self.packet[proto_type].dport in suspicious_ports:
-      #TODO: send_alert("Suspicious destination port used: " + self.packet[proto_type].dport)
-      print("Alert on bad port")
+
+
+
 
   # Validate a given certificate
   def validate_cert(self):
