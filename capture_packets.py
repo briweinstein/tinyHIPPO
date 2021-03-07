@@ -2,7 +2,8 @@
 from scapy.all import sniff
 from scapy.utils import raw
 import re, sys, json, time
-from privacy_analysis.privacy_class import Privacy_Analysis
+from privacy_analysis.packet_privacy_class import Privacy_Analysis_Packet
+from privacy_analysis.system_privacy_class import Privacy_Analysis_System
 
 # Filepath to the config file to pull the MAC addresses from
 config_file_path = "config.json"
@@ -27,6 +28,10 @@ mac_addrs = []
 def main():
   # 1) Pull and validate MAC addresses
   pull_and_validate_addrs()
+
+  # 2) Perform a system configuration security check
+  privacy_system_obj = Privacy_Analysis_System()
+  privacy_system_obj.analyze_system_configs()
 
   # Note: Steps 2 and 3 happen simultaneously in the "sniff()" call, but are separated for clarity
   # 2) Capture IoT packets only with crafted sniff
@@ -59,8 +64,8 @@ def pull_and_validate_addrs():
 ##############################################################################################
 
 def packet_parse(packet):
-  privacy_obj = Privacy_Analysis(packet)
-  privacy_obj.process_packet()
+  privacy_packet_obj = Privacy_Analysis_Packet(packet)
+  privacy_packet_obj.process_packet()
 
 ##############################################################################################
 ### Call main()
