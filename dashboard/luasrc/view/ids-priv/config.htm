@@ -16,6 +16,26 @@
       text-align: left;
       border-bottom: 1px solid #ddd;
     }
+
+	.save_button {
+		width: 10%;
+		margin: 10px;
+		padding: 2px 0px 2px 0px;
+		text-align: center;
+	}
+
+	.save_button:hover {
+		box-shadow: 0 3px 3px 0 rgba(0,0,0,0.24), 0 3px 3px 0 rgba(0,0,0,0.19);
+	}
+
+	.save_notification {
+		text-align: center;
+	}
+
+	.explanation {
+		font-size: large;
+		margin-bottom: 40px;
+	}
     
     .active, .collapsible:hover {
       background-color: #555;
@@ -37,16 +57,41 @@
 
 <script>
 	function saveChanges() {
-	  document.getElementById("changes_saved").innerText = "Changes saved"; 
+	  var x = document.getElementById("changes_saved");
+	  x.innerText = "Changes saved"; 
+	  fadeOut(x)
 	}
+
+	function fadeOut(element) {
+    var op = 1;  // initial opacity
+    var timer = setInterval(function () {
+        if (op <= 0.1){
+            clearInterval(timer);
+        }
+        element.style.opacity = op;
+        op -= 0.1;
+    }, 200);
+}
 
 	function sendChanges() {
 		var xmlhttp = new XMLHttpRequest();
 		xmlhttp.open("POST", "/cgi-bin/luci/admin/ids_tab/config/save");
 		xmlhttp.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
 
+		var config_json = {};
+		config_json.mac_addrs = []
+
 		// Build content from form via checked rows
-		var config = JSON.stringify({ "ip":"192.168.56.1" });
+		var selected_rows = document.getElementsByClassName("row_selector");
+		var i;
+		for (i = 0; i < selected_rows.length; i++) {
+			if (selected_rows[i].checked) {
+				var row_id = selected_rows[i].classList[1];
+				config_json.mac_addrs.push(document.getElementsByClassName("mac " + row_id)[0].innerHTML)
+			}
+		} 
+
+		var config = JSON.stringify(config_json);
 		xmlhttp.send(config);
 		saveChanges()
 	}
@@ -58,12 +103,14 @@
 		local return_string = [[
 		<table class="notification_table" >
 			<tr>
-				<th><input type="checkbox" />    &nbsp;   </th>
+				<th></th>
 				<th>IP Address</th>
 				<th>MAC Address</th>
 				<th>Interface</th>
 			</tr>
 		]]
+
+		local config_count = 1
 
 		for line in string.gmatch(data, '[^\r\n]+') do
 			local array = {}
@@ -78,11 +125,11 @@
 				-- Match only standard hex MAC addresses
 				mac = string.match(array[5], "(%x+:%x+:%x+:%x+:%x+:%x+)")
 				if (ip ~= nil and ip ~= '' and mac ~= nil and mac ~= '') then
-					return_string = return_string .. "<tr>" .. "\n"
-					return_string = return_string .. "<td><input type=\"checkbox\" />    &nbsp;   </td>" .. "\n"
-					return_string = return_string .. "<td>" .. ip .. "</td>" .. "\n"
-					return_string = return_string .. "<td>" .. mac .. "</td>" .. "\n"
-					return_string = return_string .. "<td>" .. interface .. "</td>" .. "\n"
+					return_string = return_string .. "<tr id=\"config_row_" .. tostring(config_count) .. "\">"  .. "\n"
+					return_string = return_string .. "<td><input type=\"checkbox\" class=\"row_selector row_" .. tostring(config_count) .. "\" id=\"selector_" .. tostring(config_count) .. "\">   &nbsp;   </td>" .. "\n"
+					return_string = return_string .. "<td class=\"ip row_" .. tostring(config_count) .. "\">" .. ip .. "</td>" .. "\n"
+					return_string = return_string .. "<td class=\"mac row_" .. tostring(config_count) .. "\">" .. mac .. "</td>" .. "\n"
+					return_string = return_string .. "<td class=\"int row_" .. tostring(config_count) .. "\">" .. interface .. "</td>" .. "\n"
 					return_string = return_string .. "</tr>" .. "\n"
 				end
 			end
@@ -94,9 +141,12 @@
 	local data = format_ip_neighbors(luci.sys.exec("ip neigh | grep -h \"192.\""))
 %>
 <h1><%:Configuration%></h1>
+<div class="explanation">
+	<h21>Select the devices you wish to be checked using the IDS system, then save</h2>
+</div>
 <div>
 	<%=data%>   
 </div>       
-<button onclick="sendChanges()">Save</button> 
-<p id="changes_saved"></p>                                           
+<button onclick="sendChanges()" class="save_button">Save</button> 
+<p id="changes_saved" class="save_notification"> &nbsp; </p>                                           
 <%+footer%>

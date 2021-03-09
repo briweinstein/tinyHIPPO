@@ -11,17 +11,42 @@ module("luci.controller.ids-priv.ids_tab", package.seeall)  --notice that new_ta
     end
     
     function action_save_config()
+        -- Load content from POST
         local config, config_length = luci.http.content()
         if (not config or config_length < 1) then
             luci.http.status(400, "Bad Request")
             return
         end
     
-        -- TODO: Save 'config' to fill here
-        conf = io.open("/etc/ids_config/config.json", 'w')
-        conf:write(config)
+        -- Get contents of HTTP POST as JSON
+        local payload = luci.jsonc.parse(tostring(config))
+
+        -- Open configuration file as JSON
+        local conf = io.open("/etc/capstone-ids/config.json", 'r')
+        local conf_contents = conf:read("*all")
+        local configuration = {}
+        if (conf_contents ~= nil and conf_contents ~= "") then
+            configuration = luci.jsonc.parse(tostring(conf_contents))
+        end
+
+        -- Write over existing configuration if no errors reading files
+        if (payload and payload.mac_addrs) then
+            configuration.mac_addrs = payload.mac_addrs
+        else 
+            -- Send 400 back indicated bad input
+            luci.http.status(400, "Bad value for configuration: " + tostring(payload))
+            return
+        end 
+
+        -- Write JSON file, and make it *pretty*,
+        -- Don't question the open/close of the file, lua hates proper file operations
+        -- ALL OR NOTHING BABY!
+        conf:close()
+        conf = io.open("/etc/capstone-ids/config.json", 'w')
+        conf:write(luci.jsonc.stringify(configuration, true) .. "\n")
         conf:close()
 
+        -- Return OK so client side doesn't get upset
         luci.http.prepare_content("application/json")
-        luci.http.write_json({ code = 200 })
+        luci.http.write_json({ code = 200, payload=luci.jsonc.stringify(payload) })
     end

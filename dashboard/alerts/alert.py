@@ -2,11 +2,17 @@
 import datetime
 from scapy.all import *
 from privacy_analysis import *
+from emailalerts import emailsystem
 
 class ALERT_TYPE:
     PRIVACY = "Privacy"
     IDS = "IDS"
     UNKNOWN = "Unknown"
+
+class SEVERITY:
+    INFO = 0
+    WARN = 1
+    ALERT = 2
 
 class alert:
     def __init__(self):
@@ -25,11 +31,12 @@ class alert:
         self.timestamp = datetime.datetime
         self.description = ""
         self.payload_info = b''
+        self.severity = SEVERITY.INFO
 
         # Unique Identifier (For easily finding alerts in logs)
         self.id = 0
 
-    def __init__(self, pkt: packet, alert_description: str, alert_type: ALERT_TYPE, is_destination =False):
+    def __init__(self, pkt: packet, alert_description: str, alert_type: ALERT_TYPE, severity: SEVERITY, is_destination =False):
         """
         Parses the given packet and extra information into a alert object
         :param pkt: Scapy's packet object, the collected info from the alert
@@ -41,6 +48,7 @@ class alert:
         # Initialize with default values
         self.__init__()
         self.type = str(alert_type)
+        self.severity = int(severity)
 
         if is_destination:
             if "IP" in pkt:
@@ -78,6 +86,16 @@ class alert:
         f.write(str(self))
         f.close()
         print("Alert was saved to file: " + log_file)
+
+    def alert(self):
+        """
+        Inform the townspeople (Send the alert where it should go)
+        :return:
+        """
+        if self.severity > 1:
+            emailsystem.send_email_alert(self)
+        self.saveAlert()
+
 
     def __str__(self):
         string = "*******************************************************\n"
