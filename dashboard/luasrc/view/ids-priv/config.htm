@@ -63,15 +63,15 @@
 	}
 
 	function fadeOut(element) {
-    var op = 1;  // initial opacity
-    var timer = setInterval(function () {
-        if (op <= 0.1){
-            clearInterval(timer);
-        }
-        element.style.opacity = op;
-        op -= 0.1;
-    }, 200);
-}
+		var op = 1;  // initial opacity
+		var timer = setInterval(function () {
+			if (op <= 0.1){
+				clearInterval(timer);
+			}
+			element.style.opacity = op;
+			op -= 0.1;
+		}, 200);
+	}
 
 	function sendChanges() {
 		var xmlhttp = new XMLHttpRequest();
@@ -142,7 +142,7 @@
 %>
 <h1><%:Configuration%></h1>
 <div class="explanation">
-	<h21>Select the devices you wish to be checked using the IDS system, then save</h2>
+	<h2>Select the devices you wish to be checked using the IDS system, then save</h2>
 </div>
 <div>
 	<%=data%>   

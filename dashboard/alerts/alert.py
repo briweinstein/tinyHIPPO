@@ -1,7 +1,8 @@
 #! /usr/bin/env python3
+
+import json
 import datetime
 from scapy.all import *
-from privacy_analysis import *
 from emailalerts import emailsystem
 
 class ALERT_TYPE:
@@ -72,9 +73,9 @@ class alert:
         if "Raw" in pkt:
             self.payload_info = pkt["Raw"].load
 
-    def saveAlert(self):
+    def logAlert(self):
         """
-        Saves the alert object to the log file
+        Logs the alert object to the log file
         :return:
         """
         log_file = "unknown_error.log"
@@ -85,23 +86,69 @@ class alert:
         f = open(log_file, "a")
         f.write(str(self))
         f.close()
-        print("Alert was saved to file: " + log_file)
+
+    def jsonify(self):
+        """
+        JSONification of the data within the object
+        :return:
+        """
+        alert_json = {"id": self.id, "type": self.type, "device_name": self.device_name, "device_ip": self.device_ip,
+                      "device_mac": self.device_mac, "timestamp": self.timestamp, "description": self.description,
+                      "payload_info": self.payload_info, "severity": self.severity}
+
+        return alert_json
+
+    def saveAlert(self):
+        """
+        Saves the alert object in JSON format to the collection
+        :return:
+        """
+        try:
+            # Open config file to get path
+            config_file = open('/etc/capstone-ids/config.json', 'r')
+            config_data = json.load(config_file)
+            path = config_data["alert_collection_path"]
+
+            # Default path
+            if path == "" or path is None:
+                path = "/etc/capstone-ids/alert_collection.json"
+
+            # Open alert collection file to read
+            alert_collection = open(path, 'r')
+            alert_data = json.load(alert_collection)
+
+            # Get the list of alerts, add the current object to the list
+            alerts = alert_data["alerts"]
+            alerts.append(self.jsonify())
+
+            #Close/Open the file to RW properly (In case of earlier error, doesn't terminate the file's contents
+            alert_collection.close()
+            write_alert_collection = open(path, 'w')
+            write_alert_collection.write(json.dumps(alert_data))
+            write_alert_collection.close()
+        except Exception as e:
+            print("Failed to save alert, reason: " + str(e))
 
     def alert(self):
         """
         Inform the townspeople (Send the alert where it should go)
         :return:
         """
+        # Send email if urgent enough
         if self.severity > 1:
             emailsystem.send_email_alert(self)
-        self.saveAlert()
 
+        # Log the alert to the log file
+        self.logAlert()
+
+        # Save the alert in the JSON collection for frontend use
+        self.saveAlert()
 
     def __str__(self):
         string = "*******************************************************\n"
         string += "{0} Alert (ID: {1})\n".format(str(self.type), str(self.id))
         string += "{0}\n".format(str(self.description))
-        string = "-------------------------------------------------------\n"
+        string += "-------------------------------------------------------\n"
         string += "Time of alert: {0}\n".format(str(self.timestamp))
         string += "Affected Device: {0}\n".format(str(self.device_name))
         string += "MAC: {0}\n".format(str(self.device_mac).upper())
