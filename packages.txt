@@ -1,2 +1,3 @@
 opkg install pip3
 pip3 install scapy
+pip3 install mitmproxy
