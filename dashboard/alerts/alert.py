@@ -16,28 +16,7 @@ class SEVERITY:
     ALERT = 2
 
 class alert:
-    def __init__(self):
-        """
-        Default constructor for the alert object
-        """
-        # Alert type (Privacy (P) vs IDS (I))
-        self.type = str(ALERT_TYPE.UNKNOWN)
-
-        # Device specific information
-        self.device_name = ""
-        self.device_ip = ""
-        self.device_mac = ""
-
-        # Additional info
-        self.timestamp = datetime.datetime
-        self.description = ""
-        self.payload_info = b''
-        self.severity = SEVERITY.INFO
-
-        # Unique Identifier (For easily finding alerts in logs)
-        self.id = 0
-
-    def __init__(self, pkt: packet, alert_description: str, alert_type: ALERT_TYPE, severity: SEVERITY, is_destination =False):
+    def __init__(self, pkt: packet, alert_description="", alert_type=ALERT_TYPE.UNKNOWN, alert_severity=SEVERITY.INFO, is_destination=False):
         """
         Parses the given packet and extra information into a alert object
         :param pkt: Scapy's packet object, the collected info from the alert
@@ -47,9 +26,12 @@ class alert:
         :param is_destination: Boolean telling alert system if the IoT device is the dst or src
         """
         # Initialize with default values
-        self.__init__()
+        self.timestamp = datetime.datetime
+        self.device_name = ""
+        self.device_ip = ""
+        self.device_mac = ""
         self.type = str(alert_type)
-        self.severity = int(severity)
+        self.severity = int(alert_severity)
 
         if is_destination:
             if "IP" in pkt:
