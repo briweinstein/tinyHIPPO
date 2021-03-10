@@ -2,8 +2,8 @@
 from scapy.all import sniff
 from scapy.utils import raw
 import re, sys, json, time
-from privacy_analysis.packet_privacy_class import Privacy_Analysis_Packet
-from privacy_analysis.system_privacy_class import Privacy_Analysis_System
+from src.privacy_analysis.packet_privacy_class import Privacy_Analysis_Packet
+from src.privacy_analysis.system_privacy_class import Privacy_Analysis_System
 
 # Filepath to the config file to pull the MAC addresses from
 config_file_path = "config.json"
@@ -12,7 +12,7 @@ config_file_path = "config.json"
 packet_base_location = "../packets_captured"
 
 # Number of packets to capture, 0 is infinite
-num_packets = 2
+num_packets = 1
 
 # Validated MAC addresses given in config file
 mac_addrs = []

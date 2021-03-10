@@ -1,6 +1,7 @@
 #! /usr/bin/env python3
 from scapy.all import TCP, UDP, IP, Ether, ls
 import os
+from dashboard.alerts.alert import alert
 
 suspicious_ports = [21,22,23,2323,25,110,111,135]
 
@@ -26,8 +27,9 @@ class Privacy_Analysis_Packet:
       # Scan for using port 80 and the plaintext for privacy leaks
       #print(ls(self.packet))
       if (self.packet[proto_type].dport == 80) or (self.packet[proto_type].sport == 80):
+        Alert
         #TODO: send_alert("Sending data over unencrypted port.")
-        self.scan_plaintext()
+        self.__scan_plaintext()
 
       # Monitor suspicious ports
       print("Monitoring suspicious ports")
@@ -36,9 +38,9 @@ class Privacy_Analysis_Packet:
         print("Alert on bad port")
 
 
-##############################################################################################
-### Private Helper Methods
-##############################################################################################
+  ##############################################################################################
+  ### Private Helper Methods
+  ##############################################################################################
 
   # Scan the plaintext for privacy leaks
   def __scan_plaintext(self):
