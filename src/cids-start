@@ -18,5 +18,5 @@ pip3 install dataclasses
 /etc/capstone-ids/check-config.py
 
 # Start the actual program
-# TODO: /etc/capstone-ids/cids-main.py
+# TODO: /etc/capstone-ids/cids_main.py
 

@@ -1,6 +1,6 @@
 from .signature import Signature
+from cids_main import run_config
 import scapy.layers.inet as net
-import json
 import ipaddress
 
 '''
@@ -21,9 +21,6 @@ class MACAddressSignature(Signature):
             raise Exception
         ether_layer = packet[net.Ether]
         ip_layer = packet[net.IP]
-        config = open('/src/config.json')
-        config_json = json.load(config)
-        mac_addresses = config_json['mac_addrs']
         mac_src = ether_layer.src
         ip_src = ipaddress.ip_address(ip_layer.src)
-        return ip_src.is_private and (mac_src not in mac_addresses)
+        return ip_src.is_private and (mac_src not in run_config.mac_addrs)
