@@ -4,7 +4,7 @@ import os
 
 suspicious_ports = [21,22,23,2323,25,110,111,135]
 
-# TODO: verify certs, plaintext
+# TODO: plaintext
 # TODO: separate sus ports for TCP/UDP?
 
 class Privacy_Analysis_Packet:
