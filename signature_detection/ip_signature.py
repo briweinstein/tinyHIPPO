@@ -3,10 +3,14 @@ import ipaddress
 import scapy.layers.inet as net
 from virustotal_checker import VirusTotalChecker
 
+'''
+This signature detects whether the packet is communicating with a malicious IP address 
+'''
+
 
 class IPSignature(Signature):
     '''
-        - subnet: local ip space for this network
+    - subnet: local ip space for this network
     '''
 
     def __init__(self, subnet: str):
@@ -21,9 +25,6 @@ class IPSignature(Signature):
         ip_dst = ipaddress.ip_address(ip_layer.dst)
         if not ip_src.is_private:
             v = VirusTotalChecker()
-            print(f'incoming packet: {ip_layer.src}')
             return v.check_ip(ip_src) or v.check_ip(ip_dst)
         else:
-            # TODO:if outgoing check mac addresses against config and ensure it's coming from a user verified space
-            # TODO: if outgoing
-            print(f'outgoing packet: {ip_layer.src}')
+            return False

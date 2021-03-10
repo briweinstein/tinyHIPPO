@@ -1,27 +1,25 @@
+from typing import List
 from scapy.layers.l2 import Ether
-from email_alerts import test_email
-import os
+from scapy.all import Packet
+from signature_detection.signature import Signature
 
-'''
-This class defines the methods that must be defined for Signature Detection for an IoT device to be supported
-'''
+
 class SignatureDetector:
-    '''
-    The below method defines the following attributes required for a "DeviceDetector"
-    - mac_address: The MAC address of this DeviceDetector within the network
-    - rules: The filepath to the list of YARA rules defined as signatures for this "DeviceDetector"
-    '''
-    def __init__(self, mac_address:str, rules:str):
-        self.mac_address = mac_address
-        if os.path.exists(rules):
-            #self.signature_list = yara.compile(rules)
-            pass
+    """
+    This class defines the methods that must be defined for Signature Detection for an IoT device to be supported
+    """
 
-    '''
-    This class method checks the defined signatures for a given packet for this DeviceDetector 
-    '''
-    def check_signatures(self, packet:str):
+    def __init__(self, rules: List[Signature]):
+        """
+        Constructor for this signature detector
+        :param rules: A list of Signatures for this signature detector to check packets against
+        """
+        self.rules = rules
+
+    def check_signatures(self, packet: Packet):
+        """
+        Checks the given packet against all defined signatures
+        :param packet: Scapy packet to check signatures against
+        :return:
+        """
         pass
-
-
-
