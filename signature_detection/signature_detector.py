@@ -16,10 +16,10 @@ class SignatureDetector:
         """
         self.rules = rules
 
-    def check_signatures(self, packet: Packet):
+    def check_signatures(self, packet: Packet) -> List[Signature]:
         """
         Checks the given packet against all defined signatures
         :param packet: Scapy packet to check signatures against
-        :return:
+        :return: List of triggered signatures
         """
-        pass
+        return [rule for rule in self.rules if rule(packet)]
