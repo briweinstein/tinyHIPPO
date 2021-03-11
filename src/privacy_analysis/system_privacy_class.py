@@ -10,7 +10,6 @@ class Privacy_Analysis_System:
     self.__check_package_upgrades()
     self.__check_root_password()
     self.__check_dropbear_config()
-    i
 
   ############################################################################################## 
   ### Private Helper Functions
@@ -18,10 +17,16 @@ class Privacy_Analysis_System:
 
   # Validate the router encryption type is not weak
   def __check_encryption(self):
+    weak_encryption_modes =	["none'", "wep", "owe'",
+				 "psk'", "psk+", "psk-",
+				 "wpa'", "wpa+", "wpa-"]
     data = self.__get_file_contents("/etc/config/wireless")
-    if (data is not None) and (("encryption 'none'" in data) or ("encryption 'psk'" in data) or ("encryption 'wep'" in data)):
-      #TODO: alert("Weak encryption is in use. Switch to WPA2 from WPA, WEP, or no encryption.")
-      print("Weak encryption found")
+    if data is None:
+      return
+    for mode in weak_encryption_modes:
+      if ("encryption '" + mode) in data:
+        #TODO: alert("Weak encryption is in use. Switch to WPA2 from " + mode + ".")
+        print("Weak encryption found")
 
   ############################################################################################## 
 
