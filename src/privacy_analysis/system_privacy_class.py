@@ -8,7 +8,9 @@ class Privacy_Analysis_System:
   def analyze_system_configs(self):
     self.__check_encryption()
     self.__check_package_upgrades()
-
+    self.__check_root_password()
+    self.__check_dropbear_config()
+    i
 
   ############################################################################################## 
   ### Private Helper Functions
@@ -16,11 +18,10 @@ class Privacy_Analysis_System:
 
   # Validate the router encryption type is not weak
   def __check_encryption(self):
-    with open("/etc/config/wireless", "r") as wireless_config_file:
-      data = wireless_config_file.read()
-      if ("psk'" in data) or ("wep" in data):
-        #TODO: alert("Weak encryption is in use. Switch to WPA2 from WPA or WEP.")
-        print("Weak encryption found")
+    data = self.__get_file_contents("/etc/config/wireless")
+    if (data is not None) and (("encryption 'none'" in data) or ("encryption 'psk'" in data) or ("encryption 'wep'" in data)):
+      #TODO: alert("Weak encryption is in use. Switch to WPA2 from WPA, WEP, or no encryption.")
+      print("Weak encryption found")
 
   ############################################################################################## 
 
@@ -33,5 +34,40 @@ class Privacy_Analysis_System:
       print("Package update found.")
 
   ############################################################################################## 
+
+  # Check if a root password has been set
+  def __check_root_password(self):
+    data = self.__get_file_contents("/etc/shadow")
+    if (data is not None) and ("root::" in data):
+      #TODO: alert("No root password set. Set a root password.")
+      print("No root password set.")
+
+  ############################################################################################## 
+
+  # Checks the dropbear configuration for root login and password login
+  def __check_dropbear_config(self):
+    data = self.__get_file_contents("/etc/config/dropbear")
+    if (data is not None) and ("RootPasswordAuth 'on'" in data):
+      #TODO: alert("Root user can login via ssh. Consider disabling this for security purposes.")
+      print("Root user can login via ssh.")
+    if "PasswordAuth 'on'" in data:
+      #TODO: alert("Password login via ssh is allowed. Consider only allowing keypair login via ssh.")
+      print("Password login via ssh is allowed.")
+
+  ############################################################################################## 
+
+  # Opens a file and returns the data
+  def __get_file_contents(self, filename):
+    # Depending on the file and the setup, the file may not exist. Try to avoid errors
+    try:
+      with open(filename, "r") as file:
+        data = file.read()
+        return data
+    except:
+      return
+
+  ############################################################################################## 
+
+
 
 
