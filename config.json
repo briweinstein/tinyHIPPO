@@ -1,4 +1,9 @@
 {
-"email": "example@example.com",
-"mac_addrs": ["A0:9F:10:1B:D7:05", "AC:83:F3:BC:A7:61"]
+    "email": {
+        "smtp_server": "smtp.example.com",
+        "email_account": "openwrt@example.com",
+        "email_password": "super_secure_password",
+        "recipient_emails": ["homeowner@example.com"]
+    },
+    "mac_addrs": ["AA:BB:CC:DD:EE:FF"]
 }

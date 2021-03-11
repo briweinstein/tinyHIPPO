@@ -1,5 +1,5 @@
 from .signature import Signature
-from cids_main import run_config
+from src import run_config
 import scapy.layers.inet as net
 import ipaddress
 

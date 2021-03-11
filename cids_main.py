@@ -1,4 +1,4 @@
-from config import Config
+from src import run_config
 
-# Entrypoint file
-run_config = Config()
+# TODO:Implement entrypoint
+

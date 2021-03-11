@@ -6,16 +6,16 @@ import smtplib
 from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
 from typing import TYPE_CHECKING
+from src import run_config
+
 if TYPE_CHECKING:
-    from dashboard.alerts import alert
+    from src.dashboard.alerts import alert
 
-email_config_file = open('/etc/capstone-ids/config.json', 'r')
-email_config_data = json.load(email_config_file)
-
-SMTP_SERVER = email_config_data['email']['smtp_server']
-EMAIL_ACCOUNT = email_config_data['email']['email_account']
-EMAIL_KEY = email_config_data['email']['email_password']
-RECIPIENT_EMAIL = email_config_data['email']['recipient_email']
+SMTP_SERVER = run_config.email.smtp_server
+EMAIL_ACCOUNT = run_config.email.email_account
+EMAIL_KEY = run_config.email.email_password
+# TODO: Allow for multiple recpient email addresses
+RECIPIENT_EMAIL = run_config.email.recipient_emails[0]
 PORT = 587  # For starttls
 
 # Create a secure SSL context
@@ -102,6 +102,7 @@ def send_email_alert(alert_object: alert):
     </body>
     </html>
     """
-    formatted_msg = msg.format(str(alert_object.alert_type), str(alert_object.device_name), str(alert_object.device_ip), str(alert_object.device_mac), str(alert_object.timestamp),
+    formatted_msg = msg.format(str(alert_object.alert_type), str(alert_object.device_name), str(alert_object.device_ip),
+                               str(alert_object.device_mac), str(alert_object.timestamp),
                                str(alert_object.info))
     send_message(formatted_msg)

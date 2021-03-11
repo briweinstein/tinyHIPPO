@@ -15,7 +15,7 @@ class ConfigEmail:
 
 class Config:
     def __init__(self):
-        config_path = os.getenv("IOT_IDS_CONFIGPATH", "src/config.json")
+        config_path = os.getenv("IOT_IDS_CONFIGPATH", "../config.json")
         with open(config_path) as f:
             config_json = json.load(f)
         self.email = ConfigEmail(**config_json["email"])

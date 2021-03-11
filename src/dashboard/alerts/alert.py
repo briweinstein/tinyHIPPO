@@ -3,7 +3,8 @@
 import json
 import datetime
 from scapy.all import *
-from emailalerts import emailsystem
+from src.emailalerts import emailsystem
+
 
 class ALERT_TYPE:
     PRIVACY = "Privacy"

@@ -1,8 +1,7 @@
 #! /usr/bin/env python3
 from scapy.all import sniff
-from scapy.utils import raw
-import re, sys, json, time
-from privacy_analysis.privacy_class import Privacy_Analysis
+import re, sys, json
+from src.privacy_analysis.privacy_class import Privacy_Analysis
 
 # Filepath to the config file to pull the MAC addresses from
 config_file_path = "config.json"
