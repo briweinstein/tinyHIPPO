@@ -29,8 +29,8 @@ class alert:
         # Initialize with default values
         self.timestamp = str(datetime.now())
         self.device_name = ""
-        self.device_ip = ""
-        self.device_mac = ""
+        self.device_ip = "None"
+        self.device_mac = "None"
         self.type = str(alert_type)
         self.severity = int(alert_severity)
 
@@ -120,11 +120,11 @@ class alert:
         try:
             # Open config file to get path
             try:
-                config_file = open('/etc/capstone-ids/config.json', 'r')
+                config_file = open('/etc/tinyHIPPO/config.json', 'r')
                 config_data = json.load(config_file)
                 path = config_data["alert_collection_path"]
             except:
-                path = "/etc/capstone-ids/alert_collection.json"
+                path = "/etc/tinyHIPPO/alert_collection.json"
 
             # Open alert collection file to read
             alert_collection = None
