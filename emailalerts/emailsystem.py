@@ -5,7 +5,9 @@ import json
 import smtplib
 from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
-from dashboard.alerts import alert
+from typing import TYPE_CHECKING
+if TYPE_CHECKING:
+    from dashboard.alerts import alert
 
 try:
     email_config_file = open('/etc/tinyHIPPO/config.json', 'r')
@@ -53,25 +55,12 @@ def send_message(msg):
         print('Could not send email message to specified recipient.')
         print(e)
 
-def send_email_alert(alert_object: alert):
-    """
-    Overloaded function for alert object as parameter
-    :param alert_object: Alert object
-    :return:
-    """
-    send_email_alert(alert_object.type, alert_object.device_name, alert_object.device_ip,
-                     alert_object.device_mac, alert_object.timestamp, alert_object.info)
 
-def send_email_alert(alert_type, device_name, device_ip, device_mac, timestamp, info):
+def send_email_alert(alert_object: alert):
     """
     This function will construct a proper HTML message with the appropriate information such as alert type, device name
     IP address, MAC address, etc.
-    :param alert_type: One of 'Security' or 'Privacy'
-    :param device_name: Name of the device, i.e. 'Robot Camera'
-    :param device_ip: IP address of the device, i.e. '10.1.2.3'
-    :param device_mac: MAC address of the device, i.e. 'AA:BB:CC:DD:EE:FF'
-    :param timestamp: Timestamp of when the alert occurs
-    :param info: Any additional information related to the alert
+    :param alert_object: Alert object
     :return:
     """
     msg = """\
@@ -119,6 +108,6 @@ def send_email_alert(alert_type, device_name, device_ip, device_mac, timestamp, 
     </body>
     </html>
     """
-    formatted_msg = msg.format(str(alert_type), str(device_name), str(device_ip), str(device_mac), str(timestamp),
-                               str(info))
+    formatted_msg = msg.format(str(alert_object.alert_type), str(alert_object.device_name), str(alert_object.device_ip), str(alert_object.device_mac), str(alert_object.timestamp),
+                               str(alert_object.info))
     send_message(formatted_msg)
