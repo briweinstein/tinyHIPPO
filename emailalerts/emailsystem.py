@@ -8,7 +8,7 @@ from email.mime.multipart import MIMEMultipart
 from dashboard.alerts import alert
 
 try:
-    email_config_file = open('/etc/capstone-ids/config.json', 'r')
+    email_config_file = open('/etc/tinyHIPPO/config.json', 'r')
     email_config_data = json.load(email_config_file)
     SMTP_SERVER = email_config_data['email']['smtp_server']
     EMAIL_ACCOUNT = email_config_data['email']['email_account']
@@ -39,7 +39,7 @@ def send_message(msg):
         server.ehlo()
         server.login(EMAIL_ACCOUNT, EMAIL_KEY)
         message = MIMEMultipart("alternative")
-        message["Subject"] = "Capstone IDS - OpenWrt Email Alert"
+        message["Subject"] = "Tiny HIPPO IDS - OpenWrt Email Alert"
         message["From"] = 'OpenWrt Alerting System'
         message["To"] = RECIPIENT_EMAIL
         part1 = MIMEText(msg, 'plain')
