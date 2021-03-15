@@ -18,7 +18,32 @@ class SEVERITY:
     ALERT = 2
 
 class alert:
-    def __init__(self, pkt: Packet, alert_description="", alert_type=ALERT_TYPE.UNKNOWN, alert_severity=SEVERITY.INFO, is_destination=False):
+    def __init__(self, alert_description="", alert_type=ALERT_TYPE.UNKNOWN, alert_severity=SEVERITY.INFO):
+        """
+        Parses the given information into a alert object, no packet present
+        :param alert_description: A description providing context/information as to why this
+                                  particular packet was flagged
+        :param alert_type: IDS or PRIVACY
+        :param is_destination: Boolean telling alert system if the IoT device is the dst or src
+        """
+        # Initialize with default values
+        self.timestamp = str(datetime.now())
+        self.device_name = ""
+        self.device_ip = ""
+        self.device_mac = ""
+        self.type = str(alert_type)
+        self.severity = int(alert_severity)
+
+        self.description = alert_description
+        hasher = hashlib.sha1()
+        hasher.update(str(self.device_mac + self.timestamp).encode('utf-8'))
+        self.id = int(hasher.hexdigest()[:4], 16)
+
+        # If there is raw information, try to save it
+        self.payload_info = "None"
+
+    def __init__(self, pkt: Packet, alert_description="", alert_type=ALERT_TYPE.UNKNOWN, alert_severity=SEVERITY.INFO,
+                 is_destination=False):
         """
         Parses the given packet and extra information into a alert object
         :param pkt: Scapy's packet object, the collected info from the alert
