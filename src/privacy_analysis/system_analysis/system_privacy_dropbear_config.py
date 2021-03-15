@@ -1,6 +1,6 @@
 #! /usr/bin/env python3
-from src.privacy_analysis import SystemPrivacy
-from src.privacy_analysis import get_file_contents
+from src.privacy_analysis.system_analysis import SystemPrivacy
+from src.privacy_analysis.system_analysis import get_file_contents
 
 
 # Checks the dropbear configuration for root login and password login

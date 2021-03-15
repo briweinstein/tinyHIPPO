@@ -1,7 +1,7 @@
 #! /usr/bin/env python3
 from scapy.all import sniff
 from config import Config
-import re, sys, json
+import re, sys
 from src.privacy_analysis.packet_analysis import PacketPrivacyPort
 from src.privacy_analysis.system_analysis import SystemPrivacyDropbearConfig
 from src.privacy_analysis.system_analysis import SystemPrivacyEncryption
