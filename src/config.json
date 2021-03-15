@@ -3,7 +3,7 @@
         "smtp_server": "smtp.example.com",
         "email_account": "openwrt@example.com",
         "email_password": "super_secure_password",
-        "recipient_email": "homeowner@example.com"
+        "recipient_emails": ["homeowner@example.com"]
     },
     "mac_addrs": ["AA:BB:CC:DD:EE:FF"]
 }
