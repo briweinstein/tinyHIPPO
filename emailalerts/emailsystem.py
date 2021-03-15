@@ -9,13 +9,19 @@ from typing import TYPE_CHECKING
 if TYPE_CHECKING:
     from dashboard.alerts import alert
 
-email_config_file = open('/etc/capstone-ids/config.json', 'r')
-email_config_data = json.load(email_config_file)
+try:
+    email_config_file = open('/etc/tinyHIPPO/config.json', 'r')
+    email_config_data = json.load(email_config_file)
+    SMTP_SERVER = email_config_data['email']['smtp_server']
+    EMAIL_ACCOUNT = email_config_data['email']['email_account']
+    EMAIL_KEY = email_config_data['email']['email_password']
+    RECIPIENT_EMAIL = email_config_data['email']['recipient_email']
+except:
+    SMTP_SERVER = ""
+    EMAIL_ACCOUNT = ""
+    EMAIL_KEY = ""
+    RECIPIENT_EMAIL = ""
 
-SMTP_SERVER = email_config_data['email']['smtp_server']
-EMAIL_ACCOUNT = email_config_data['email']['email_account']
-EMAIL_KEY = email_config_data['email']['email_password']
-RECIPIENT_EMAIL = email_config_data['email']['recipient_email']
 PORT = 587  # For starttls
 
 # Create a secure SSL context
@@ -35,7 +41,7 @@ def send_message(msg):
         server.ehlo()
         server.login(EMAIL_ACCOUNT, EMAIL_KEY)
         message = MIMEMultipart("alternative")
-        message["Subject"] = "Capstone IDS - OpenWrt Email Alert"
+        message["Subject"] = "Tiny HIPPO IDS - OpenWrt Email Alert"
         message["From"] = 'OpenWrt Alerting System'
         message["To"] = RECIPIENT_EMAIL
         part1 = MIMEText(msg, 'plain')
