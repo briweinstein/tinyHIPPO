@@ -1,15 +1,16 @@
 #! /usr/bin/env python3
 from scapy.all import sniff
-from scapy.utils import raw
-import re, sys, json, time
-from src.privacy_analysis.packet_privacy_class import Privacy_Analysis_Packet
-from src.privacy_analysis.system_privacy_class import Privacy_Analysis_System
+from config import Config
+import re, sys, json
+from src.privacy_analysis.packet_analysis import PacketPrivacyPort
+from src.privacy_analysis.system_analysis import SystemPrivacyDropbearConfig
+from src.privacy_analysis.system_analysis import SystemPrivacyEncryption
+from src.privacy_analysis.system_analysis import SystemPrivacyPackageUpgrades
+from src.privacy_analysis.system_analysis import SystemPrivacyRootPassword
 
-# Filepath to the config file to pull the MAC addresses from
-config_file_path = "config.json"
-
-# Base location of where packets will be stored
-packet_base_location = "../packets_captured"
+rules_packet_privacy = [PacketPrivacyPort]
+rules_system_privacy = [SystemPrivacyDropbearConfig, SystemPrivacyEncryption, SystemPrivacyPackageUpgrades, SystemPrivacyRootPassword]
+rules_scanning_privacy = []
 
 # Number of packets to capture, 0 is infinite
 num_packets = 1
@@ -30,8 +31,8 @@ def main():
   pull_and_validate_addrs()
 
   # 2) Perform a system configuration security check
-  privacy_system_obj = Privacy_Analysis_System()
-  privacy_system_obj.analyze_system_configs()
+  for rule in rules_system_privacy:
+    rule()
 
   # Note: Steps 2 and 3 happen simultaneously in the "sniff()" call, but are separated for clarity
   # 2) Capture IoT packets only with crafted sniff
@@ -47,25 +48,25 @@ def main():
 def pull_and_validate_addrs():
   print("Pulling and validating MAC addresses")
 
-  with open(config_file_path, "r") as config_file:
-    config_json = json.load(config_file)
+  # Entrypoint file
+  run_config = Config()
 
   # Throw an error on a bad MAC address or add it to the global MAC address storage
   # TODO: The validation likely won't go in this script, but we'll keep it here for now
   global mac_addrs
-  for addr in config_json["mac_addrs"]:
+  for addr in run_config.mac_addrs:
     if not re.match("[0-9a-f]{2}([:])[0-9a-f]{2}(\\1[0-9a-f]{2}){4}$", addr.lower()):
       sys.exit("Provided address " + addr + " is not a vaid MAC address.")
     else:
       mac_addrs.append(addr.lower())
 
 ##############################################################################################
-### Export packets
+### Analyze packet privacy
 ##############################################################################################
 
 def packet_parse(packet):
-  privacy_packet_obj = Privacy_Analysis_Packet(packet)
-  privacy_packet_obj.process_packet()
+  for rule in rules_packet_privacy:
+    rule(packet)
 
 ##############################################################################################
 ### Call main()

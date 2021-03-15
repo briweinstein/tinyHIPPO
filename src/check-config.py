@@ -2,10 +2,10 @@
 
 import json
 
-config_file = open('/etc/capstone-ids/config.json','r')
+config_file = open('/etc/tinyHIPPO/config.json','r')
 config_data = json.load(config_file)
 
-logging_file = open('/etc/capstone-ids/cids-startuo.log','a+')
+logging_file = open('/etc/tinyHIPPO/cids-startuo.log','a+')
 
 SMTP_SERVER = config_data['email']['smtp_server']
 EMAIL_ACCOUNT = config_data['email']['email_account']
