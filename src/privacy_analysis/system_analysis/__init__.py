@@ -1,22 +1,3 @@
-class SystemPrivacyDropbearConfig(object):
-    pass
+#from src.privacy_analysis.system_analysis.system_privacy import SystemPrivacy
+#from src.privacy_analysis.system_analysis.system_privacy_dropbear_config import SystemPrivacyDropbearConfig
 
-
-class SystemPrivacy(object):
-    pass
-
-
-def get_file_contents(filename):
-    return None
-
-
-class SystemPrivacyEncryption(object):
-    pass
-
-
-class SystemPrivacyPackageUpgrades(object):
-    pass
-
-
-class SystemPrivacyRootPassword(object):
-    pass

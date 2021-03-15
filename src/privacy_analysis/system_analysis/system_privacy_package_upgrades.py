@@ -1,5 +1,5 @@
 #! /usr/bin/env python3
-from src.privacy_analysis.system_analysis import SystemPrivacy
+from src.privacy_analysis.system_analysis.system_privacy import SystemPrivacy
 import os
 
 

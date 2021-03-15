@@ -1,6 +1,6 @@
 #! /usr/bin/env python3
-from src.privacy_analysis.system_analysis import SystemPrivacy
-from src.privacy_analysis.system_analysis import get_file_contents
+from src.privacy_analysis.system_analysis.system_privacy import SystemPrivacy
+from src.privacy_analysis.system_analysis.helpers_analysis import get_file_contents
 
 
 # Validate the router encryption type is not weak
