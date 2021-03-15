@@ -37,7 +37,7 @@ def main():
   # 2) Capture IoT packets only with crafted sniff
   print("Capturing IoT packets only")
   # 3) Export packets
-  #sniff(iface="wlan0", lfilter=lambda packet: (packet.src in mac_addrs) or (packet.dst in mac_addrs), prn=packet_parse, count=num_packets)
+  sniff(iface="wlan0", lfilter=lambda packet: (packet.src in mac_addrs) or (packet.dst in mac_addrs), prn=packet_parse, count=num_packets)
 
 ##############################################################################################
 ### Pull and validate MAC addresses

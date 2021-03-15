@@ -1,7 +1,7 @@
 #! /usr/bin/env python3
 from scapy.all import TCP, UDP, IP, Ether, ls
 import os
-from dashboard.alerts.alert import alert
+#from dashboard.alerts.alert import alert
 
 suspicious_ports = [21,22,23,2323,25,110,111,135]
 
