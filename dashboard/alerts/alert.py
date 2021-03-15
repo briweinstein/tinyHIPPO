@@ -11,7 +11,7 @@ from datetime import datetime
 from scapy.packet import Packet
 from scapy.utils import hexdump
 from emailalerts import emailsystem
-from config import CONFIG
+from cids_main import run_config as CONFIG
 
 
 class ALERT_TYPE:

@@ -6,7 +6,7 @@ import smtplib
 from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
 from typing import TYPE_CHECKING
-from config import CONFIG
+from cids_main import run_config as CONFIG
 if TYPE_CHECKING:
     from dashboard.alerts import alert
 

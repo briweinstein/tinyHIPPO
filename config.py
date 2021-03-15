@@ -20,5 +20,3 @@ class Config:
         self.email = ConfigEmail(**config_json["email"])
         self.mac_addrs = config_json["mac_addrs"]
         self.alert_collection_path = config_json["alert_collection_path"]
-
-CONFIG = Config()
