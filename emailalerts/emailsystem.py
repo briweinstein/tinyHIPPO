@@ -6,21 +6,14 @@ import smtplib
 from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
 from typing import TYPE_CHECKING
+from config import CONFIG
 if TYPE_CHECKING:
     from dashboard.alerts import alert
 
-try:
-    email_config_file = open('/etc/tinyHIPPO/config.json', 'r')
-    email_config_data = json.load(email_config_file)
-    SMTP_SERVER = email_config_data['email']['smtp_server']
-    EMAIL_ACCOUNT = email_config_data['email']['email_account']
-    EMAIL_KEY = email_config_data['email']['email_password']
-    RECIPIENT_EMAIL = email_config_data['email']['recipient_email']
-except:
-    SMTP_SERVER = ""
-    EMAIL_ACCOUNT = ""
-    EMAIL_KEY = ""
-    RECIPIENT_EMAIL = ""
+SMTP_SERVER = CONFIG.email.smtp_server
+EMAIL_ACCOUNT = CONFIG.email.email_account
+EMAIL_KEY = CONFIG.email.email_password
+RECIPIENT_EMAIL = CONFIG.email.recipient_emails
 
 PORT = 587  # For starttls
 

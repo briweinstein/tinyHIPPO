@@ -4,7 +4,6 @@ from typing import List
 
 from dataclasses import dataclass
 
-
 @dataclass(frozen=True)
 class ConfigEmail:
     smtp_server: str
@@ -20,3 +19,6 @@ class Config:
             config_json = json.load(f)
         self.email = ConfigEmail(**config_json["email"])
         self.mac_addrs = config_json["mac_addrs"]
+        self.alert_collection_path = config_json["alert_collection_path"]
+
+CONFIG = Config()

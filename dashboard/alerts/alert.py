@@ -1,21 +1,30 @@
 #! /usr/bin/env python3
 
+import os
+import sys
+
+sys.path.insert(0, os.path.abspath("../.."))
+
 import json
 import hashlib
 from datetime import datetime
 from scapy.packet import Packet
 from scapy.utils import hexdump
 from emailalerts import emailsystem
+from config import CONFIG
+
 
 class ALERT_TYPE:
     PRIVACY = "Privacy"
     IDS = "IDS"
     UNKNOWN = "Unknown"
 
+
 class SEVERITY:
     INFO = 0
     WARN = 1
     ALERT = 2
+
 
 class alert:
     def __init__(self, alert_description="", alert_type=ALERT_TYPE.UNKNOWN, alert_severity=SEVERITY.INFO):
@@ -118,13 +127,7 @@ class alert:
         :return:
         """
         try:
-            # Open config file to get path
-            try:
-                config_file = open('/etc/tinyHIPPO/config.json', 'r')
-                config_data = json.load(config_file)
-                path = config_data["alert_collection_path"]
-            except:
-                path = "/etc/tinyHIPPO/alert_collection.json"
+            path = CONFIG.alert_collection_path
 
             # Open alert collection file to read
             alert_collection = None
@@ -141,7 +144,7 @@ class alert:
             alerts = alert_data["alerts"]
             alerts.append(self.jsonify())
 
-            #Close/Open the file to RW properly (In case of earlier error, doesn't terminate the file's contents
+            # Close/Open the file to RW properly (In case of earlier error, doesn't terminate the file's contents
             if alert_collection:
                 alert_collection.close()
 

@@ -5,5 +5,6 @@
         "email_password": "super_secure_password",
         "recipient_emails": ["homeowner@example.com"]
     },
-    "mac_addrs": ["AA:BB:CC:DD:EE:FF"]
+    "mac_addrs": ["AA:BB:CC:DD:EE:FF"],
+    "alert_collection_path": "/etc/tinyHIPPO/alert_collection.json"
 }
