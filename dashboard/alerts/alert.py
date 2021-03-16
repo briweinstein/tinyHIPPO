@@ -1,22 +1,58 @@
 #! /usr/bin/env python3
 
+import os
+import sys
+
+sys.path.insert(0, os.path.abspath("../.."))
+
 import json
-import datetime
-from scapy.all import *
+import hashlib
+from datetime import datetime
+from scapy.packet import Packet
+from scapy.utils import hexdump
 from emailalerts import emailsystem
+from cids_main import run_config as CONFIG
+
 
 class ALERT_TYPE:
     PRIVACY = "Privacy"
     IDS = "IDS"
     UNKNOWN = "Unknown"
 
+
 class SEVERITY:
     INFO = 0
     WARN = 1
     ALERT = 2
 
+
 class alert:
-    def __init__(self, pkt: packet, alert_description="", alert_type=ALERT_TYPE.UNKNOWN, alert_severity=SEVERITY.INFO, is_destination=False):
+    def __init__(self, alert_description="", alert_type=ALERT_TYPE.UNKNOWN, alert_severity=SEVERITY.INFO):
+        """
+        Parses the given information into a alert object, no packet present
+        :param alert_description: A description providing context/information as to why this
+                                  particular packet was flagged
+        :param alert_type: IDS or PRIVACY
+        :param is_destination: Boolean telling alert system if the IoT device is the dst or src
+        """
+        # Initialize with default values
+        self.timestamp = str(datetime.now())
+        self.device_name = ""
+        self.device_ip = "None"
+        self.device_mac = "None"
+        self.type = str(alert_type)
+        self.severity = int(alert_severity)
+
+        self.description = alert_description
+        hasher = hashlib.sha1()
+        hasher.update(str(self.device_mac + self.timestamp).encode('utf-8'))
+        self.id = int(hasher.hexdigest()[:4], 16)
+
+        # If there is raw information, try to save it
+        self.payload_info = "None"
+
+    def __init__(self, pkt: Packet, alert_description="", alert_type=ALERT_TYPE.UNKNOWN, alert_severity=SEVERITY.INFO,
+                 is_destination=False):
         """
         Parses the given packet and extra information into a alert object
         :param pkt: Scapy's packet object, the collected info from the alert
@@ -26,7 +62,7 @@ class alert:
         :param is_destination: Boolean telling alert system if the IoT device is the dst or src
         """
         # Initialize with default values
-        self.timestamp = datetime.datetime
+        self.timestamp = str(datetime.now())
         self.device_name = ""
         self.device_ip = ""
         self.device_mac = ""
@@ -41,19 +77,24 @@ class alert:
         else:
             if "IP" in pkt:
                 self.device_ip = pkt["IP"].src
+            else:
+                self.device_ip = "[Layer 2]"
             if "Ethernet" in pkt:
                 self.device_mac = pkt["Ethernet"].src
+            else:
+                self.device_mac = "[Unknown]"
 
         # Use some magic config trickery to get the name for this device, otherwise unknown
         if "magic":
             self.device_name = "Unknown"
 
         self.description = alert_description
-        self.id = hash(self.device_mac + str(self.timestamp))
+        hasher = hashlib.sha1()
+        hasher.update(str(self.device_mac + self.timestamp).encode('utf-8'))
+        self.id = int(hasher.hexdigest()[:4], 16)
 
         # If there is raw information, try to save it
-        if "Raw" in pkt:
-            self.payload_info = pkt["Raw"].load
+        self.payload_info = hexdump(pkt, dump=True)
 
     def logAlert(self):
         """
@@ -85,31 +126,27 @@ class alert:
         Saves the alert object in JSON format to the collection
         :return:
         """
-        try:
-            # Open config file to get path
-            config_file = open('/etc/capstone-ids/config.json', 'r')
-            config_data = json.load(config_file)
-            path = config_data["alert_collection_path"]
+        path = CONFIG.alert_collection_path
 
-            # Default path
-            if path == "" or path is None:
-                path = "/etc/capstone-ids/alert_collection.json"
-
-            # Open alert collection file to read
-            alert_collection = open(path, 'r')
-            alert_data = json.load(alert_collection)
+        # Open alert collection file to read
+        alert_data = None
+        with open(path, 'r') as alert_collection:
+            try:
+                alert_data = json.load(alert_collection)
+            except json.decoder.JSONDecodeError:
+                alert_data = json.loads("{\n \"alerts\": []\n}\n")
 
             # Get the list of alerts, add the current object to the list
             alerts = alert_data["alerts"]
             alerts.append(self.jsonify())
 
-            #Close/Open the file to RW properly (In case of earlier error, doesn't terminate the file's contents
-            alert_collection.close()
-            write_alert_collection = open(path, 'w')
-            write_alert_collection.write(json.dumps(alert_data))
-            write_alert_collection.close()
-        except Exception as e:
-            print("Failed to save alert, reason: " + str(e))
+        # Load object as JSON
+        serialized_data = json.dumps(alert_data, indent=4)
+
+        # Write to file
+        write_alert_collection = open(path, 'w')
+        write_alert_collection.write(serialized_data)
+        write_alert_collection.close()
 
     def alert(self):
         """
@@ -136,5 +173,7 @@ class alert:
         string += "MAC: {0}\n".format(str(self.device_mac).upper())
         string += "IP: {0}\n".format(str(self.device_ip))
         string += "-------------------------------------------------------\n"
-        string += "Additional info (Packet Dump): \n{:X}\n".format(self.payload_info)
+        string += "Additional info (Packet Dump): \n{0}\n".format(self.payload_info)
         string += "*******************************************************\n"
+        return string
+
