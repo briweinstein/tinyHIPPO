@@ -53,9 +53,8 @@ def pull_and_validate_addrs():
   global mac_addrs
   for addr in run_config.mac_addrs:
     if not re.match("[0-9a-f]{2}([:])[0-9a-f]{2}(\\1[0-9a-f]{2}){4}$", addr.lower()):
-      sys.exit("Provided address " + addr + " is not a vaid MAC address.")
-    else:
-      mac_addrs.append(addr.lower())
+      print("Provided address " + addr + " is not a vaid MAC address.")
+    mac_addrs.append(addr.lower())
 
 ##############################################################################################
 ### Analyze packet privacy
