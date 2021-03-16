@@ -8,14 +8,8 @@ from src.privacy_analysis.system_analysis.system_privacy_encryption import Syste
 from src.privacy_analysis.system_analysis.system_privacy_package_upgrades import SystemPrivacyPackageUpgrades
 from src.privacy_analysis.system_analysis.system_privacy_root_password import SystemPrivacyRootPassword
 
-# Packet Privacy list
-pkt_port = PacketPrivacyPort()
-rules_packet_privacy = [pkt_port]
-
-# System Privacy list
-sys_dropbear = SystemPrivacyDropbearConfig()
-sys_encryption = SystemPrivacyEncryption()
-rules_system_privacy = [sys_dropbear, sys_encryption, SystemPrivacyPackageUpgrades(), SystemPrivacyRootPassword()]
+rules_packet_privacy = [PacketPrivacyPort()]
+rules_system_privacy = [SystemPrivacyDropbearConfig(), SystemPrivacyEncryption(), SystemPrivacyPackageUpgrades(), SystemPrivacyRootPassword()]
 rules_scanning_privacy = []
 
 # Number of packets to capture, 0 is infinite
@@ -38,13 +32,13 @@ def main():
 
   # 2) Perform a system configuration security check
   for rule in rules_system_privacy:
-    sys_dropbear()
+    rule()
 
   # Note: Steps 2 and 3 happen simultaneously in the "sniff()" call, but are separated for clarity
   # 2) Capture IoT packets only with crafted sniff
   print("Capturing IoT packets only")
   # 3) Export packets
-  #sniff(iface="wlan0", lfilter=lambda packet: (packet.src in mac_addrs) or (packet.dst in mac_addrs), prn=packet_parse, count=num_packets)
+  sniff(iface="wlan0", lfilter=lambda packet: (packet.src in mac_addrs) or (packet.dst in mac_addrs), prn=packet_parse, count=num_packets)
 
 ##############################################################################################
 ### Pull and validate MAC addresses

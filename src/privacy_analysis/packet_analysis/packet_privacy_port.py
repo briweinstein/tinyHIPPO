@@ -1,5 +1,5 @@
 #! /usr/bin/env python3
-from src.privacy_analysis.packet_analysis import PacketPrivacy
+from src.privacy_analysis.packet_analysis.packet_privacy import PacketPrivacy
 from scapy.all import TCP, UDP
 from scapy.all import Packet
 
