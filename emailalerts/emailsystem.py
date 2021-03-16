@@ -7,8 +7,7 @@ from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
 from typing import TYPE_CHECKING
 from cids_main import run_config as CONFIG
-if TYPE_CHECKING:
-    from dashboard.alerts import alert
+from dashboard.alerts import alert
 
 SMTP_SERVER = CONFIG.email.smtp_server
 EMAIL_ACCOUNT = CONFIG.email.email_account

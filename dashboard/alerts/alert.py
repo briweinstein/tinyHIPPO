@@ -126,37 +126,27 @@ class alert:
         Saves the alert object in JSON format to the collection
         :return:
         """
-        try:
-            path = CONFIG.alert_collection_path
+        path = CONFIG.alert_collection_path
 
-            # Open alert collection file to read
-            alert_collection = None
+        # Open alert collection file to read
+        alert_data = None
+        with open(path, 'r') as alert_collection:
             try:
-                alert_collection = open(path, 'r')
-                try:
-                    alert_data = json.load(alert_collection)
-                except json.decoder.JSONDecodeError:
-                    alert_data = json.loads("{\n \"alerts\": []\n}\n")
-            except FileNotFoundError:
+                alert_data = json.load(alert_collection)
+            except json.decoder.JSONDecodeError:
                 alert_data = json.loads("{\n \"alerts\": []\n}\n")
 
             # Get the list of alerts, add the current object to the list
             alerts = alert_data["alerts"]
             alerts.append(self.jsonify())
 
-            # Close/Open the file to RW properly (In case of earlier error, doesn't terminate the file's contents
-            if alert_collection:
-                alert_collection.close()
+        # Load object as JSON
+        serialized_data = json.dumps(alert_data, indent=4)
 
-            # Load object as JSON
-            serialized_data = json.dumps(alert_data, indent=4)
-
-            # Write to file
-            write_alert_collection = open(path, 'w')
-            write_alert_collection.write(serialized_data)
-            write_alert_collection.close()
-        except Exception as e:
-            print("Failed to save alert, reason: " + str(type(e)) + str(e))
+        # Write to file
+        write_alert_collection = open(path, 'w')
+        write_alert_collection.write(serialized_data)
+        write_alert_collection.close()
 
     def alert(self):
         """
@@ -186,3 +176,4 @@ class alert:
         string += "Additional info (Packet Dump): \n{0}\n".format(self.payload_info)
         string += "*******************************************************\n"
         return string
+
