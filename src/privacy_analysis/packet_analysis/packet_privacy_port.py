@@ -22,7 +22,7 @@ class PacketPrivacyPort(PacketPrivacy):
             if (packet[proto_type].dport == 80) or (packet[proto_type].sport == 80):
                 alert_port_80 = Alert("Sending data over unencrypted port.", ALERT_TYPE.PRIVACY, SEVERITY.ALERT)
                 alert_port_80.alert()
-                self.__scan_plaintext(packet)
+                self.__scan_plaintext(packet, proto_type)
 
             # Monitor suspicious ports
             print("Monitoring suspicious ports")
@@ -34,7 +34,7 @@ class PacketPrivacyPort(PacketPrivacy):
 
     # Scan the plaintext for privacy leaks
     # TODO: regex for email, SSN, credit card
-    def __scan_plaintext(self, packet):
+    def __scan_plaintext(self, packet, proto_type):
         try:
             if (packet[proto_type].dport == 80) or (packet[proto_type].sport == 80):
                 print(packet[proto_type].payload)
