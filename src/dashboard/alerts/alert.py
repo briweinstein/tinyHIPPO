@@ -3,15 +3,15 @@
 import os
 import sys
 
-sys.path.insert(0, os.path.abspath("../.."))
+sys.path.insert(0, os.path.abspath("../../.."))
 
 import json
 import hashlib
 from datetime import datetime
 from scapy.packet import Packet
 from scapy.utils import hexdump
-from emailalerts import emailsystem
-from cids_main import run_config as CONFIG
+from src.emailalerts import emailsystem
+from src import run_config as CONFIG
 
 
 class ALERT_TYPE:
@@ -26,7 +26,7 @@ class SEVERITY:
     ALERT = 2
 
 
-class alert:
+class Alert:
     def __init__(self, alert_description="", alert_type=ALERT_TYPE.UNKNOWN, alert_severity=SEVERITY.INFO):
         """
         Parses the given information into a alert object, no packet present
@@ -176,4 +176,3 @@ class alert:
         string += "Additional info (Packet Dump): \n{0}\n".format(self.payload_info)
         string += "*******************************************************\n"
         return string
-

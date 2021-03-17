@@ -1,13 +1,11 @@
 #! /usr/bin/env python3
 
 import ssl
-import json
 import smtplib
 from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
-from typing import TYPE_CHECKING
-from cids_main import run_config as CONFIG
-from dashboard.alerts import alert
+from src import run_config as CONFIG
+from src.dashboard.alerts import alert
 
 SMTP_SERVER = CONFIG.email.smtp_server
 EMAIL_ACCOUNT = CONFIG.email.email_account

@@ -7,5 +7,5 @@ def get_file_contents(filename):
         with open(filename, "r") as file:
             data = file.read()
             return data
-    except:
+    except FileNotFoundError:
         return

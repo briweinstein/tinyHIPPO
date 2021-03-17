@@ -1,24 +1,24 @@
 from .signature import Signature
-from cids_main import run_config
+from src import run_config
 import scapy.layers.inet as net
+from scapy.all import Packet
 import ipaddress
-
-'''
-This signature detects whether the comes from a trusted device on the network 
-'''
 
 
 class MACAddressSignature(Signature):
+    """
+    This signature detects whether the comes from a trusted device on the network
+    """
 
-    def __call__(self, packet):
+    def __call__(self, packet: Packet) -> bool:
         """
         This method returns True if the src mac address is not in the network and the source ip is private, which would
         indicate an unauthorized IoT device within the network or MACAddress spoofing
-        :param packet:
-        :return:
+        :param packet:The packet to check for MAC Address spoofing
+        :return: Whether the packet came from a spoofed MAC Address
         """
         if net.Ether not in packet or net.IP not in packet:
-            raise Exception
+            raise Exception("Given packet does not have the necessary layers")
         ether_layer = packet[net.Ether]
         ip_layer = packet[net.IP]
         mac_src = ether_layer.src

@@ -1,7 +1,6 @@
 from typing import List
-from scapy.layers.l2 import Ether
 from scapy.all import Packet
-from signature_detection.signature import Signature
+from src.signature_detection import Signature
 
 
 class SignatureDetector:
