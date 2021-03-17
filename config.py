@@ -20,6 +20,7 @@ class Config:
         self.email = ConfigEmail(**config_json["email"])
         self.mac_addrs = config_json["mac_addrs"]
         self.alert_collection_path = config_json["alert_collection_path"]
+        self.virustotal_api_key = config_json["virustotal_api_key"]
         with open('/etc/tinyHIPPO/cids-startuo.log', 'a+') as logging_file:
             smtp_server = config_json['email']['smtp_server']
             email_account = config_json['email']['email_account']
