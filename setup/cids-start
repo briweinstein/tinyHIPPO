@@ -15,5 +15,8 @@ opkg install python3-pip
 pip3 install scapy
 pip3 install dataclasses
 
+# set config path environment variable
+export IOT_IDS_CONFIGPATH = "/etc/tinyHIPPO/config.json"
+
 # Start the actual program
 # TODO: /etc/capstone-ids/

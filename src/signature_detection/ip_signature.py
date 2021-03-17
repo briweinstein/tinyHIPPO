@@ -2,7 +2,7 @@ from .signature import Signature
 import ipaddress
 import scapy.layers.inet as net
 from scapy.packet import Packet
-from virustotal_checker import VirusTotalChecker
+from .virustotal_checker import VirusTotalChecker
 from src import run_config
 
 
@@ -25,8 +25,8 @@ class IPSignature(Signature):
         # check whether source ip is private
         ip_src = ipaddress.ip_address(ip_layer.src)
         ip_dst = ipaddress.ip_address(ip_layer.dst)
+        v = VirusTotalChecker(run_config.virustotal_api_key)
         if not ip_src.is_private:
-            v = VirusTotalChecker(run_config.virustotal_api_key)
-            return v.check_ip(ip_src) or v.check_ip(ip_dst)
+            return v.check_ip(ip_src)
         else:
-            return False
+            return v.check_ip(ip_dst)

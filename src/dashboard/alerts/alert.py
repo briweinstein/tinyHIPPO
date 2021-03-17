@@ -96,7 +96,7 @@ class Alert:
         # If there is raw information, try to save it
         self.payload_info = hexdump(pkt, dump=True)
 
-    def logAlert(self):
+    def log_alert(self):
         """
         Logs the alert object to the log file
         :return:
@@ -121,7 +121,7 @@ class Alert:
 
         return alert_json
 
-    def saveAlert(self):
+    def save_alert(self):
         """
         Saves the alert object in JSON format to the collection
         :return:
@@ -158,10 +158,10 @@ class Alert:
             emailsystem.send_email_alert(self)
 
         # Log the alert to the log file
-        self.logAlert()
+        self.log_alert()
 
         # Save the alert in the JSON collection for frontend use
-        self.saveAlert()
+        self.save_alert()
 
     def __str__(self):
         string = "*******************************************************\n"
