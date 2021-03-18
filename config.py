@@ -25,7 +25,7 @@ class Config:
             smtp_server = config_json['email']['smtp_server']
             email_account = config_json['email']['email_account']
             email_key = config_json['email']['email_password']
-            recipient_email = config_json['email']['recipient_email']
+            recipient_email = config_json['email']['recipient_emails']
 
             if smtp_server == "smtp.example.com":
                 logging_file.write('STMP Server not configured\n')
@@ -36,5 +36,7 @@ class Config:
             if email_key == "super_secure_password":
                 logging_file.write('Email account password not set\n')
 
+            '''
             if recipient_email == "homeowner@example.com":
                 logging_file.write('Recipient email not configured\n')
+            '''
