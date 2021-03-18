@@ -36,7 +36,6 @@ class Config:
             if email_key == "super_secure_password":
                 logging_file.write('Email account password not set\n')
 
-            '''
-            if recipient_email == "homeowner@example.com":
+            if recipient_email[0] == "homeowner@example.com":
                 logging_file.write('Recipient email not configured\n')
-            '''
+            
