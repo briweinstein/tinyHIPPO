@@ -10,7 +10,9 @@ class VirusTotalChecker:
     def check_ip(self, ip_address: ipaddress.IPv4Address) -> bool:
         response = requests.get(f'https://www.virustotal.com/api/v3/ip_addresses/{str(ip_address)}',
                                 headers={'x-apikey': self.api_key}).json()
+        # TODO: do not raise an Exception samirboi
         if not response:
-            raise Exception
+            return False
+            #raise Exception
         results = response['data']['attributes']['last_analysis_stats']
         return results['malicious'] > 0 or results['suspicious'] > 0
