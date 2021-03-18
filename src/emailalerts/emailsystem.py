@@ -5,7 +5,7 @@ import smtplib
 from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
 from src import run_config as CONFIG
-from src.dashboard.alerts import alert
+from src.dashboard.alerts.alert import Alert
 
 SMTP_SERVER = CONFIG.email.smtp_server
 EMAIL_ACCOUNT = CONFIG.email.email_account
@@ -46,7 +46,7 @@ def send_message(msg):
         print(e)
 
 
-def send_email_alert(alert_object: alert):
+def send_email_alert(alert_object: Alert):
     """
     This function will construct a proper HTML message with the appropriate information such as alert type, device name
     IP address, MAC address, etc.
@@ -98,6 +98,7 @@ def send_email_alert(alert_object: alert):
     </body>
     </html>
     """
-    formatted_msg = msg.format(str(alert_object.alert_type), str(alert_object.device_name), str(alert_object.device_ip), str(alert_object.device_mac), str(alert_object.timestamp),
-                               str(alert_object.info))
+    formatted_msg = msg.format(str(alert_object.type), str(alert_object.device_name), str(alert_object.device_ip),
+                               str(alert_object.device_mac), str(alert_object.timestamp),
+                               str(alert_object.description))
     send_message(formatted_msg)
