@@ -22,7 +22,7 @@ module("luci.controller.ids-priv.ids_tab", package.seeall)  --notice that new_ta
         local payload = luci.jsonc.parse(tostring(config))
 
         -- Open configuration file as JSON
-        local conf = io.open("/etc/capstone-ids/config.json", 'r')
+        local conf = io.open("/etc/tinyHIPPO/config.json", 'r')
         local conf_contents = conf:read("*all")
         local configuration = {}
         if (conf_contents ~= nil and conf_contents ~= "") then
@@ -42,7 +42,7 @@ module("luci.controller.ids-priv.ids_tab", package.seeall)  --notice that new_ta
         -- Don't question the open/close of the file, lua hates proper file operations
         -- ALL OR NOTHING BABY!
         conf:close()
-        conf = io.open("/etc/capstone-ids/config.json", 'w')
+        conf = io.open("/etc/tinyHIPPO/config.json", 'w')
         conf:write(luci.jsonc.stringify(configuration, true) .. "\n")
         conf:close()
 

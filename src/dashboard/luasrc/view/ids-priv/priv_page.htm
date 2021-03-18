@@ -40,7 +40,7 @@
     -- Format the JSON formatted alerts into HTML to be inserted into the page
     function format_alerts()
         -- Open the alert collection
-        local alert_collection = io.open("/etc/capstone-ids/alert_collection.json", 'r')
+        local alert_collection = io.open("/etc/tinyHIPPO/alert_collection.json", 'r')
         local alert_content = nil
         if alert_collection then
             alert_content = alert_collection:read("*all")
