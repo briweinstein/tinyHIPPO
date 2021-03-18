@@ -22,7 +22,7 @@ rules_scanning_privacy = []
 ids_signatures = [IPSignature("192.168.1.0/24"), MACAddressSignature()]
 signature_detector = SignatureDetector(ids_signatures)
 # Number of packets to capture, 0 is infinite
-num_packets = 1
+num_packets = 0
 
 # Validated MAC addresses given in config file
 mac_addrs = []
