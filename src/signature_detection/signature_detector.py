@@ -1,6 +1,6 @@
 from typing import List
 from scapy.all import Packet
-from src.signature_detection import Signature
+from src.signature_detection.signature import Signature
 
 
 class SignatureDetector:
