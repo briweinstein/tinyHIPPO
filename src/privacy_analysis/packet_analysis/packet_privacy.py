@@ -7,6 +7,7 @@ class PacketPrivacy(abc.ABC):
     """
     This abstract base class represents a single privacy rule to be checked against packets in our IoT Privacy Protection System
     """
+
     @property
     def msg(self):
         return type(self).__name__

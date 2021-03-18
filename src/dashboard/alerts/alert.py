@@ -1,17 +1,12 @@
 #! /usr/bin/env python3
 
-import os
-import sys
-
-sys.path.insert(0, os.path.abspath("../.."))
-
 import json
 import hashlib
 from datetime import datetime
 from scapy.packet import Packet
 from scapy.utils import hexdump
-from emailalerts import emailsystem
-from cids_main import run_config as CONFIG
+from src.emailalerts import emailsystem
+from src import run_config as CONFIG
 
 
 class ALERT_TYPE:
@@ -26,7 +21,7 @@ class SEVERITY:
     ALERT = 2
 
 
-class alert:
+class Alert:
     def __init__(self, alert_description="", alert_type=ALERT_TYPE.UNKNOWN, alert_severity=SEVERITY.INFO):
         """
         Parses the given information into a alert object, no packet present
@@ -96,7 +91,7 @@ class alert:
         # If there is raw information, try to save it
         self.payload_info = hexdump(pkt, dump=True)
 
-    def logAlert(self):
+    def log_alert(self):
         """
         Logs the alert object to the log file
         :return:
@@ -121,7 +116,7 @@ class alert:
 
         return alert_json
 
-    def saveAlert(self):
+    def save_alert(self):
         """
         Saves the alert object in JSON format to the collection
         :return:
@@ -158,10 +153,10 @@ class alert:
             emailsystem.send_email_alert(self)
 
         # Log the alert to the log file
-        self.logAlert()
+        self.log_alert()
 
         # Save the alert in the JSON collection for frontend use
-        self.saveAlert()
+        self.save_alert()
 
     def __str__(self):
         string = "*******************************************************\n"
@@ -176,4 +171,3 @@ class alert:
         string += "Additional info (Packet Dump): \n{0}\n".format(self.payload_info)
         string += "*******************************************************\n"
         return string
-
