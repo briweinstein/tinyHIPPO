@@ -1,4 +1,11 @@
 {
-"email": "example@example.com",
-"mac_addrs": ["A0:9F:10:1B:D7:05", "AC:83:F3:BC:A7:61"]
+    "email": {
+        "smtp_server": "smtp.example.com",
+        "email_account": "openwrt@example.com",
+        "email_password": "super_secure_password",
+        "recipient_emails": ["homeowner@example.com"]
+    },
+    "virustotal_api_key": "TEMPLATE",
+    "mac_addrs": ["A0:9F:10:1B:D7:05", "AC:83:F3:BC:A7:61", "C4:DD:57:13:A7:FF", "EC:FA:BC:55:6E:A2", "D4:A6:51:40:1D:69", "D4:A6:51:40:34:F0", "10:52:1C:4C:54:9E"],
+    "alert_collection_path": "/etc/tinyHIPPO/alert_collection.json"
 }
