@@ -131,6 +131,7 @@
 					return_string = return_string .. "<td class=\"mac row_" .. tostring(config_count) .. "\">" .. mac .. "</td>" .. "\n"
 					return_string = return_string .. "<td class=\"int row_" .. tostring(config_count) .. "\">" .. interface .. "</td>" .. "\n"
 					return_string = return_string .. "</tr>" .. "\n"
+					config_count = config_count + 1
 				end
 			end
 		end
@@ -138,7 +139,7 @@
 		return return_string
 	end
 
-	local data = format_ip_neighbors(luci.sys.exec("ip neigh | grep -h \"192.\""))
+	local data = format_ip_neighbors(luci.sys.exec("ip neigh"))
 %>
 <h1><%:Configuration%></h1>
 <div class="explanation">

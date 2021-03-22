@@ -9,8 +9,8 @@ import json
 import hashlib
 from datetime import datetime
 from scapy.packet import Packet
-from scapy.utils import hexdump
-from emailalerts import emailsystem
+from scapy.utils import raw, hexstr
+from emailalerts.emailsystem import send_email_alert
 from cids_main import run_config as CONFIG
 
 
@@ -94,7 +94,7 @@ class alert:
         self.id = int(hasher.hexdigest()[:4], 16)
 
         # If there is raw information, try to save it
-        self.payload_info = hexdump(pkt, dump=True)
+        self.payload_info = raw(pkt)
 
     def logAlert(self):
         """
@@ -117,7 +117,7 @@ class alert:
         """
         alert_json = {"id": self.id, "type": self.type, "device_name": self.device_name, "device_ip": self.device_ip,
                       "device_mac": self.device_mac, "timestamp": self.timestamp, "description": self.description,
-                      "payload_info": self.payload_info, "severity": self.severity}
+                      "payload_info": format(self.payload_info), "severity": self.severity}
 
         return alert_json
 
@@ -150,12 +150,12 @@ class alert:
 
     def alert(self):
         """
-        Inform the townspeople (Send the alert where it should go)
+        Send the alert where it should go
         :return:
         """
         # Send email if urgent enough
         if self.severity > 1:
-            emailsystem.send_email_alert(self)
+            send_email_alert(self)
 
         # Log the alert to the log file
         self.logAlert()

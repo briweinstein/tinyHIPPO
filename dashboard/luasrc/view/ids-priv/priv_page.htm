@@ -40,7 +40,11 @@
     -- Format the JSON formatted alerts into HTML to be inserted into the page
     function format_alerts()
         -- Open the alert collection
-        local alert_collection = io.open("/etc/capstone-ids/alert_collection.json", 'r')
+        local config_file = io.open("/etc/tinyHIPPO/config.json", 'r')
+        local config_content = config_file:read("*all")
+        local config_json = = luci.jsonc.parse(tostring(config_content))
+
+        local alert_collection = io.open(config_json["alert_collection_path"], 'r')
         local alert_content = nil
         if alert_collection then
             alert_content = alert_collection:read("*all")
