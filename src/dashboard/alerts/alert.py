@@ -127,7 +127,7 @@ class Alert:
         """
         # Send email if urgent enough
         if self.severity > 1:
-            send_email_alert(self)
+            emailsystem.send_email_alert(self)
 
         # Log the alert to the log file
         self.log_alert()
