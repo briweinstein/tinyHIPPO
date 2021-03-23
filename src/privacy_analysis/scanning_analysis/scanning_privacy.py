@@ -13,5 +13,5 @@ class ScanningPrivacy(abc.ABC):
         return type(self).__name__
 
     @abc.abstractmethod
-    def __call__(self) -> None:
+    def __call__(self, ip_to_mac) -> None:
         raise NotImplementedError
