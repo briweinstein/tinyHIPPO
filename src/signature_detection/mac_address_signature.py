@@ -17,11 +17,9 @@ class MACAddressSignature(Signature):
         :param packet:The packet to check for MAC Address spoofing
         :return: Whether the packet came from a spoofed MAC Address
         """
-        # TODO: this also causes the program to crash, goddamit SAMIR
-        # Exceptions should not be raised, either log to a file or return a value
         if net.Ether not in packet or net.IP not in packet:
+            run_config.log_event.info('Not a layer 2 packet, not subject to MACAddress inspection.')
             return False
-            #raise Exception("Given packet does not have the necessary layers")
         ether_layer = packet[net.Ether]
         ip_layer = packet[net.IP]
         mac_src = ether_layer.src
