@@ -10,8 +10,6 @@
 opkg update
 
 # Make sure Python3, Pip, misc packages are installed
-opkg install python3
-opkg install python3-pip
 pip3 install scapy
 pip3 install dataclasses
 pip3 install requests
