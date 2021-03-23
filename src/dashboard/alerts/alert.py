@@ -41,20 +41,16 @@ class Alert:
         self.severity = int(alert_severity)
 
         if pkt:
+            # Default values
+            self.device_ip = "[Layer 2]"
             if is_destination:
                 if "IP" in pkt:
                     self.device_ip = pkt["IP"].dst
-                if "Ethernet" in pkt:
-                    self.device_mac = pkt["Ethernet"].dst
+                self.device_mac = pkt["Ethernet"].dst
             else:
                 if "IP" in pkt:
                     self.device_ip = pkt["IP"].src
-                else:
-                    self.device_ip = "[Layer 2]"
-                if "Ethernet" in pkt:
-                    self.device_mac = pkt["Ethernet"].src
-                else:
-                    self.device_mac = "[Unknown]"
+                self.device_mac = pkt["Ethernet"].src
             self.payload_info = raw(pkt)
         else:
             self.payload_info = "None"
