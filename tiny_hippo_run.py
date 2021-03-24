@@ -74,14 +74,23 @@ def packet_parse(packet: Packet):
     :return: nothing
     """
     for rule in rules_packet_privacy:
-        rule(packet)
+        try:
+            rule(packet)
+        except Exception as e:
+            # TODO: refine so a specific error message can be logged
+            run_config.log_event.info('Exception raised: ' + str(e))
     # For each triggered signature generate an alert for the user
-    triggered_rules = signature_detector.check_signatures(packet)
-    if len(triggered_rules) > 0:
-        for triggered_rule in triggered_rules:
-            is_dst = packet[Ether].src in mac_addrs
-            alert_object = Alert(packet, triggered_rule.msg, ALERT_TYPE.IDS, SEVERITY.ALERT, is_dst)
-            alert_object.alert()
+    try:
+        triggered_rules = signature_detector.check_signatures(packet)
+    except Exception as e:
+        # TODO: refine so a specific error message can be logged
+        run_config.log_event.info('Exception raised: ' + str(e))
+    else:
+        if len(triggered_rules) > 0:
+            for triggered_rule in triggered_rules:
+                is_dst = packet[Ether].src in mac_addrs
+                alert_object = Alert(packet, triggered_rule.msg, ALERT_TYPE.IDS, SEVERITY.ALERT, is_dst)
+                alert_object.alert()
 
 
 # call main
