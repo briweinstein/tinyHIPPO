@@ -40,24 +40,26 @@ class Alert:
         self.type = str(alert_type)
         self.severity = int(alert_severity)
 
-        if pkt:
-            # Default values
-            self.device_ip = "[Layer 2]"
-            if is_destination:
-                if "IP" in pkt:
-                    self.device_ip = pkt["IP"].dst
-                self.device_mac = pkt["Ethernet"].dst
+        try:
+            if pkt:
+                # Default values
+                self.device_ip = "[Layer 2]"
+                if is_destination:
+                    if "IP" in pkt:
+                        self.device_ip = pkt["IP"].dst
+                    self.device_mac = pkt["Ethernet"].dst
+                else:
+                    if "IP" in pkt:
+                        self.device_ip = pkt["IP"].src
+                    self.device_mac = pkt["Ethernet"].src
+                self.payload_info = raw(pkt)
             else:
-                if "IP" in pkt:
-                    self.device_ip = pkt["IP"].src
-                self.device_mac = pkt["Ethernet"].src
-            self.payload_info = raw(pkt)
-        else:
-            self.payload_info = "None"
+                self.payload_info = "None"
+        except KeyError as e:
+            print("Error attempting to read from packet: " + str(e))
 
-        # Use some magic config trickery to get the name for this device, otherwise unknown
-        if "magic":
-            self.device_name = "Unknown"
+        # TODO: Use some magic config trickery to get the name for this device, otherwise unknown
+        self.device_name = "Unknown"
 
         self.description = alert_description
         hasher = hashlib.sha1()
