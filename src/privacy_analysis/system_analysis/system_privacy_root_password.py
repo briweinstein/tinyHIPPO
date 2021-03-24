@@ -9,5 +9,5 @@ class SystemPrivacyRootPassword(SystemPrivacy):
     def __call__(self):
         data = get_file_contents("/etc/shadow")
         if (data is not None) and ("root::" in data):
-            alert_obj = Alert("No root password set. Set a root password.", ALERT_TYPE.PRIVACY, SEVERITY.ALERT)
+            alert_obj = Alert(None, "No root password set. Set a root password.", ALERT_TYPE.PRIVACY, SEVERITY.ALERT)
             alert_obj.alert()

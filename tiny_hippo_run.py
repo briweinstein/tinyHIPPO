@@ -22,7 +22,7 @@ rules_scanning_privacy = []
 ids_signatures = [IPSignature("192.168.1.0/24"), MACAddressSignature()]
 signature_detector = SignatureDetector(ids_signatures)
 # Number of packets to capture, 0 is infinite
-num_packets = 1
+num_packets = 0
 
 # Validated MAC addresses given in config file
 mac_addrs = []
@@ -47,6 +47,7 @@ def main():
     # 2) Capture IoT packets only with crafted sniff
     print("Capturing IoT packets only")
     # 3) Export packets
+    # TODO: Make sure iface is set to the correct interface. May be different in some routers
     sniff(iface="wlan0", lfilter=lambda packet: (packet.src in mac_addrs) or (packet.dst in mac_addrs),
           prn=packet_parse, count=num_packets)
 
@@ -74,14 +75,22 @@ def packet_parse(packet: Packet):
     :return: nothing
     """
     for rule in rules_packet_privacy:
-        rule(packet)
+        try:
+            rule(packet)
+        except Exception as e:
+            # TODO: refine so a specific error message can be logged
+            run_config.log_event.info('Exception raised: ' + str(e))
     # For each triggered signature generate an alert for the user
-    triggered_rules = signature_detector.check_signatures(packet)
-    if len(triggered_rules) > 0:
-        for triggered_rule in triggered_rules:
-            is_dst = packet[Ether].src in mac_addrs
-            alert_object = Alert(packet, triggered_rule.msg, ALERT_TYPE.IDS, SEVERITY.ALERT, is_dst)
-            alert_object.alert()
+    try:
+        triggered_rules = signature_detector.check_signatures(packet)
+        if len(triggered_rules) > 0:
+            for triggered_rule in triggered_rules:
+                is_dst = packet[Ether].src in mac_addrs
+                alert_object = Alert(packet, triggered_rule.msg, ALERT_TYPE.IDS, SEVERITY.ALERT, is_dst)
+                alert_object.alert()
+    except Exception as e:
+        # TODO: refine so a specific error message can be logged
+        run_config.log_event.info('Exception raised: ' + str(e))
 
 
 # call main

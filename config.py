@@ -1,8 +1,8 @@
 import json
 import os
+import logging
 from typing import List
 from dataclasses import dataclass
-
 
 @dataclass(frozen=True)
 class ConfigEmail:
@@ -14,6 +14,11 @@ class ConfigEmail:
 
 class Config:
     def __init__(self):
+        logging.basicConfig(level=logging.INFO,
+                            filemode='a',
+                            format='%(asctime)s %(name)s %(levelname)s %(message)s',
+                            datefmt='%H:%M:%S',
+                            filename='/etc/tinyHIPPO/tinyHIPPO_error.log')
         config_path = os.getenv("IOT_IDS_CONFIGPATH", "config.json")
         with open(config_path) as f:
             config_json = json.load(f)
@@ -21,20 +26,5 @@ class Config:
         self.mac_addrs = config_json["mac_addrs"]
         self.alert_collection_path = config_json["alert_collection_path"]
         self.virustotal_api_key = config_json["virustotal_api_key"]
-        with open('/etc/tinyHIPPO/cids-startuo.log', 'a+') as logging_file:
-            smtp_server = config_json['email']['smtp_server']
-            email_account = config_json['email']['email_account']
-            email_key = config_json['email']['email_password']
-            recipient_email = config_json['email']['recipient_email']
-
-            if smtp_server == "smtp.example.com":
-                logging_file.write('STMP Server not configured\n')
-
-            if email_account == "openwrt@example.com":
-                logging_file.write('EMAIL ACCOUNT NOT CONFIGURED\n')
-
-            if email_key == "super_secure_password":
-                logging_file.write('Email account password not set\n')
-
-            if recipient_email == "homeowner@example.com":
-                logging_file.write('Recipient email not configured\n')
+        self.log_event = logging.getLogger()
+        
