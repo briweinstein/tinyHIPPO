@@ -30,4 +30,3 @@ class IPSignature(Signature):
             return v.check_ip(ip_src)
         else:
             return v.check_ip(ip_dst)
-
