@@ -5,8 +5,7 @@ import hashlib
 from datetime import datetime
 from scapy.packet import Packet
 from scapy.utils import hexdump
-# TODO: this creates a circular import
-#from src.emailalerts import emailsystem
+from src.emailalerts import emailsystem
 from src import run_config as CONFIG
 
 
@@ -150,8 +149,8 @@ class Alert:
         :return:
         """
         # Send email if urgent enough
-        #if self.severity > 1:
-        #    emailsystem.send_email_alert(self)
+        if self.severity > 1:
+            emailsystem.send_email_alert(self)
 
         # Log the alert to the log file
         self.log_alert()
