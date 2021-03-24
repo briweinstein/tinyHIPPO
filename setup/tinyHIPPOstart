@@ -28,7 +28,7 @@ uci commit luci
 /etc/init.d/uhttpd restart
 
 # Create the alert_collection.json file
-cd /etc/tinyHIPPO/ && touch alert_collection.json
+touch /etc/tinyHIPPO/alert_collection.json
 
 # Start the actual program
 /etc/tinyHIPPO/tiny_hippo_run.py
