@@ -40,7 +40,7 @@ module("luci.controller.ids-priv.ids_tab", package.seeall)  --notice that new_ta
         -- Write JSON file, and make it *pretty*,
         conf:close()
         conf = io.open("/etc/tinyHIPPO/config.json", 'w')
-        conf:write(string.gsub(luci.jsonc.stringify(configuration, true) .. "\n", "\\/", "/"))
+        conf:write((string.gsub(luci.jsonc.stringify(configuration, true) .. "\n", "\\/", "/")))
         conf:close()
 
         -- Return OK so client side doesn't get upset
