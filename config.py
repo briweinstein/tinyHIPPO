@@ -4,12 +4,6 @@ import logging
 from typing import List
 from dataclasses import dataclass
 
-logging.basicConfig(level=logging.INFO,
-                    filemode='a',
-                    format='%(asctime)s %(name)s %(levelname)s %(message)s',
-                    datefmt='%H:%M:%S',
-                    filename='/etc/tinyHIPPO/tinyHIPPO_error.log')
-
 @dataclass(frozen=True)
 class ConfigEmail:
     smtp_server: str
@@ -20,6 +14,11 @@ class ConfigEmail:
 
 class Config:
     def __init__(self):
+        logging.basicConfig(level=logging.INFO,
+                            filemode='a',
+                            format='%(asctime)s %(name)s %(levelname)s %(message)s',
+                            datefmt='%H:%M:%S',
+                            filename='/etc/tinyHIPPO/tinyHIPPO_error.log')
         config_path = os.getenv("IOT_IDS_CONFIGPATH", "config.json")
         with open(config_path) as f:
             config_json = json.load(f)
