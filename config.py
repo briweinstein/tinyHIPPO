@@ -28,9 +28,4 @@ class Config:
         self.alert_collection_path = config_json["alert_collection_path"]
         self.virustotal_api_key = config_json["virustotal_api_key"]
         self.log_event = logging.getLogger()
-        
-        smtp_server = config_json['email']['smtp_server']
-        email_account = config_json['email']['email_account']
-        email_key = config_json['email']['email_password']
-        recipient_email = config_json['email']['recipient_emails']
             
