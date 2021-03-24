@@ -9,5 +9,5 @@ class SystemPrivacyPackageUpgrades(SystemPrivacy):
     def __call__(self):
         upgradable = os.popen("opkg list-upgradable").read()
         if upgradable != "":
-            alert_obj = Alert("Packages are available for an update.", ALERT_TYPE.PRIVACY, SEVERITY.INFO)
+            alert_obj = Alert(None, "Packages are available for an update.", ALERT_TYPE.PRIVACY, SEVERITY.INFO)
             alert_obj.alert()
