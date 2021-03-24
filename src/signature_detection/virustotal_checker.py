@@ -1,6 +1,5 @@
 import ipaddress
 import requests
-from src import run_config
 
 
 class VirusTotalChecker:
@@ -12,7 +11,6 @@ class VirusTotalChecker:
         response = requests.get(f'https://www.virustotal.com/api/v3/ip_addresses/{str(ip_address)}',
                                 headers={'x-apikey': self.api_key}).json()
         if not response:
-            run_config.log_event.info('Could not properly use the VirusTotalChecker.')
-            return False
+            raise Exception
         results = response['data']['attributes']['last_analysis_stats']
         return results['malicious'] > 0 or results['suspicious'] > 0

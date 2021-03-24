@@ -20,18 +20,14 @@ class IPSignature(Signature):
 
     def __call__(self, packet: Packet) -> bool:
         if net.IP not in packet:
-            run_config.log_event.info('Not a layer 3 packet, not subject to IPSignature inspection.')
-            return False
+            raise Exception
         ip_layer = packet[net.IP]
         # check whether source ip is private
         ip_src = ipaddress.ip_address(ip_layer.src)
         ip_dst = ipaddress.ip_address(ip_layer.dst)
-        try:
-            v = VirusTotalChecker(run_config.virustotal_api_key)
-            if not ip_src.is_private:
-                return v.check_ip(ip_src)
-            else:
-                return v.check_ip(ip_dst)
-        except:
-            run_config.log_event.warning('Could not check VirusTotal API at this time')
-            return False
+        v = VirusTotalChecker(run_config.virustotal_api_key)
+        if not ip_src.is_private:
+            return v.check_ip(ip_src)
+        else:
+            return v.check_ip(ip_dst)
+
