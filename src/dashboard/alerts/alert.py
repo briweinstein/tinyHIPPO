@@ -4,7 +4,7 @@ import json
 import hashlib
 from datetime import datetime
 from scapy.packet import Packet
-from scapy.utils import hexdump
+from scapy.utils import raw, hexdump
 from src.emailalerts import emailsystem
 from src import run_config as CONFIG
 
@@ -22,31 +22,7 @@ class SEVERITY:
 
 
 class Alert:
-    def __init__(self, alert_description="", alert_type=ALERT_TYPE.UNKNOWN, alert_severity=SEVERITY.INFO):
-        """
-        Parses the given information into a alert object, no packet present
-        :param alert_description: A description providing context/information as to why this
-                                  particular packet was flagged
-        :param alert_type: IDS or PRIVACY
-        :param is_destination: Boolean telling alert system if the IoT device is the dst or src
-        """
-        # Initialize with default values
-        self.timestamp = str(datetime.now())
-        self.device_name = ""
-        self.device_ip = "None"
-        self.device_mac = "None"
-        self.type = str(alert_type)
-        self.severity = int(alert_severity)
-
-        self.description = alert_description
-        hasher = hashlib.sha1()
-        hasher.update(str(self.device_mac + self.timestamp).encode('utf-8'))
-        self.id = int(hasher.hexdigest()[:4], 16)
-
-        # If there is raw information, try to save it
-        self.payload_info = "None"
-
-    def __init__(self, pkt: Packet, alert_description="", alert_type=ALERT_TYPE.UNKNOWN, alert_severity=SEVERITY.INFO,
+    def __init__(self, pkt=None, alert_description="", alert_type=ALERT_TYPE.UNKNOWN, alert_severity=SEVERITY.INFO,
                  is_destination=False):
         """
         Parses the given packet and extra information into a alert object
@@ -64,32 +40,31 @@ class Alert:
         self.type = str(alert_type)
         self.severity = int(alert_severity)
 
-        if is_destination:
-            if "IP" in pkt:
-                self.device_ip = pkt["IP"].dst
-            if "Ethernet" in pkt:
-                self.device_mac = pkt["Ethernet"].dst
-        else:
-            if "IP" in pkt:
-                self.device_ip = pkt["IP"].src
-            else:
+        try:
+            if pkt:
+                # Default values
                 self.device_ip = "[Layer 2]"
-            if "Ethernet" in pkt:
-                self.device_mac = pkt["Ethernet"].src
+                if is_destination:
+                    if "IP" in pkt:
+                        self.device_ip = pkt["IP"].dst
+                    self.device_mac = pkt["Ethernet"].dst
+                else:
+                    if "IP" in pkt:
+                        self.device_ip = pkt["IP"].src
+                    self.device_mac = pkt["Ethernet"].src
+                self.payload_info = raw(pkt)
             else:
-                self.device_mac = "[Unknown]"
+                self.payload_info = "None"
+        except KeyError as e:
+            print("Error attempting to read from packet: " + str(e))
 
-        # Use some magic config trickery to get the name for this device, otherwise unknown
-        if "magic":
-            self.device_name = "Unknown"
+        # TODO: Use some magic config trickery to get the name for this device, otherwise unknown
+        self.device_name = "Unknown"
 
         self.description = alert_description
         hasher = hashlib.sha1()
         hasher.update(str(self.device_mac + self.timestamp).encode('utf-8'))
         self.id = int(hasher.hexdigest()[:4], 16)
-
-        # If there is raw information, try to save it
-        self.payload_info = hexdump(pkt, dump=True)
 
     def log_alert(self):
         """
@@ -112,7 +87,7 @@ class Alert:
         """
         alert_json = {"id": self.id, "type": self.type, "device_name": self.device_name, "device_ip": self.device_ip,
                       "device_mac": self.device_mac, "timestamp": self.timestamp, "description": self.description,
-                      "payload_info": self.payload_info, "severity": self.severity}
+                      "payload_info": format(self.payload_info), "severity": self.severity}
 
         return alert_json
 
@@ -145,7 +120,7 @@ class Alert:
 
     def alert(self):
         """
-        Inform the townspeople (Send the alert where it should go)
+        Send the alert where it should go
         :return:
         """
         # Send email if urgent enough
