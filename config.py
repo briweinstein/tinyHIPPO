@@ -27,4 +27,4 @@ class Config:
         self.alert_collection_path = config_json["alert_collection_path"]
         self.virustotal_api_key = config_json["virustotal_api_key"]
         self.log_event = logging.getLogger()
-            
+        

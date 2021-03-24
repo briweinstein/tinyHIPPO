@@ -2,10 +2,12 @@
 
 import ssl
 import smtplib
+from typing import TYPE_CHECKING
 from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
 from src import run_config as CONFIG
-from src.dashboard.alerts.alert import Alert
+if TYPE_CHECKING:
+    from src.dashboard.alerts.alert import Alert
 
 SMTP_SERVER = CONFIG.email.smtp_server
 EMAIL_ACCOUNT = CONFIG.email.email_account
@@ -46,7 +48,7 @@ def send_message(msg):
         print(e)
 
 
-def send_email_alert(alert_object: Alert):
+def send_email_alert(alert_object: 'Alert'):
     """
     This function will construct a proper HTML message with the appropriate information such as alert type, device name
     IP address, MAC address, etc.
