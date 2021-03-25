@@ -12,6 +12,7 @@ from src import run_config as CONFIG
 class ALERT_TYPE:
     PRIVACY = "Privacy"
     IDS = "IDS"
+    ANOMALY = "Anomaly"
     UNKNOWN = "Unknown"
 
 
