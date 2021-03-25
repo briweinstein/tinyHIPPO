@@ -8,7 +8,7 @@ from src.signature_detection.mac_address_signature import MACAddressSignature
 class TestMACAddressSignature(unittest.TestCase):
     def setUp(self) -> None:
         self.mac_signature = MACAddressSignature()
-        packets = rdpcap(str(pathlib.Path("../tests/test_data/test_tcpdump2.pcap").resolve()))
+        packets = rdpcap(str(pathlib.Path("../test_data/test_packets.pcap").resolve()))
         self.src_spoofed_mac_packet = packets[0]
         self.src_spoofed_mac_packet[Ether].src = "CC:43:65:61:39:D9"
         self.src_benign_mac_packet = packets[1]

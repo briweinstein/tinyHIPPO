@@ -16,7 +16,7 @@ class ConfigEmail:
 
 class Config:
     def __init__(self):
-        self.install_path = Path(os.getenv("TINY_HIPPO_INSTALL_PATH"))
+        self.install_path = Path(os.getenv("TINYHIPPO_INSTALL_PATH"))
         config_path = self._absolute_path("config.json")
         logging.basicConfig(level=logging.INFO,
                             filemode='a',
