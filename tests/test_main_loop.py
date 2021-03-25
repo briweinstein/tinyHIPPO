@@ -4,11 +4,8 @@ from pathlib import Path
 from src.dashboard.alerts.alert import Alert, ALERT_TYPE, SEVERITY
 from scapy.layers.inet import Ether, IP
 from src import run_config
-from unittest.mock import MagicMock
 from unittest.mock import patch
-from scapy.packet import Packet
 from src.signature_detection.signature_detector import SignatureDetector
-from src.signature_detection.signature import Signature
 from src.signature_detection.ip_signature import IPSignature
 from src.signature_detection.mac_address_signature import MACAddressSignature
 

@@ -14,13 +14,13 @@ pip3 install scapy
 pip3 install dataclasses
 pip3 install requests
 
-# set config path environment variable
-export IOT_IDS_CONFIGPATH='/etc/tinyHIPPO/config.json'
+# set install path environment variable
+export TINY_HIPPO_INSTALL_PATH='/etc/tinyHIPPO/'
 
 # Move the dashboard files
 # TODO: this is a hack to get tinyHIPPO running for the midterm progress report
-cp -r /etc/tinyHIPPO/src/dashboard/luasrc/controller/ids-priv /usr/lib/lua/luci/controller
-cp -r /etc/tinyHIPPO/src/dashboard/luasrc/view/ids-priv /usr/lib/lua/luci/view
+cp -r $TINY_HIPPO_INSTALL_PATH/src/dashboard/luasrc/controller/ids-priv /usr/lib/lua/luci/controller
+cp -r $TINY_HIPPO_INSTALL_PATH/dashboard/luasrc/view/ids-priv /usr/lib/lua/luci/view
 
 # Restart the webserver
 uci set luci.ccache.enable=0
@@ -28,7 +28,7 @@ uci commit luci
 /etc/init.d/uhttpd restart
 
 # Create the alert_collection.json file
-touch /etc/tinyHIPPO/alert_collection.json
+touch $TINY_HIPPO_INSTALL_PATH/alert_collection.json
 
 # Start the actual program
-/etc/tinyHIPPO/tiny_hippo_run.py
+$TINY_HIPPO_INSTALL_PATH/tiny_hippo_run.py
