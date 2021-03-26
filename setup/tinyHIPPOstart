@@ -15,7 +15,7 @@ pip3 install dataclasses
 pip3 install requests
 
 # set install path environment variable
-export TINYHIPPO_INSTALL_PATH='/etc/tinyHIPPO/'
+export TINYHIPPO_INSTALL_PATH='/etc/tinyHIPPO'
 
 # Move the dashboard files
 # TODO: this is a hack to get tinyHIPPO running for the midterm progress report
