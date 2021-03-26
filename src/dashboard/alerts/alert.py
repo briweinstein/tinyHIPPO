@@ -7,15 +7,16 @@ from scapy.packet import Packet
 from scapy.utils import raw, hexdump
 from src.emailalerts import emailsystem
 from src import run_config as CONFIG
+from enum import Enum, IntEnum
 
 
-class ALERT_TYPE:
+class ALERT_TYPE(Enum):
     PRIVACY = "Privacy"
     IDS = "IDS"
     UNKNOWN = "Unknown"
 
 
-class SEVERITY:
+class SEVERITY(IntEnum):
     INFO = 0
     WARN = 1
     ALERT = 2
