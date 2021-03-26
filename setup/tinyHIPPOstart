@@ -20,7 +20,7 @@ export TINYHIPPO_INSTALL_PATH='/etc/tinyHIPPO/'
 # Move the dashboard files
 # TODO: this is a hack to get tinyHIPPO running for the midterm progress report
 cp -r $TINYHIPPO_INSTALL_PATH/src/dashboard/luasrc/controller/ids-priv /usr/lib/lua/luci/controller
-cp -r $TINYHIPPO_INSTALL_PATH/dashboard/luasrc/view/ids-priv /usr/lib/lua/luci/view
+cp -r $TINYHIPPO_INSTALL_PATH/src/dashboard/luasrc/view/ids-priv /usr/lib/lua/luci/view
 
 # Restart the webserver
 uci set luci.ccache.enable=0
