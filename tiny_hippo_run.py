@@ -45,10 +45,8 @@ def main():
     for rule in rules_system_privacy:
         rule()
 
-    # TODO: make this a static variable in the module outside of here (?)
-    ip_to_mac = __pair_ip_to_mac()
-
     # 3) Perform a scanning analysis of the IoT devices
+    ip_to_mac = __pair_ip_to_mac()
     for rule in rules_scanning_privacy:
         rule(ip_to_mac)
 
