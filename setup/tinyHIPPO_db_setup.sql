@@ -1,16 +1,14 @@
-CREATE TABLE alerts ( 
+CREATE TABLE alerts (
 	id                   integer NOT NULL  PRIMARY KEY autoincrement ,
 	alert_type           text CHECK (alert_type IN ('Privacy', 'IDS', 'System')) NOT NULL    ,
-	device_name          varchar(256)     ,
-	device_ip_address    varchar(256)     ,
-	device_mac_address   varchar(17)     ,
 	timestamp            datetime NOT NULL    ,
 	description          text NOT NULL    ,
+	severity             integer check (severity in (0, 1, 2)) NOT NULL
+	mac_address          varchar(17)     ,
 	payload              text     ,
-	severity             integer check (severity in (0, 1, 2)) NOT NULL    
  );
 
-CREATE TABLE anamoly_equations ( 
+CREATE TABLE anomaly_equations (
 	id                   integer NOT NULL  PRIMARY KEY autoincrement ,
 	average_equation     varchar(256) NOT NULL    ,
 	adjustment_equation  varchar(256) NOT NULL    
@@ -18,13 +16,14 @@ CREATE TABLE anamoly_equations (
 
 CREATE TABLE email_information ( 
 	id                   integer NOT NULL  PRIMARY KEY autoincrement ,
-	recipient_addresses  text     ,
-	sender_address       varchar(256) NOT NULL DEFAULT 'openwrt@example.com'   ,
-	sender_email_password varchar(32) NOT NULL DEFAULT 'super_secure_password'   ,
-	smtp_server          varchar(256) NOT NULL DEFAULT 'smtp.example.com'   
+	recipient_addresses  text    NOT NULL ,
+	sender_address       varchar(256) NOT NULL,
+	sender_email_password varchar(32) NOT NULL,
+	smtp_server          varchar(256) NOT NULL
  );
 
-CREATE TABLE mac_addresses (
-    id                   integer NOT NULL PRIMARY KEY autoincrement ,
-	address              varchar(17) NOT NULL
+CREATE TABLE device_information (
+	mac_address          varchar(17) NOT NULL PRIMARY KEY,
+	device_name          varchar(256)     ,
+    device_ip_address    varchar(256)     ,
  );
