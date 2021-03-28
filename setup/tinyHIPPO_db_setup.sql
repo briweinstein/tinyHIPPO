@@ -1,5 +1,5 @@
 CREATE TABLE alerts (
-	id                   integer NOT NULL  PRIMARY KEY autoincrement ,
+	alert_id                   integer NOT NULL  PRIMARY KEY autoincrement ,
 	alert_type           text CHECK (alert_type IN ('Privacy', 'IDS', 'System')) NOT NULL    ,
 	timestamp            datetime NOT NULL    ,
 	description          text NOT NULL    ,
@@ -9,7 +9,7 @@ CREATE TABLE alerts (
  );
 
 CREATE TABLE anomaly_equations (
-	id                   integer NOT NULL  PRIMARY KEY autoincrement ,
+	equation_id                   integer NOT NULL  PRIMARY KEY autoincrement ,
 	average_equation     varchar(256) NOT NULL    ,
 	adjustment_equation  varchar(256) NOT NULL    
  );
