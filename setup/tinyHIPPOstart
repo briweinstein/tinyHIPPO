@@ -28,7 +28,7 @@ uci commit luci
 /etc/init.d/uhttpd restart
 
 # Create the sqlite database
-$TINYHIPPO_INSTALL_PATH/setup/tinyHIPPO_init_db.py
+sqlite3 $TINYHIPPO_INSTALL_PATH/tinyHIPPO.db < $TINYHIPPO_INSTALL_PATH/setup/tinyHIPPO_db_setup.sql
 
 # TODO: remove this file creation once the conversion to sqlite is complete
 # Create the alert_collection.json file
