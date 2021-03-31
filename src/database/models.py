@@ -1,14 +1,42 @@
+from typing import List
+
 from sqlalchemy import Column, Integer, String, ForeignKey
 from sqlalchemy.ext.declarative import declarative_base
 from datetime import datetime
+from src import db, run_config
 
 Base = declarative_base()
 
 
-class Alerts(Base):
+class BaseModelMixin:
+    """Base class with default functionality for all models"""
+
+    def insert_new(self, commit=True):
+        db.session.add(self)
+        if commit:
+            self.safe_commit()
+        else:
+            return self
+
+    @staticmethod
+    def safe_commit():
+        try:
+            db.session.commit()
+        except Exception as e:
+            db.session.rollback()
+            run_config.log_event(e)
+
+    @classmethod
+    def get_by_id(self, value_id):
+        value = db.session.query(self).filter(
+            self.id == value_id
+        )
+
+
+class Alerts(Base, BaseModelMixin):
     """Represents the Alerts table in our SQLite Database"""
     __tablename__ = "Alerts"
-    alert_id = Column(Integer, primary_key=True, nullable=False)
+    id = Column(Integer, primary_key=True, nullable=False)
     alert_type = Column(String, nullable=False)
     timestamp = Column(String, nullable=False, default=datetime.now())
     description = Column(String, nullable=False)
@@ -20,7 +48,7 @@ class Alerts(Base):
 class AnomalyEquations(Base):
     """Represents the AnomalyEquation table in our SQLite Database"""
     __tablename__ = "anomaly_equations"
-    equation_id = Column(Integer, primary_key=True, nullable=False, autoincrement=True)
+    id = Column(Integer, primary_key=True, nullable=False, autoincrement=True)
     average_equation = Column(String(256), nullable=False)
     adjustment_equation = Column(String(256), nullable=False)
 

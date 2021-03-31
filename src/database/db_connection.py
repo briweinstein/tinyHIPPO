@@ -1,7 +1,8 @@
-from sqlite3 import connect
+from requests import Session
+from sqlalchemy.orm import sessionmaker
 from src import run_config
 from pathlib import Path
-from typing import List
+from sqlalchemy import create_engine
 
 
 class DBConnection:
@@ -14,16 +15,10 @@ class DBConnection:
         """
         db_file = Path(db_file)
         try:
-            self.conn = connect(db_file.resolve())
+            engine = create_engine(f"sqlite:///{db_file}")
+            self.session = sessionmaker()
+            self.session.configure(bind=engine)
+            self.session = Session()
         except Exception as e:
             run_config.log_event(e)
             raise e
-
-    def insert(self, table_name: str, values: List):
-        """
-
-        :param table_name:
-        :param values:
-        :return:
-        """
-        pass
