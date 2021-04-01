@@ -8,7 +8,6 @@
 
 # Update the package repositories for OpenWrt
 opkg update
-opkg install nmap
 
 # Make sure Python3, Pip, misc packages are installed
 pip3 install scapy
