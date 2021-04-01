@@ -1,6 +1,6 @@
 from typing import List
 
-from sqlalchemy import Column, Integer, String, ForeignKey
+from sqlalchemy import Column, Integer, String, ForeignKey, DateTime, Text, VARCHAR
 from sqlalchemy.ext.declarative import declarative_base
 from datetime import datetime
 from src import db, run_config
@@ -24,7 +24,8 @@ class BaseModelMixin:
             db.session.commit()
         except Exception as e:
             db.session.rollback()
-            run_config.log_event(e)
+            print("something done goofed:{}", str(e))
+            # run_config.log_event(e)
 
     @classmethod
     def get_by_id(self, pk_value):
@@ -33,14 +34,14 @@ class BaseModelMixin:
 
 class Alerts(Base, BaseModelMixin):
     """Represents the Alerts table in our SQLite Database"""
-    __tablename__ = "Alerts"
+    __tablename__ = "alerts"
     id = Column(Integer, primary_key=True, nullable=False)
-    alert_type = Column(String, nullable=False)
-    timestamp = Column(String, nullable=False, default=datetime.now())
-    description = Column(String, nullable=False)
+    alert_type = Column(Text, nullable=False)
+    timestamp = Column(DateTime, nullable=False, default=datetime.now())
+    description = Column(Text, nullable=False)
     severity = Column(Integer, nullable=False)
-    mac_address = Column(String(17), ForeignKey("device_information.mac_address"))
-    payload = Column(String)
+    mac_address = Column(VARCHAR(17), ForeignKey("device_information.mac_address"))
+    payload = Column(Text)
 
 
 class AnomalyEquations(Base):
