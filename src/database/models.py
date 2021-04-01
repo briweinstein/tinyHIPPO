@@ -1,5 +1,3 @@
-from typing import List
-
 from sqlalchemy import Column, Integer, String, ForeignKey, DateTime, Text, VARCHAR
 from sqlalchemy.ext.declarative import declarative_base
 from datetime import datetime
@@ -11,26 +9,28 @@ Base = declarative_base()
 class BaseModelMixin:
     """Base class with default functionality for all models"""
 
-    def insert_new(self, commit=True):
+    @classmethod
+    def insert_new_object(cls, model_object: Base, commit=True):
         """
         Adds this model object to the session and optionally commits to the database
+        :param model_object: Object to add to the database
         :param commit: Whether to commit to the database after adding the model object
         :return: Object that was inserted
         """
-        db.session.add(self)
+        db.session.add(model_object)
         if commit:
-            self.safe_commit()
+            model_object.safe_commit()
         else:
             return self
 
     @staticmethod
     def safe_commit():
-        """Tries to commit to this database session and rollsback if an error occurs"""
+        """Tries to commit to this database session and rolls back if an error occurs"""
         try:
             db.session.commit()
         except Exception as e:
             db.session.rollback()
-            run_config.log_event(f"Exception occured when committing to the database: {e}")
+            run_config.log_event(f"Exception occurred when committing to the database: {e}")
 
     @classmethod
     def get_by_pk(cls, key, value):

@@ -19,25 +19,25 @@ class TestGetByPk(unittest.TestCase):
                                              device_ip_address='192.168.0.1')
 
     def test_get_alert_id(self):
-        self.alert.insert_new()
+        Alerts.insert_new_object(self.alert)
         result = Alerts.get_by_pk(Alerts.id, self.alert.id)
         self.assertEqual(self.alert, result)
         self.db.session.delete(result)
 
     def test_get_anomaly_equations_id(self):
-        self.anamoly_eq.insert_new()
+        AnomalyEquations.insert_new_object(self.anamoly_eq)
         result = AnomalyEquations.get_by_pk(AnomalyEquations.id, self.anamoly_eq.id)
         self.assertEqual(self.anamoly_eq, result)
         self.db.session.delete(result)
 
     def test_get_email_information_id(self):
-        self.email_info.insert_new()
+        EmailInformation.insert_new_object(self.email_info)
         result = EmailInformation.get_by_pk(EmailInformation.id, self.email_info.id)
         self.assertEqual(self.email_info, result)
         self.db.session.delete(result)
 
     def test_get_device_information_id(self):
-        self.device_info.insert_new()
+        DeviceInformation.insert_new_object(self.device_info)
         result = DeviceInformation.get_by_pk(DeviceInformation.mac_address, self.device_info.mac_address)
         self.assertEqual(self.device_info, result)
         self.db.session.delete(result)

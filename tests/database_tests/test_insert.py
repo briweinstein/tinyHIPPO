@@ -22,19 +22,19 @@ class TestInsert(unittest.TestCase):
                                              device_ip_address='192.168.0.1')
 
     def test_insert_alert(self):
-        self.alert.insert_new()
+        Alerts.insert_new_object(self.alert)
         result = self.db.session.query(Alerts).filter(Alerts.description == 'test').first()
         self.assertEqual(self.alert, result)
         self.db.session.delete(result)
 
     def test_insert_anomaly_equation(self):
-        self.anamoly_eq.insert_new()
+        AnomalyEquations.insert_new_object(self.anamoly_eq)
         result = self.db.session.query(AnomalyEquations).filter(AnomalyEquations.average_equation == "test").first()
         self.assertEqual(self.anamoly_eq, result)
         self.db.session.delete(result)
 
     def test_insert_email_information(self):
-        self.email_info.insert_new()
+        EmailInformation.insert_new_object(self.email_info)
         result = self.db.session.query(EmailInformation).filter(
             EmailInformation.recipient_addresses == "test@email.com, foo@bar.com") \
             .first()
@@ -42,7 +42,7 @@ class TestInsert(unittest.TestCase):
         self.db.session.delete(result)
 
     def test_insert_device_information(self):
-        self.device_info.insert_new()
+        DeviceInformation.insert_new_object(self.device_info)
         result = self.db.session.query(DeviceInformation).filter(
             DeviceInformation.mac_address == "00:00:00:00:00:00") \
             .first()
