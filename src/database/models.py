@@ -25,14 +25,21 @@ class BaseModelMixin:
 
     @staticmethod
     def safe_commit():
+        """Tries to commit to this database session and rollsback if an error occurs"""
         try:
             db.session.commit()
         except Exception as e:
             db.session.rollback()
-            run_config.log_event(e)
+            run_config.log_event(f"Exception occured when committing to the database: {e}")
 
     @classmethod
     def get_by_pk(cls, key, value):
+        """
+        Returns the first model object that matches the given primary key's value
+        :param key: The primary key to check against (IE alert_id, mac_address)
+        :param value: The value tied to the primary key to fetch from the table
+        :return: The corresponding model object
+        """
         return db.session.query(cls).filter(key == value).first()
 
 
