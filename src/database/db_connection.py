@@ -1,6 +1,5 @@
 from requests import Session
 from sqlalchemy.orm import sessionmaker
-from src import run_config
 from pathlib import Path
 from sqlalchemy import create_engine
 
@@ -14,11 +13,7 @@ class DBConnection:
         :param db_file: database file
         """
         db_file = Path(db_file)
-        try:
-            engine = create_engine(f"sqlite:///{db_file}")
-            self.session = sessionmaker()
-            self.session.configure(bind=engine)
-            self.session = Session()
-        except Exception as e:
-            run_config.log_event(e)
-            raise e
+        engine = create_engine(f"sqlite:///{db_file}")
+        self.session = sessionmaker()
+        self.session.configure(bind=engine)
+        self.session = Session()

@@ -27,10 +27,8 @@ class BaseModelMixin:
             run_config.log_event(e)
 
     @classmethod
-    def get_by_id(self, value_id):
-        value = db.session.query(self).filter(
-            self.id == value_id
-        )
+    def get_by_id(self, pk_value):
+        return db.session.query(self).filter(self.id == pk_value).first()
 
 
 class Alerts(Base, BaseModelMixin):
