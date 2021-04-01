@@ -44,7 +44,7 @@ class Alerts(Base, BaseModelMixin):
     payload = Column(Text)
 
 
-class AnomalyEquations(Base):
+class AnomalyEquations(Base, BaseModelMixin):
     """Represents the AnomalyEquation table in our SQLite Database"""
     __tablename__ = "anomaly_equations"
     id = Column(Integer, primary_key=True, nullable=False, autoincrement=True)
@@ -52,17 +52,17 @@ class AnomalyEquations(Base):
     adjustment_equation = Column(String(256), nullable=False)
 
 
-class EmailInformation(Base):
+class EmailInformation(Base, BaseModelMixin):
     """Represents the EmailInformation table in our SQLite Database"""
     __tablename__ = "email_information"
     id = Column(Integer, primary_key=True, nullable=False, autoincrement=True)
     recipient_addresses = Column(String, nullable=False)
-    sender_addresses = Column(String(256), nullable=False)
+    sender_address = Column(String(256), nullable=False)
     sender_email_password = Column(String(32), nullable=False)
     smtp_server = Column(String(256), nullable=False)
 
 
-class DeviceInformation(Base):
+class DeviceInformation(Base, BaseModelMixin):
     """Represents the DeviceInformation table in our SQLite Database"""
     __tablename__ = "device_information"
     mac_address = Column(String, primary_key=True, nullable=False)
