@@ -12,6 +12,11 @@ class BaseModelMixin:
     """Base class with default functionality for all models"""
 
     def insert_new(self, commit=True):
+        """
+        Adds this model object to the session and optionally commits to the database
+        :param commit: Whether to commit to the database after adding the model object
+        :return: Object that was inserted
+        """
         db.session.add(self)
         if commit:
             self.safe_commit()
@@ -24,16 +29,15 @@ class BaseModelMixin:
             db.session.commit()
         except Exception as e:
             db.session.rollback()
-            print("something done goofed:{}", str(e))
-            # run_config.log_event(e)
+            run_config.log_event(e)
 
     @classmethod
-    def get_by_id(self, pk_value):
-        return db.session.query(self).filter(self.id == pk_value).first()
+    def get_by_pk(cls, key, value):
+        return db.session.query(cls).filter(key == value).first()
 
 
 class Alerts(Base, BaseModelMixin):
-    """Represents the Alerts table in our SQLite Database"""
+    """Model mapping a row of our Alerts table in our SQLite Database"""
     __tablename__ = "alerts"
     id = Column(Integer, primary_key=True, nullable=False)
     alert_type = Column(Text, nullable=False)
@@ -45,7 +49,7 @@ class Alerts(Base, BaseModelMixin):
 
 
 class AnomalyEquations(Base, BaseModelMixin):
-    """Represents the AnomalyEquation table in our SQLite Database"""
+    """Model mapping a row of our AnomalyEquation table in our SQLite Database"""
     __tablename__ = "anomaly_equations"
     id = Column(Integer, primary_key=True, nullable=False, autoincrement=True)
     average_equation = Column(String(256), nullable=False)
@@ -53,7 +57,7 @@ class AnomalyEquations(Base, BaseModelMixin):
 
 
 class EmailInformation(Base, BaseModelMixin):
-    """Represents the EmailInformation table in our SQLite Database"""
+    """Model mapping a row of our EmailInformation table in our SQLite Database"""
     __tablename__ = "email_information"
     id = Column(Integer, primary_key=True, nullable=False, autoincrement=True)
     recipient_addresses = Column(String, nullable=False)
@@ -63,8 +67,8 @@ class EmailInformation(Base, BaseModelMixin):
 
 
 class DeviceInformation(Base, BaseModelMixin):
-    """Represents the DeviceInformation table in our SQLite Database"""
+    """Model mapping a row of our DeviceInformation table in our SQLite Database"""
     __tablename__ = "device_information"
-    mac_address = Column(String, primary_key=True, nullable=False)
-    device_name = Column(String)
-    device_ip_address = Column(String)
+    mac_address = Column(String(17), primary_key=True, nullable=False)
+    device_name = Column(String(256))
+    device_ip_address = Column(String(256))
