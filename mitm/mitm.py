@@ -1,7 +1,9 @@
 #! /usr/bin/env python3
 from scapy.all import sniff, TCP, TLSClientHello, TLSExtEllipticCurves, TLSExtECPointsFormat, IP, IPv6, TCP, UDP
 import urllib.request
-from cids_main import run_config
+import nfqueue
+from mitm.helpers_mitm import get_packet_type_functions
+
 
 # TODO: Retries
 
@@ -20,37 +22,21 @@ class MitM:
     def __init__(self):
         self.status = "Uninitialized"
         self.success = False
-        self.mac_addrs = []
-        for addr in run_config.mac_addrs:
-            self.mac_addrs.append(addr.lower())
-
         self.router_ip = urllib.request.urlopen('https://ident.me').read().decode('utf8')
         print("router ip: " + self.router_ip)
 
     # Determine what kind of packet to process, if any
-    def __call__(self, packet):
+    def __call__(self, packet, curr_packet_type, payload):
         print("MitM called")
-
-        if not packet.haslayer(TCP):
-            return
-
         self.__print_stuff()
 
-        packet_types = ["TLSClientHello", "TLSServerHello", "TLSCertificate",
-                        "TLSCertificateStatus", "TLSServerKeyExchange", "TLSServerHelloDone",
-                        "TLSClientKeyExchange", "", "TLSFinished"
-                        "TLSNewSessionTicket", "", "TLSFinished"
-                        "", ""]
+        # Check that this packet type is valid for this point in the session
+        if not self.__is_packet_expected(packet):
+            # For now, we will be fault tolerant and simply let the packet continue
+            payload.set_verdict(nfqueue.NF_ACCEPT)
 
-        unused_packet_types = ["TLSHelloRequest", "TLSHelloVerifyRequest", "TLSNewSessionTicket",
-                               "TLSEncryptedExtensions", "TLSCertificateRequest", "TLSServerHelloDone",
-                               "TLSCertificateVerify", "TLSCertificateURL", "TLSCertificateStatus",
-                               "TLSSupplementalData"]
-
-        for type in packet_types:
-            if packet[TCP].haslayer(type):
-                self.__process_packet(packet, self.__process_ClientHello)
-                return
+        all_packet_type_functions = get_packet_type_functions()
+        all_packet_type_functions[curr_packet_type]()
 
     ##############################################################################################
 
@@ -61,7 +47,8 @@ class MitM:
             self.status = "Uninitialized"
 
     def __is_packet_expected(self, packet):
-        if self.status
+        if self.status:
+            print("hi")
 
     ##############################################################################################
 
@@ -103,4 +90,3 @@ class MitM:
 
 # Sources
 # https://gist.github.com/allansto/8e47c2998995d0d8b781c88936b4624a
-

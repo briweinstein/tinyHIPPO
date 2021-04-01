@@ -4,6 +4,7 @@ from scapy.all import sniff
 from cids_main import run_config
 from scapy.utils import raw
 from iot_device_class import IoTDevice
+from mitm.scapy_bridge import bridge
 from src.privacy_analysis.packet_analysis.packet_privacy_port import PacketPrivacyPort
 from src.privacy_analysis.system_analysis.system_privacy_dropbear_config import SystemPrivacyDropbearConfig
 from src.privacy_analysis.system_analysis.system_privacy_encryption import SystemPrivacyEncryption
@@ -26,6 +27,9 @@ mac_addrs = []
 # List of IoT device objects
 devices = []
 
+# If True, intercept packets, if False, sniff packets
+mitm_active = True
+
 ##############################################################################################
 ### Main function
 ##############################################################################################
@@ -46,7 +50,11 @@ def main():
   # 2) Capture IoT packets only with crafted sniff
   print("Capturing IoT packets only")
   # 3) Export packets
-  sniff(iface="wlan0", lfilter=lambda packet: (packet.src in mac_addrs) or (packet.dst in mac_addrs), prn=packet_parse, count=num_packets)
+  if mitm_active:
+
+    bridge(mac_addrs, devices)
+  else:
+    sniff(iface="wlan0", lfilter=lambda packet: (packet.src in mac_addrs) or (packet.dst in mac_addrs), prn=packet_parse, count=num_packets)
 
 ##############################################################################################
 ### Pull and validate MAC addresses
@@ -73,13 +81,6 @@ def pull_and_validate_addrs():
 def packet_parse(packet):
   for rule in rules_packet_privacy:
     rule(packet)
-  
-  for device in devices:
-    if (device.mac_addr == packet.src) or (device.mac_addr == packet.dst):
-      device.mitm()
-
-  privacy_obj = Privacy_Analysis(packet)
-  privacy_obj.process_packet()
 
 ##############################################################################################
 ### Call main()
