@@ -13,6 +13,7 @@ opkg update
 pip3 install scapy
 pip3 install dataclasses
 pip3 install requests
+pip3 install python-nmap
 
 # set install path environment variable
 export TINYHIPPO_INSTALL_PATH='/etc/tinyHIPPO'

@@ -3,12 +3,13 @@ from scapy.all import sniff
 from scapy.packet import Packet
 from scapy.layers.inet import Ether
 from src import run_config
-import re
+import re, os
 from src.privacy_analysis.packet_analysis.packet_privacy_port import PacketPrivacyPort
 from src.privacy_analysis.system_analysis.system_privacy_dropbear_config import SystemPrivacyDropbearConfig
 from src.privacy_analysis.system_analysis.system_privacy_encryption import SystemPrivacyEncryption
 from src.privacy_analysis.system_analysis.system_privacy_package_upgrades import SystemPrivacyPackageUpgrades
 from src.privacy_analysis.system_analysis.system_privacy_root_password import SystemPrivacyRootPassword
+from src.privacy_analysis.scanning_analysis.scanning_privacy_nmap_passive import ScanningPrivacyNmapPassive
 from src.signature_detection.ip_signature import IPSignature
 from src.signature_detection.mac_address_signature import MACAddressSignature
 from src.signature_detection.signature_detector import SignatureDetector
@@ -18,7 +19,7 @@ from src.dashboard.alerts.alert import Alert, SEVERITY, ALERT_TYPE
 rules_packet_privacy = [PacketPrivacyPort()]
 rules_system_privacy = [SystemPrivacyDropbearConfig(), SystemPrivacyEncryption(), SystemPrivacyPackageUpgrades(),
                         SystemPrivacyRootPassword()]
-rules_scanning_privacy = []
+rules_scanning_privacy = [ScanningPrivacyNmapPassive()]
 ids_signatures = [IPSignature("192.168.1.0/24"), MACAddressSignature()]
 signature_detector = SignatureDetector(ids_signatures)
 # Number of packets to capture, 0 is infinite
@@ -33,7 +34,8 @@ def main():
     Main loop of the program, does the following
     1. Validates the users given mac addresses
     2. Runs system privacy checks
-    3. Sniffs packets on "wlan0" and analyzes the packet against signatures and privacy rules
+    3. Runs scanning analysis of the IoT devices
+    4. Sniffs packets on "wlan0" and analyzes the packet against signatures and privacy rules
     :return: nothing
     """
     # 1) Pull and validate MAC addresses
@@ -43,10 +45,13 @@ def main():
     for rule in rules_system_privacy:
         rule()
 
-    # Note: Steps 2 and 3 happen simultaneously in the "sniff()" call, but are separated for clarity
-    # 2) Capture IoT packets only with crafted sniff
+    # 3) Perform a scanning analysis of the IoT devices
+    ip_to_mac = __pair_ip_to_mac()
+    for rule in rules_scanning_privacy:
+        rule(ip_to_mac)
+
+    # 4) Capture IoT packets only with crafted sniff
     print("Capturing IoT packets only")
-    # 3) Export packets
     # TODO: Make sure iface is set to the correct interface. May be different in some routers
     sniff(iface="wlan0", lfilter=lambda packet: (packet.src in mac_addrs) or (packet.dst in mac_addrs),
           prn=packet_parse, count=num_packets)
@@ -92,6 +97,27 @@ def packet_parse(packet: Packet):
         # TODO: refine so a specific error message can be logged
         run_config.log_event.info('Exception raised: ' + str(e))
 
+
+def __pair_ip_to_mac():
+    """
+    Uses the "arp" system call to pair IoT MAC addrs to their current IP addrs
+    :return: dict of IPs to MACs
+    """
+    # Get ARP data from the system and parse out the IP and MAC addrs
+    with open("/proc/net/arp", "r") as file:
+        arp_data = file.read()
+    arp_lines = arp_data.split("\n")
+    ip_to_mac_all = {}
+    for line in arp_lines[1:-1]:
+        line_parsed = list(filter(None, line.split(" ")))
+        ip_to_mac_all[line_parsed[0]] = line_parsed[3]
+
+    # Filter out non-IoT devices from ip_to_mac_all
+    ip_to_mac_iot = {}
+    for ip in ip_to_mac_all.keys():
+        if ip_to_mac_all[ip] in mac_addrs:
+            ip_to_mac_iot[ip] = ip_to_mac_all[ip]
+    return(ip_to_mac_iot)
 
 # call main
 main()
