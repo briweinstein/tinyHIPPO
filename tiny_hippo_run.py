@@ -79,7 +79,7 @@ def packet_parse(packet: Packet):
             rule(packet)
         except Exception as e:
             # TODO: refine so a specific error message can be logged
-            run_config.log_event.info('Exception raised: ' + str(e))
+            run_config.log_event.info('Exception raised in a privacy rule check: ' + str(e))
     # For each triggered signature generate an alert for the user
     try:
         triggered_rules = signature_detector.check_signatures(packet)
@@ -90,7 +90,7 @@ def packet_parse(packet: Packet):
                 alert_object.alert()
     except Exception as e:
         # TODO: refine so a specific error message can be logged
-        run_config.log_event.info('Exception raised: ' + str(e))
+        run_config.log_event.info('Exception raised in an IDS rule check: ' + str(e))
 
 
 # call main

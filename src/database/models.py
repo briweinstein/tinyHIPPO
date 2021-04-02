@@ -1,6 +1,7 @@
 from sqlalchemy import Column, Integer, String, ForeignKey, DateTime, Text, VARCHAR
 from sqlalchemy.ext.declarative import declarative_base
 from datetime import datetime
+from sqlalchemy.orm import relationship
 from src import db, run_config
 
 Base = declarative_base()
@@ -21,7 +22,7 @@ class BaseModelMixin:
         if commit:
             model_object.safe_commit()
         else:
-            return self
+            return model_object
 
     @staticmethod
     def safe_commit():
@@ -43,6 +44,15 @@ class BaseModelMixin:
         return db.session.query(cls).filter(key == value).first()
 
 
+class DeviceInformation(Base, BaseModelMixin):
+    """Model mapping a row of our DeviceInformation table in our SQLite Database"""
+    __tablename__ = "device_information"
+    mac_address = Column(String(17), primary_key=True, nullable=False)
+    device_name = Column(String(256))
+    device_ip_address = Column(String(256))
+    alerts = relationship('Alerts', back_populates='device')
+
+
 class Alerts(Base, BaseModelMixin):
     """Model mapping a row of our Alerts table in our SQLite Database"""
     __tablename__ = "alerts"
@@ -52,6 +62,7 @@ class Alerts(Base, BaseModelMixin):
     description = Column(Text, nullable=False)
     severity = Column(Integer, nullable=False)
     mac_address = Column(VARCHAR(17), ForeignKey("device_information.mac_address"))
+    device = relationship('DeviceInformation', back_populates='alerts')
     payload = Column(Text)
 
 
@@ -71,11 +82,3 @@ class EmailInformation(Base, BaseModelMixin):
     sender_address = Column(String(256), nullable=False)
     sender_email_password = Column(String(32), nullable=False)
     smtp_server = Column(String(256), nullable=False)
-
-
-class DeviceInformation(Base, BaseModelMixin):
-    """Model mapping a row of our DeviceInformation table in our SQLite Database"""
-    __tablename__ = "device_information"
-    mac_address = Column(String(17), primary_key=True, nullable=False)
-    device_name = Column(String(256))
-    device_ip_address = Column(String(256))
