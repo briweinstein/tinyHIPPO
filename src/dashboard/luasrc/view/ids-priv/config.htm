@@ -33,6 +33,7 @@
 	}
 
 	.explanation {
+        margin-top: 40px;
 		font-size: large;
 		margin-bottom: 40px;
 	}
@@ -90,7 +91,15 @@
 				config_json.mac_addrs.push(document.getElementsByClassName("mac " + row_id)[0].innerHTML)
 			}
 		} 
-
+        // Get the selected network interface
+        var selected_network_interface = document.getElementsByClassName("network_interface")
+        var j;
+        for (j = 0; j < selected_network_interface.length; j++) {
+            if (selected_network_interface[j].checked) {
+                config_json.network_interface = document.getElementsByClassName("network_interface")[j].nextSibling.data
+            }
+        }
+		
 		var config = JSON.stringify(config_json);
 		xmlhttp.send(config);
 		saveChanges()
@@ -138,8 +147,31 @@
 		return_string = return_string .. "</table>"
 		return return_string
 	end
-
+	
 	local data = format_ip_neighbors(luci.sys.exec("ip neigh"))
+	
+%>
+<%
+	function format_network_interfaces(net_data)
+        local count = 1
+	
+        local return_string = [[
+        <table class="notification_table" >
+            <tr>
+                <th>Network Interface</th>
+            </tr>
+        ]]
+        for line in string.gmatch(net_data, '[^\r\n]+') do
+            return_string = return_string .. "<tr>"  .. "\n"
+            return_string = return_string .. "<td><input type=\"radio\" name=\"network_interface\" class=\"network_interface\" id=\"selector_" .. tostring(count) .. "\">" .. line .. "</td>" .. "\n"
+            return_string = return_string .. "</tr>" .. "\n"
+            count = count + 1
+        end
+        return_string = return_string .. "</table>"
+		return return_string
+    end
+	
+	local net_data = format_network_interfaces(luci.sys.exec("ls /sys/class/net"))
 %>
 <h1><%:Configuration%></h1>
 <div class="explanation">
@@ -147,7 +179,14 @@
 </div>
 <div>
 	<%=data%>   
-</div>       
+</div> 
+<div class="explanation">
+    <h2>Select the network interface that the devices are on</h2>
+    <h2>Typical wireless interfaces start with wlan</h2>
+</div>
+<div>
+    <%=net_data%>
+</div>
 <button onclick="sendChanges()" class="save_button">Save</button> 
 <p id="changes_saved" class="save_notification"> &nbsp; </p>                                           
 <%+footer%>

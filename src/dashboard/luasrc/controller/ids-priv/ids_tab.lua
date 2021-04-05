@@ -31,6 +31,7 @@ module("luci.controller.ids-priv.ids_tab", package.seeall)  --notice that new_ta
         -- Write over existing configuration if no errors reading files
         if (payload and payload.mac_addrs) then
             configuration.mac_addrs = payload.mac_addrs
+            configuration.network_interface = payload.network_interface
         else 
             -- Send 400 back indicated bad input
             luci.http.status(400, "Bad value for configuration: " + tostring(payload))
