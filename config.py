@@ -30,6 +30,7 @@ class Config:
         self.alert_collection_path = self._absolute_path('alert_collection.json')
         self.virustotal_api_key = config_json["virustotal_api_key"]
         self.log_event = logging.getLogger()
+        self.network_interface = config_json["network_interface"]
 
     def _absolute_path(self, relative_path: str) -> Path:
         return self.install_path / relative_path

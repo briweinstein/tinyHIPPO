@@ -52,9 +52,12 @@ def main():
 
     # 4) Capture IoT packets only with crafted sniff
     print("Capturing IoT packets only")
-    # TODO: Make sure iface is set to the correct interface. May be different in some routers
-    sniff(iface="wlan0", lfilter=lambda packet: (packet.src in mac_addrs) or (packet.dst in mac_addrs),
-          prn=packet_parse, count=num_packets)
+    network_interface = run_config.network_interface
+    try:
+        sniff(iface=network_interface, lfilter=lambda packet: (packet.src in mac_addrs) or (packet.dst in mac_addrs),
+              prn=packet_parse, count=num_packets)
+    except Exception as e:
+        run_config.log_event.info('Could not sniff packet. Exception: ' + str(e))
 
 
 def pull_and_validate_addrs():
