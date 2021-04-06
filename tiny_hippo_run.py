@@ -12,7 +12,7 @@ from src.privacy_analysis.system_analysis.system_privacy_root_password import Sy
 from src.signature_detection.ip_signature import IPSignature
 from src.signature_detection.mac_address_signature import MACAddressSignature
 from src.signature_detection.signature_detector import SignatureDetector
-from src.dashboard.alerts.alert import Alert, SEVERITY, ALERT_TYPE
+from src.dashboard.alerts.alert import Alert, Severity, AlertType
 
 # TODO: Allow user to enable/disable certain rules
 rules_packet_privacy = [PacketPrivacyPort()]
@@ -86,7 +86,7 @@ def packet_parse(packet: Packet):
         if len(triggered_rules) > 0:
             for triggered_rule in triggered_rules:
                 is_dst = packet[Ether].src in mac_addrs
-                alert_object = Alert(packet, triggered_rule.msg, ALERT_TYPE.IDS, SEVERITY.ALERT, is_dst)
+                alert_object = Alert(packet, triggered_rule.msg, AlertType.IDS, Severity.ALERT, is_dst)
                 alert_object.alert()
     except Exception as e:
         # TODO: refine so a specific error message can be logged

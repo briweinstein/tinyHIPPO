@@ -2,7 +2,7 @@
 from src.privacy_analysis.packet_analysis.packet_privacy import PacketPrivacy
 from scapy.layers.inet import TCP, UDP
 from scapy.all import Packet
-from src.dashboard.alerts.alert import Alert, ALERT_TYPE, SEVERITY
+from src.dashboard.alerts.alert import Alert, AlertType, Severity
 
 suspicious_ports = [21, 22, 23, 2323, 25, 110, 111, 135]
 
@@ -20,7 +20,7 @@ class PacketPrivacyPort(PacketPrivacy):
 
             # Scan for using port 80 and the plaintext for privacy leaks
             if (packet[proto_type].dport == 80) or (packet[proto_type].sport == 80):
-                alert_port_80 = Alert(None, "Sending data over unencrypted port.", ALERT_TYPE.PRIVACY, SEVERITY.ALERT)
+                alert_port_80 = Alert(None, "Sending data over unencrypted port.", AlertType.PRIVACY, Severity.ALERT)
                 alert_port_80.alert()
                 self.__scan_plaintext(packet, proto_type)
 
@@ -28,7 +28,7 @@ class PacketPrivacyPort(PacketPrivacy):
             print("Monitoring suspicious ports")
             if packet[proto_type].dport in suspicious_ports:
                 alert_suspicious_ports = Alert(None, "Suspicious destination port used: " + packet[proto_type].dport,
-                                               ALERT_TYPE.PRIVACY, SEVERITY.WARN)
+                                               AlertType.PRIVACY, Severity.WARN)
                 alert_suspicious_ports.alert()
                 print("Alert on bad port")
 
