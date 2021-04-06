@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# Uninstall the old cids package
+# Uninstall the old tinyHIPPO package
 echo 'Uninstalling old tinyHIPPO package'
 $HOME/source/scripts/feeds uninstall tinyHIPPO
 
