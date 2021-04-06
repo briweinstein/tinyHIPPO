@@ -43,6 +43,17 @@ class BaseModelMixin:
         """
         return db.session.query(cls).filter(key == value).first()
 
+    def delete(self, with_commit=True):
+        """
+        Deletes this entry from the database with the option to commit the changes
+        :param with_commit: Whether to commit to the database
+        :return: The object deleted
+        """
+        db.session.delete(self)
+        if with_commit:
+            self.safe_commit()
+        return self
+
 
 class DeviceInformation(Base, BaseModelMixin):
     """Model mapping a row of our DeviceInformation table in our SQLite Database"""
