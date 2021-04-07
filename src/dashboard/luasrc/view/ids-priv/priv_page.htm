@@ -37,71 +37,7 @@
 
 <%+header%>
 <%
-    -- Format the JSON formatted alerts into HTML to be inserted into the page
-    function format_alerts()
-        -- Open the alert collection
-        local config_file = io.open("/etc/tinyHIPPO/config.json", 'r')
-        local config_content = config_file:read("*all")
-        local config_json = luci.jsonc.parse(tostring(config_content))
-
-        local alert_collection = io.open(config_json["alert_collection_path"], 'r')
-        local alert_content = nil
-        if alert_collection then
-            alert_content = alert_collection:read("*all")
-            alert_collection:close()
-        end
-
-        -- Format file input as JSON
-        local alerts = nil
-        if (alert_content ~= nil and alert_content ~= "") then
-            alerts = luci.jsonc.parse(tostring(alert_content))
-        end
-        local return_string = ""
-        if alerts == nil then
-            return return_string
-        end
-
-        -- Loops through JSON (Table) and formats contents
-        for k, alert in ipairs(alerts["alerts"]) do
-            if alert["type"] == "Privacy" then
-                return_string = return_string .. "<button class=\"collapsible\">" .. alert["description"] .. "</button>\n"
-                return_string = return_string .. [[
-                    <div class="content">
-                        <table class="notification_table">
-                            <tbody>
-                                <tr>
-                                    <th>Severity</th>
-                                    <th>Time</th>
-                                    <th>MAC</th>
-                                    <th>IP</th>
-                                </tr>
-                                <tr>
-                                    ]]
-                return_string = return_string .. "<td>" .. alert["severity"] .. "</td>\n"
-                return_string = return_string .. "<td>" .. alert["timestamp"] .. "</td>\n"
-                return_string = return_string .. "<td>" .. alert["device_mac"] .. "</td>\n"
-                return_string = return_string .. "<td>" .. alert["device_ip"] .. "</td>\n"
-                return_string = return_string .. [[</tr>
-                                            </tbody>
-                                            <div>
-                                                <h3>Packet Dump:</h3>
-                                                ]]
-                return_string = return_string .. "<p>" .. alert["payload_info"] .. "</p>\n"
-                return_string = return_string .. [[</div>
-                                                </table>
-                                            </div>
-                                            ]]
-            end
-        end
-
-        -- Return the magic
-        return return_string
-    end
-
-
-    -- Variable for ease of use
-    local data = format_alerts()
-
+   # call format_alerts
 %>
 <h1><%:Privacy Dashboard%></h1>
 <body>

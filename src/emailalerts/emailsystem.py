@@ -1,5 +1,3 @@
-#! /usr/bin/env python3
-
 import ssl
 import smtplib
 from typing import TYPE_CHECKING
