@@ -96,7 +96,7 @@ def packet_parse(packet: Packet):
 
 # call main
 if __name__ == '__main__':
-    app.run()
+    app.run(host="0.0.0.0")
     main()
 
 # Sources:
