@@ -7,7 +7,6 @@
 -- Retrieves the IDS alerts from the sqlite database
 function retrieve_alerts()
     -- Open the alert collection
-    local db_filepath = os.getenv('TINYHIPPO_INSTALL_PATH') + "/tinyHIPPO.db"
     local config_file = io.open("/etc/tinyHIPPO/config.json", 'r')
     local config_content = config_file:read("*all")
     local config_json = luci.jsonc.parse(tostring(config_content))

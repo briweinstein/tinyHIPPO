@@ -25,6 +25,6 @@ CREATE TABLE email_information (
 
 CREATE TABLE device_information (
 	mac_address          varchar(17) NOT NULL PRIMARY KEY,
-	device_name          varchar(256),
-    device_ip_address    varchar(256)
+	name          varchar(256),
+    ip_address    varchar(256)
  );

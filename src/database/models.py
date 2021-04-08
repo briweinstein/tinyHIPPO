@@ -59,8 +59,8 @@ class DeviceInformation(Base, BaseModelMixin):
     """Model mapping a row of our DeviceInformation table in our SQLite Database"""
     __tablename__ = "device_information"
     mac_address = Column(String(17), primary_key=True, nullable=False)
-    device_name = Column(String(256))
-    device_ip_address = Column(String(256))
+    name = Column(String(256))
+    ip_address = Column(String(256))
     alerts = relationship('Alerts', back_populates='device')
 
 
