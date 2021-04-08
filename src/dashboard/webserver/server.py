@@ -1,6 +1,6 @@
 from flask import Flask, render_template, g
-from .server_utils import get_alerts, get_neighboring_devices, get_db
 from src import run_config
+from src.dashboard.webserver.server_utils import get_db, get_alerts
 
 app = Flask(__name__)
 
@@ -9,6 +9,7 @@ app = Flask(__name__)
 def init_db():
     g.db = get_db(run_config.db_file)
 
+
 @app.route('/ids-priv/settings/')
 def settings():
     pass
@@ -16,7 +17,7 @@ def settings():
 
 @app.route('/ids-priv/ids-alerts/')
 def ids_alerts():
-    all_alerts = get_alerts('IDS',g.db)
+    all_alerts = get_alerts('IDS', g.db)
     return render_template('alerts.htm', all_alerts=all_alerts, dashboard_title='IDS')
 
 
