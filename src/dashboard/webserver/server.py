@@ -1,7 +1,6 @@
 from flask import Flask, url_for, render_template, g
-
 from config import Config
-from server_utils import get_alerts, get_neighboring_devices, get_db
+from .server_utils import get_alerts, get_neighboring_devices, get_db
 from src import run_config
 
 app = Flask(__name__)
