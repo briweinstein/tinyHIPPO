@@ -19,8 +19,9 @@ class Severity(IntEnum):
 
 
 class Alert:
-    def __init__(self, pkt=None, alert_description="", alert_type: AlertType = AlertType.UNKNOWN,
-                 alert_severity=Severity.INFO,
+    def __init__(self, pkt=None, alert_description="",
+                 alert_type: AlertType = AlertType.UNKNOWN,
+                 alert_severity: Severity = Severity.INFO,
                  is_destination=False):
         """
         Parses the given packet and extra information into a alert object
@@ -36,7 +37,7 @@ class Alert:
         self.device_ip = ""
         self.device_mac = ""
         self.type = alert_type
-        self.severity = int(alert_severity)
+        self.severity = alert_severity
 
         try:
             if pkt:
@@ -71,7 +72,7 @@ class Alert:
         """
         new_alert = Alerts(alert_type=self.type.value,
                            description=self.description,
-                           severity=self.severity)
+                           severity=self.severity.value)
         if self.device_mac:
             new_alert.mac_address = self.device_mac
             new_alert.payload = self.payload_info
