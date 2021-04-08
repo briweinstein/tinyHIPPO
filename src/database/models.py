@@ -76,9 +76,6 @@ class Alerts(Base, BaseModelMixin):
     device = relationship('DeviceInformation', back_populates='alerts')
     payload = Column(Text)
 
-    def __init__(self):
-        self.timestamp = str(datetime)
-
 
 class AnomalyEquations(Base, BaseModelMixin):
     """Model mapping a row of our AnomalyEquation table in our SQLite Database"""

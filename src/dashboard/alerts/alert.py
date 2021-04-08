@@ -72,7 +72,8 @@ class Alert:
         """
         new_alert = Alerts(alert_type=self.type.value,
                            description=self.description,
-                           severity=self.severity.value)
+                           severity=self.severity.value,
+                           timestamp=str(datetime.now()))
         if self.device_mac:
             new_alert.mac_address = self.device_mac
             new_alert.payload = self.payload_info
