@@ -43,9 +43,7 @@
 
     .content {
       padding: 0 18px;
-      max-height: 0;
       overflow: hidden;
-      transition: max-height 0.2s ease-out;
       background-color: #f1f1f1;
     }
 
@@ -97,29 +95,35 @@
 	}
 </script>
 
-{%for device in neighboring_devices%}
+<body>
+<h1>Configuration</h1>
+<div class="explanation">
+	<h2>Select the devices you wish to be checked using the IDS system</h2>
+</div>
+<p id="changes_saved" class="save_notification"></p>
+<form action="/ids-priv/settings/" method="post">
 <div>
     <div class="content">
         <table class="table">
             <tbody>
             <tr>
+                <th></th>
                 <th>IP Address</th>
                 <th>MAC Address</th>
                 <th>Interface</th>
             </tr>
+            {%for device in neighboring_devices%}
             <tr>
-                <th>{{device.ip}}</th>
-                <th>{{device.mac}}</th>
-                <th>{{device.interface}}</th>
+                <td><input type="checkbox" name="{{device.mac}}"></td>
+                <td>{{device.ip}}</td>
+                <td>{{device.mac}}</td>
+                <td>{{device.interface}}</td>
             </tr>
+            {% endfor %}
             </tbody>
         </table>
     </div>
+    <input type="submit" value="Save" class="save_button">
 </div>
-{% endfor %}
-<h1>Configuration</h1>
-<div class="explanation">
-	<h2>Select the devices you wish to be checked using the IDS system, then save</h2>
-</div>
-<button onclick="sendChanges()" class="save_button">Save</button>
-<p id="changes_saved" class="save_notification"> &nbsp; </p>
+</form>
+</body>

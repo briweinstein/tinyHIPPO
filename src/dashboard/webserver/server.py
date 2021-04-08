@@ -1,4 +1,4 @@
-from flask import Flask, render_template, g
+from flask import Flask, render_template, g, redirect, request
 from src import run_config
 from src.dashboard.webserver.server_utils import get_db, get_neighboring_devices, get_alerts
 
@@ -10,9 +10,11 @@ def init_db():
     g.db = get_db(run_config.db_file)
 
 
-@app.route('/ids-priv/settings/')
+@app.route('/ids-priv/settings/', methods=['GET', 'POST'])
 def settings():
     ip_neighbors = get_neighboring_devices()
+    if request.method == 'POST':
+        print(request.form)
     return render_template('config.html', neighboring_devices=ip_neighbors)
 
 
