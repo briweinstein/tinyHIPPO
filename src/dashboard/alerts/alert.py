@@ -19,7 +19,8 @@ class Severity(IntEnum):
 
 
 class Alert:
-    def __init__(self, pkt=None, alert_description="", alert_type=AlertType.UNKNOWN, alert_severity=Severity.INFO,
+    def __init__(self, pkt=None, alert_description="", alert_type: AlertType = AlertType.UNKNOWN,
+                 alert_severity=Severity.INFO,
                  is_destination=False):
         """
         Parses the given packet and extra information into a alert object
@@ -34,7 +35,7 @@ class Alert:
         self.device_name = ""
         self.device_ip = ""
         self.device_mac = ""
-        self.type = str(alert_type)
+        self.type = alert_type
         self.severity = int(alert_severity)
 
         try:
@@ -68,7 +69,7 @@ class Alert:
         Saves the alert to the SQLite Database
         :return: The alert object saved to the database as a model
         """
-        new_alert = Alerts(alert_type=self.type,
+        new_alert = Alerts(alert_type=self.type.value,
                            description=self.description,
                            severity=self.severity)
         if self.device_mac:
