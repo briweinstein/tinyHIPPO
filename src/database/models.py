@@ -69,7 +69,7 @@ class Alerts(Base, BaseModelMixin):
     __tablename__ = "alerts"
     id = Column(Integer, primary_key=True, nullable=False)
     alert_type = Column(Text, nullable=False)
-    timestamp = Column(DateTime, nullable=False, default=datetime.now())
+    timestamp = Column(DateTime, nullable=False, default=str(datetime.now()))
     description = Column(Text, nullable=False)
     severity = Column(Integer, nullable=False)
     mac_address = Column(VARCHAR(17), ForeignKey("device_information.mac_address"))

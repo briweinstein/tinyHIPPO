@@ -1,7 +1,7 @@
 CREATE TABLE alerts (
 	id                   integer NOT NULL  PRIMARY KEY,
 	alert_type           text CHECK (alert_type IN ('Privacy', 'IDS', 'System')) NOT NULL,
-	timestamp            datetime NOT NULL,
+	timestamp            text NOT NULL,
 	description          text NOT NULL,
 	severity             integer check (severity in (0, 1, 2)) NOT NULL,
 	mac_address          varchar(17),
