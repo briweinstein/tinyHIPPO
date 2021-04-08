@@ -13,6 +13,7 @@ from src.signature_detection.ip_signature import IPSignature
 from src.signature_detection.mac_address_signature import MACAddressSignature
 from src.signature_detection.signature_detector import SignatureDetector
 from src.dashboard.alerts.alert import Alert, Severity, AlertType
+from src.dashboard.webserver.server import app
 
 # TODO: Allow user to enable/disable certain rules
 rules_packet_privacy = [PacketPrivacyPort()]
@@ -94,7 +95,9 @@ def packet_parse(packet: Packet):
 
 
 # call main
-main()
+if __name__ == '__main__':
+    app.run()
+    main()
 
 # Sources:
 # https://linuxsecurityblog.com/2016/02/04/sniffing-access-points-and-mac-addresses-using-python/
