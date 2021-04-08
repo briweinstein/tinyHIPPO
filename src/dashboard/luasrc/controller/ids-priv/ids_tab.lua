@@ -10,8 +10,7 @@ module("luci.controller.ids-priv.ids_tab", package.seeall)  --notice that new_ta
     end
 
     function get_page(route)
-        local http = require("socket.http")
-        local body, code, headers, status = http.request("localhost:5000"..route)
+        local body, code, headers, status = luci.http.request("localhost:5000"..route)
         luci.http.prepare_content("text/html")
         luci.http.write(body)
     end
