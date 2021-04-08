@@ -10,7 +10,7 @@
       outline: none;
       font-size: 15px;
     }
-    
+
     th, td {
       padding: 8px;
       text-align: left;
@@ -36,11 +36,11 @@
 		font-size: large;
 		margin-bottom: 40px;
 	}
-    
+
     .active, .collapsible:hover {
       background-color: #555;
     }
-    
+
     .content {
       padding: 0 18px;
       max-height: 0;
@@ -49,7 +49,7 @@
       background-color: #f1f1f1;
     }
 
-    .notification_table {
+    .table {
       border-collapse: collapse;
       width: 100%;
     }
@@ -58,7 +58,7 @@
 <script>
 	function saveChanges() {
 	  var x = document.getElementById("changes_saved");
-	  x.innerText = "Changes saved"; 
+	  x.innerText = "Changes saved";
 	  fadeOut(x)
 	}
 
@@ -89,7 +89,7 @@
 				var row_id = selected_rows[i].classList[1];
 				config_json.mac_addrs.push(document.getElementsByClassName("mac " + row_id)[0].innerHTML)
 			}
-		} 
+		}
 
 		var config = JSON.stringify(config_json);
 		xmlhttp.send(config);
@@ -97,18 +97,29 @@
 	}
 </script>
 
-<%+header%>             
-<body style="width: 100%;height: 100%;">
-<iframe id="flask-server" src="//:5000/ids-priv/settings/" width="100%" height="100%"></iframe>
-</body>
-<script type="text/javascript">
-    var el = document.getElementById('flask-server');
-    el.src = window.location.origin + el.src.slice(2);
-</script>
-<h1><%:Configuration%></h1>
+{%for device in neighboring_devices%}
+<div>
+    <div class="content">
+        <table class="table">
+            <tbody>
+            <tr>
+                <th>IP Address</th>
+                <th>MAC Address</th>
+                <th>Interface</th>
+            </tr>
+            <tr>
+                <th>{{device.ip}}</th>
+                <th>{{device.mac}}</th>
+                <th>{{device.interface}}</th>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endfor %}
+<h1>Configuration</h1>
 <div class="explanation">
 	<h2>Select the devices you wish to be checked using the IDS system, then save</h2>
 </div>
 <button onclick="sendChanges()" class="save_button">Save</button>
-<p id="changes_saved" class="save_notification"> &nbsp; </p>                                           
-<%+footer%>
+<p id="changes_saved" class="save_notification"> &nbsp; </p>
