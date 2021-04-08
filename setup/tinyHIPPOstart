@@ -27,11 +27,9 @@ uci set luci.ccache.enable=0
 uci commit luci
 /etc/init.d/uhttpd restart
 
-# copy database setup file over
-
-
 # Create the sqlite database
 sqlite3 $TINYHIPPO_INSTALL_PATH/tinyHIPPO.db < $TINYHIPPO_INSTALL_PATH/tinyHIPPO_db_setup.sql
 
 # Start the actual program
-$TINYHIPPO_INSTALL_PATH/tiny_hippo_run.py
+$TINYHIPPO_INSTALL_PATH/tiny_hippo_run.py &
+$TINYHIPPO_INSTALL_PATH/src/dashboard/webserver/server.py &

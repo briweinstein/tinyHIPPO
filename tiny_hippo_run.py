@@ -4,7 +4,6 @@ from scapy.packet import Packet
 from scapy.layers.inet import Ether
 from src import run_config
 import re
-import threading
 from src.privacy_analysis.packet_analysis.packet_privacy_port import PacketPrivacyPort
 from src.privacy_analysis.system_analysis.system_privacy_dropbear_config import SystemPrivacyDropbearConfig
 from src.privacy_analysis.system_analysis.system_privacy_encryption import SystemPrivacyEncryption
@@ -101,8 +100,7 @@ def run_flask_app():
 
 # call main
 if __name__ == '__main__':
-    t1 = threading.Thread(target=run_flask_app).start()
-    t2 = threading.Thread(target=main).start()
+    main()
 
 # Sources:
 # https://linuxsecurityblog.com/2016/02/04/sniffing-access-points-and-mac-addresses-using-python/
