@@ -69,12 +69,15 @@ class Alerts(Base, BaseModelMixin):
     __tablename__ = "alerts"
     id = Column(Integer, primary_key=True, nullable=False)
     alert_type = Column(Text, nullable=False)
-    timestamp = Column(DateTime, nullable=False, default=str(datetime.now()))
+    timestamp = Column(Text, nullable=False)
     description = Column(Text, nullable=False)
     severity = Column(Integer, nullable=False)
     mac_address = Column(VARCHAR(17), ForeignKey("device_information.mac_address"))
     device = relationship('DeviceInformation', back_populates='alerts')
     payload = Column(Text)
+
+    def __init__(self):
+        self.timestamp = str(datetime)
 
 
 class AnomalyEquations(Base, BaseModelMixin):
