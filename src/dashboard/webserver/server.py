@@ -25,7 +25,3 @@ def ids_alerts():
 def privacy_alerts():
     all_alerts = get_alerts('Privacy', g.db)
     return render_template('alerts.htm', all_alerts=all_alerts, dashboard_title='Privacy')
-
-
-if __name__ == "__main__":
-    app.run(debug=True, host="0.0.0.0")

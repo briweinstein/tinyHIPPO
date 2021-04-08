@@ -32,4 +32,4 @@ sqlite3 $TINYHIPPO_INSTALL_PATH/tinyHIPPO.db < $TINYHIPPO_INSTALL_PATH/tinyHIPPO
 
 # Start the actual program
 $TINYHIPPO_INSTALL_PATH/tiny_hippo_run.py &
-python3 $TINYHIPPO_INSTALL_PATH/src/dashboard/webserver/server.py &
+$TINYHIPPO_INSTALL_PATH/run_flask.py &
