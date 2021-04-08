@@ -27,11 +27,11 @@ uci set luci.ccache.enable=0
 uci commit luci
 /etc/init.d/uhttpd restart
 
-# Create the alert_collection.json file
-touch $TINYHIPPO_INSTALL_PATH/alert_collection.json
+# copy database setup file over
+
 
 # Create the sqlite database
-sqlite3 $TINYHIPPO_INSTALL_PATH/tinyHIPPO.db < $TINYHIPPO_INSTALL_PATH/setup/tinyHIPPO_db_setup.sql
+sqlite3 $TINYHIPPO_INSTALL_PATH/tinyHIPPO.db < $TINYHIPPO_INSTALL_PATH/tinyHIPPO_db_setup.sql
 
 # Start the actual program
 $TINYHIPPO_INSTALL_PATH/tiny_hippo_run.py
