@@ -31,7 +31,7 @@ class BaseModelMixin:
             db.session.commit()
         except Exception as e:
             db.session.rollback()
-            run_config.log_event(f"Exception occurred when committing to the database: {e}")
+            run_config.log_event.info(f"Exception occurred when committing to the database: {e}")
 
     @classmethod
     def get_by_pk(cls, key, value):
