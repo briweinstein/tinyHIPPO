@@ -1,6 +1,6 @@
 from flask import Flask, render_template, g, request
 from src import run_config
-from src.dashboard.webserver.server_utils import get_db, get_neighboring_devices, get_alerts, devices_in_db
+from src.dashboard.webserver.server_utils import get_db, get_neighboring_devices, get_alerts
 from src.database.models import DeviceInformation
 
 app = Flask(__name__)
@@ -17,7 +17,7 @@ def settings():
     if request.method == 'POST':
         # insert unique devices into the database to be monitored by our IDS
         mac_addresses = {key for key in request.form.keys()}
-        existing_devices = set(devices_in_db(list(mac_addresses), g.db))
+        existing_devices = set(DeviceInformation.get_mac_addresses(g.db))
         new_devices_macs = mac_addresses - existing_devices
         new_devices = [neigh for neigh in ip_neighbors if neigh.mac in new_devices_macs]
         for item in new_devices:
@@ -34,7 +34,7 @@ def settings():
 
     return render_template('config.html',
                            neighboring_devices=ip_neighbors,
-                           existing_devices=DeviceInformation.get_mac_addresses())
+                           existing_devices=DeviceInformation.get_mac_addresses(g.db))
 
 
 @app.route('/ids-priv/ids-alerts/')

@@ -32,21 +32,13 @@ def get_neighboring_devices() -> List[NeighboringDevice]:
     """
     regex = r'(\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})\s[\w\d]+\s([\w\d-]+).*((?:[0-9a-fA-F]:?){12})'
     arp_results = subprocess.getoutput('ip neigh')
-
+    arp_results = [('192.168.168.26', 'br', '00:50:56:c0:00:02'), ('10.110.0.11', 'eth0', '00:00:5e:00:01:01'),
+                   ('192.168.168.225', 'br', '00:0c:29:4f:00:d5')]
+    # neighboring_devices = [NeighboringDevice(result[0], result[2], result[1]) for result in
+    #                        re.findall(regex, arp_results)]
     neighboring_devices = [NeighboringDevice(result[0], result[2], result[1]) for result in
-                           re.findall(regex, arp_results)]
+                           arp_results]
     return neighboring_devices
-
-
-def devices_in_db(mac_addresses: List[str], connection):
-    """
-    Returns all mac addresses in the given list that exist in the sqlite database
-    :param mac_addresses: Addresses to check against the database
-    :return: A list of mac addresses
-    """
-    return [val[0] for val in connection.session \
-        .query(DeviceInformation.mac_address) \
-        .filter(DeviceInformation.mac_address.in_(mac_addresses)).all()]
 
 
 def get_alerts(alert_type: str, connection) -> List[Alerts]:
