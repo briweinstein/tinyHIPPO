@@ -1,6 +1,6 @@
 from scapy.all import Packet
-from ..dao.sqlObject import sqlObject
-from ..dao.udp import UDP, table_sql as udp_table_sql
+from packet_analysis.sql.dao.sqlObject import sqlObject
+from packet_analysis.sql.dao.udp import UDP, table_sql as udp_table_sql
 
 def table_sql() -> str:
     return udp_table_sql() + \

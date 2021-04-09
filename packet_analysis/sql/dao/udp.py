@@ -1,6 +1,6 @@
 from scapy.all import Packet
-from ..dao.sqlObject import sqlObject
-from ..dao.ip import IP, table_sql as ip_table_sql
+from packet_analysis.sql.dao.sqlObject import sqlObject
+from packet_analysis.sql.dao.ip import IP, table_sql as ip_table_sql
 
 
 def table_sql() -> str:
