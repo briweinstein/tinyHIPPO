@@ -114,7 +114,12 @@
             </tr>
             {%for device in neighboring_devices%}
             <tr>
-                <td><input type="checkbox" name="{{device.mac}}"></td>
+                <td>
+                {%if device.mac in existing_devices%}
+                    <input type="checkbox" name="{{device.mac}}" checked>
+                {%else}}
+                    <input type="checkbox" name="{{device.mac}}">
+                </td>
                 <td>{{device.ip}}</td>
                 <td>{{device.mac}}</td>
                 <td>{{device.interface}}</td>

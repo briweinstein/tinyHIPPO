@@ -25,7 +25,9 @@ def settings():
                                   name="placeholder",
                                   ip_address=item.ip)
             DeviceInformation.insert_new_object(d)
-    return render_template('config.html', neighboring_devices=ip_neighbors)
+    return render_template('config.html',
+                           neighboring_devices=ip_neighbors,
+                           existing_devices=DeviceInformation.get_mac_addresses())
 
 
 @app.route('/ids-priv/ids-alerts/')
