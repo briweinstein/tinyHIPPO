@@ -16,10 +16,10 @@ class ScanningPrivacyNmapPassive(ScanningPrivacy):
     def __call__(self, ip_to_mac):
         ip_list = list(ip_to_mac.keys())
         # Scan
-        nm = nmap.PortScanner()
+        self.nm = nmap.PortScanner()
         try:
-            results_top = nm.scan(hosts=" ".join(ip_list), arguments="-sT -sU -F")
-            results_specific = nm.scan(hosts=" ".join(ip_list), arguments="-sT -p 194")
+            results_top = self.nm.scan(hosts=" ".join(ip_list), arguments="-sT -sU -F")
+            results_specific = self.nm.scan(hosts=" ".join(ip_list), arguments="-sT -p 194")
         except Exception as e:
             run_config.log_event.info("Exception raised, passive nmap scan failed: " + str(e))
             return
