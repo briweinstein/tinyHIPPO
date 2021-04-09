@@ -25,6 +25,12 @@ def settings():
                                   name="placeholder",
                                   ip_address=item.ip)
             DeviceInformation.insert_new_object(d)
+        # remove devices that were unchecked
+        devices_to_delete = [DeviceInformation.get_by_pk(DeviceInformation.mac_address, mac_address) for mac_address in
+                             existing_devices - mac_addresses]
+        for device in devices_to_delete:
+            device.delete()
+
     return render_template('config.html',
                            neighboring_devices=ip_neighbors,
                            existing_devices=DeviceInformation.get_mac_addresses())

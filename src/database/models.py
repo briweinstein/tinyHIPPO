@@ -10,54 +10,54 @@ class BaseModelMixin:
     """Base class with default functionality for all models"""
 
     @classmethod
-    def insert_new_object(cls, model_object: Base, commit=True):
+    def insert_new_object(cls, model_object: Base, commit=True, conn=db):
         """
         Adds this model object to the session and optionally commits to the database
         :param model_object: Object to add to the database
         :param commit: Whether to commit to the database after adding the model object
         :return: Object that was inserted
         """
-        db.session.add(model_object)
+        conn.session.add(model_object)
         if commit:
             model_object.safe_commit()
         else:
             return model_object
 
     @staticmethod
-    def safe_commit():
+    def safe_commit(conn=db):
         """Tries to commit to this database session and rolls back if an error occurs"""
         try:
-            db.session.commit()
+            conn.session.commit()
         except Exception as e:
-            db.session.rollback()
+            conn.session.rollback()
             run_config.log_event.info(f"Exception occurred when committing to the database: {e}")
 
     @classmethod
-    def get_by_pk(cls, key, value):
+    def get_by_pk(cls, key, value, conn=db):
         """
         Returns the first model object that matches the given primary key's value
         :param key: The primary key to check against (IE alert_id, mac_address)
         :param value: The value tied to the primary key to fetch from the table
         :return: The corresponding model object
         """
-        return db.session.query(cls).filter(key == value).first()
+        return conn.session.query(cls).filter(key == value).first()
 
     @staticmethod
-    def get_many(key):
+    def get_many(key, conn=db):
         """
         Queries database for all items with the given key
         :param key: Model key to return
         :return: Objects with the given key
         """
-        return db.session.query(key).all()
+        return conn.session.query(key).all()
 
-    def delete(self, with_commit=True):
+    def delete(self, with_commit=True, conn=db):
         """
         Deletes this entry from the database with the option to commit the changes
         :param with_commit: Whether to commit to the database
         :return: The object deleted
         """
-        db.session.delete(self)
+        conn.session.delete(self)
         if with_commit:
             self.safe_commit()
         return self
@@ -72,12 +72,12 @@ class DeviceInformation(Base, BaseModelMixin):
     alerts = relationship('Alerts', back_populates='device')
 
     @staticmethod
-    def get_mac_addresses():
+    def get_mac_addresses(conn=db):
         """
         Returns a list of all mac addresses currently in the database
         :return: List of mac addresses
         """
-        return [item[0] for item in DeviceInformation.get_many(DeviceInformation.mac_address)]
+        return [item[0] for item in DeviceInformation.get_many(DeviceInformation.mac_address, conn)]
 
 
 class Alerts(Base, BaseModelMixin):
