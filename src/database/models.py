@@ -83,7 +83,7 @@ class DeviceInformation(Base, BaseModelMixin):
 class Alerts(Base, BaseModelMixin):
     """Model mapping a row of our Alerts table in our SQLite Database"""
     __tablename__ = "alerts"
-    id = Column(Integer, primary_key=True, nullable=False)
+    id = Column(Integer, primary_key=True, nullable=False, autoincrement=True)
     alert_type = Column(Text, nullable=False)
     timestamp = Column(Text, nullable=False)
     description = Column(Text, nullable=False)

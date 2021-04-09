@@ -54,44 +54,8 @@
 </style>
 
 <script>
-    function saveChanges() {
-        var x = document.getElementById("changes_saved");
-        x.innerText = "Changes saved";
-        fadeOut(x)
-    }
-
-    function fadeOut(element) {
-        var op = 1;  // initial opacity
-        var timer = setInterval(function () {
-            if (op <= 0.1) {
-                clearInterval(timer);
-            }
-            element.style.opacity = op;
-            op -= 0.1;
-        }, 200);
-    }
-
-    function sendChanges() {
-        var xmlhttp = new XMLHttpRequest();
-        xmlhttp.open("POST", "/cgi-bin/luci/admin/ids_tab/config/save");
-        xmlhttp.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
-
-        var config_json = {};
-        config_json.mac_addrs = []
-
-        // Build content from form via checked rows
-        var selected_rows = document.getElementsByClassName("row_selector");
-        var i;
-        for (i = 0; i < selected_rows.length; i++) {
-            if (selected_rows[i].checked) {
-                var row_id = selected_rows[i].classList[1];
-                config_json.mac_addrs.push(document.getElementsByClassName("mac " + row_id)[0].innerHTML)
-            }
-        }
-
-        var config = JSON.stringify(config_json);
-        xmlhttp.send(config);
-        saveChanges()
+    function disableChangesSaveText(){
+        document.getElementById("changes_saved").style.display="none";
     }
 </script>
 
@@ -100,7 +64,7 @@
 <div class="explanation">
     <h2>Select the devices you wish to be checked using the IDS system</h2>
 </div>
-<p id="changes_saved" class="save_notification"></p>
+<p id="changes_saved" class="save_notification">Changes saved!</p>
 <form action="/ids-priv/settings/" method="post">
     <div>
         <div class="content">
@@ -129,7 +93,7 @@
                 </tbody>
             </table>
         </div>
-        <input type="submit" value="Save" class="save_button">
+        <input onclick="disableChangesSaveText()" type="submit" value="Save" class="save_button">
     </div>
 </form>
 </body>
