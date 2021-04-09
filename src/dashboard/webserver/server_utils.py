@@ -30,7 +30,7 @@ def get_neighboring_devices() -> List[NeighboringDevice]:
     Retrieves a list of all neighboring devices and returns them as a dictionary
     :return: List of NeighboringDevices
     """
-    regex = r'(\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})\s[\w\d]+\s([\w\d]+).*((?:[0-9a-fA-F]:?){12})'
+    regex = r'(\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})\s[\w\d]+\s([\w\d-]+).*((?:[0-9a-fA-F]:?){12})'
     arp_results = subprocess.getoutput('ip neigh')
 
     neighboring_devices = [NeighboringDevice(result[0], result[2], result[1]) for result in
