@@ -12,7 +12,7 @@ if TYPE_CHECKING:
 SMTP_SERVER = CONFIG.email.smtp_server
 EMAIL_ACCOUNT = CONFIG.email.email_account
 EMAIL_KEY = CONFIG.email.email_password
-RECIPIENT_EMAIL = CONFIG.email.recipient_emails
+RECIPIENT_EMAILS = CONFIG.email.recipient_emails
 
 PORT = 587  # For starttls
 
@@ -35,12 +35,12 @@ def send_message(msg):
         message = MIMEMultipart("alternative")
         message["Subject"] = "Tiny HIPPO IDS - OpenWrt Email Alert"
         message["From"] = 'OpenWrt Alerting System'
-        message["To"] = RECIPIENT_EMAIL
+        message["To"] = ",".join(RECIPIENT_EMAILS)
         part1 = MIMEText(msg, 'plain')
         part2 = MIMEText(msg, 'html')
         message.attach(part1)
         message.attach(part2)
-        server.sendmail(EMAIL_ACCOUNT, RECIPIENT_EMAIL, message.as_string())
+        server.sendmail(EMAIL_ACCOUNT, RECIPIENT_EMAILS, message.as_string())
         server.quit()
         print('Email was sent successfully')
     except Exception as e:
