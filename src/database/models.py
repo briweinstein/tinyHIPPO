@@ -1,6 +1,5 @@
-from sqlalchemy import Column, Integer, String, ForeignKey, DateTime, Text, VARCHAR
+from sqlalchemy import Column, Integer, String, ForeignKey, Text, VARCHAR
 from sqlalchemy.ext.declarative import declarative_base
-from datetime import datetime
 from sqlalchemy.orm import relationship
 from src import db, run_config
 
