@@ -43,6 +43,15 @@ class BaseModelMixin:
         """
         return db.session.query(cls).filter(key == value).first()
 
+    @staticmethod
+    def get_many(key):
+        """
+        Queries database for all items with the given key
+        :param key: Model key to return
+        :return: Objects with the given key
+        """
+        return db.session.query(key).all()
+
     def delete(self, with_commit=True):
         """
         Deletes this entry from the database with the option to commit the changes
@@ -62,6 +71,14 @@ class DeviceInformation(Base, BaseModelMixin):
     name = Column(String(256))
     ip_address = Column(String(256))
     alerts = relationship('Alerts', back_populates='device')
+
+    @staticmethod
+    def get_mac_addresses():
+        """
+        Returns a list of all mac addresses currently in the database
+        :return: List of mac addresses
+        """
+        return [item[0] for item in DeviceInformation.get_many(DeviceInformation.mac_address)]
 
 
 class Alerts(Base, BaseModelMixin):

@@ -26,7 +26,6 @@ class Config:
         with open(config_path) as f:
             config_json = json.load(f)
         self.email = ConfigEmail(**config_json["email"])
-        self.mac_addrs = config_json["mac_addrs"]
         self.alert_collection_path = self._absolute_path('alert_collection.json')
         self.db_file = self._absolute_path('tinyHIPPO.db')
         self.virustotal_api_key = config_json["virustotal_api_key"]

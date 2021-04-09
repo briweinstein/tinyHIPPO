@@ -5,6 +5,8 @@ from src.dashboard.alerts.alert import Alert, AlertType, Severity
 from scapy.layers.inet import Ether, IP
 from src import run_config
 from unittest.mock import patch
+
+from src.database.models import DeviceInformation
 from src.signature_detection.signature_detector import SignatureDetector
 from src.signature_detection.ip_signature import IPSignature
 from src.signature_detection.mac_address_signature import MACAddressSignature
@@ -33,7 +35,7 @@ class TestMainLoop(unittest.TestCase):
             triggered_rules = self.signature_detector.check_signatures(packet)
             if len(triggered_rules) > 0:
                 for triggered_rule in triggered_rules:
-                    is_dst = packet[Ether].src in run_config.mac_addrs
+                    is_dst = packet[Ether].src in DeviceInformation.get_mac_addresses()
                     alert_object = Alert(packet, triggered_rule.msg, AlertType.IDS, Severity.ALERT, is_dst)
                     return alert_object.alert()
 

@@ -1,6 +1,7 @@
-from flask import Flask, render_template, g, redirect, request
+from flask import Flask, render_template, g, request
 from src import run_config
-from src.dashboard.webserver.server_utils import get_db, get_neighboring_devices, get_alerts
+from src.dashboard.webserver.server_utils import get_db, get_neighboring_devices, get_alerts, devices_in_db
+from src.database.models import DeviceInformation
 
 app = Flask(__name__)
 
@@ -14,7 +15,16 @@ def init_db():
 def settings():
     ip_neighbors = get_neighboring_devices()
     if request.method == 'POST':
-        print(request.form)
+        # insert unique devices into the database to be monitored by our IDS
+        mac_addresses = {key for key in request.form.keys()}
+        existing_devices = set(devices_in_db(list(mac_addresses), g.db))
+        new_devices_macs = mac_addresses - existing_devices
+        new_devices = [neigh for neigh in ip_neighbors if neigh.mac in new_devices_macs]
+        for item in new_devices:
+            d = DeviceInformation(mac_address=item.mac,
+                                  name="placeholder",
+                                  ip_address=item.ip)
+            DeviceInformation.insert_new_object(d)
     return render_template('config.html', neighboring_devices=ip_neighbors)
 
 
