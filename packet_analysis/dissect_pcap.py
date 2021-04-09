@@ -12,18 +12,7 @@ from scapy.all import Packet
 from packet_analysis.sql.dao import *
 from packet_analysis.sql.dao import sqlObject
 from packet_analysis.sql.csv.csv_builder import CSVBuilder
-from packet_analysis.sql.sql_insert import table_bindings, create_connection, bulk_insert
-
-
-
-# TODO: A formal list
-todo = ("\n"
-        "    1) Use the signature models for anomaly detection to pick n choose the required data\n"
-        "    2) Build and populate a SQL database structure to house this data\n"
-        "    3) Build an analysis program to extract equations from the database\n"
-        "    4) Build signatures from this equation\n"
-        "    5) Finish the engine's implementation of these signatures\n"
-        "    6) Tweak as necessary\n")
+from packet_analysis.sql.sql_helper import table_bindings, create_connection, bulk_insert
 
 csv_collection = None
 
@@ -74,21 +63,29 @@ def alert_pkt(pkt: Packet):
         csv_collection.add_entry(str_layer, sql_dao.csv())
 
 def main(argv):
-    # Make sure a file is specified
-    if len(argv) < 1:
-        print("No PCAP files specified, please run the command "
-              "./pcap_analysis [path-to-file] [path-to-another-file] ...")
-        return -1
-
     first_time = time.time()
     print("*" * 50)
     conn = create_connection("D:/Semester 6/Capstone/DB/analysis.db")
 
-    for path in argv[1:]:
-        analyze_pcap_file(path)
-        print("*" * 50)
-        print("Inserting int SQL-DB")
-        bulk_insert(conn, csv_collection.sql_objects)
+    if len(argv) < 2:
+        paths = []
+        for subdir, dirs, files in os.walk(r'D:\Semester 6\Capstone\routerPCAP\Capstone-pcaps'):
+            for filename in files:
+                filepath = subdir + os.sep + filename
+                if filepath.endswith(".00") or filepath.endswith(".01") or filepath.endswith(".02") or filepath.endswith(".03") or filepath.endswith(".04") or filepath.endswith(".05") or filepath.endswith(".06"):
+                    paths.append(filepath)
+                    print("Found PCAP: " + str(filepath))
+    else:
+        paths = argv[1:]
+
+    for path in paths:
+        try:
+            analyze_pcap_file(path)
+            bulk_insert(conn, csv_collection.sql_objects)
+        except:
+            print("*" * 50)
+            print("Error in processing PCAP, moving forward")
+            print("*" * 50)
 
     elapsed_time = time.time() - first_time
     print("*" * 50)

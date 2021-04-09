@@ -2,7 +2,7 @@ import sqlite3
 from sqlite3 import Error
 
 # All data access objects from __inti__.py -> __all__
-from .dao import *
+from packet_analysis.sql.dao import *
 
 # Bindings for table creation SQL
 table_bindings = {
@@ -18,6 +18,11 @@ table_bindings = {
 }
 
 def create_connection(path):
+    """
+    Create a connection to the DB at the given path
+    :param path: Path to .db file
+    :return: sqlite3.Connection
+    """
     connection = None
     try:
         connection = sqlite3.connect(path)
@@ -27,6 +32,12 @@ def create_connection(path):
     return connection
 
 def bulk_insert(conn: sqlite3.Connection, csv_collection: dict):
+    """
+    Bulk insert data created from the CSVBuilder
+    :param conn: DB connection
+    :param csv_collection: {} built from CSVBuilder
+    :return: None
+    """
     # Make sure the tables are present
     for table in csv_collection:
         cursor = conn.cursor()
@@ -41,9 +52,36 @@ def bulk_insert(conn: sqlite3.Connection, csv_collection: dict):
         sql_query = "INSERT INTO {0} VALUES({1})".format(
             str(table), ("?, " * length)[:-2]
         )
-        print("SQL: " + sql_query)
-        print("Data: " + str(data[0]))
         cursor = conn.cursor()
         cursor.executemany(sql_query, data)
         conn.commit()
         cursor.close()
+
+def get_values(conn: sqlite3.Connection, table: str, columns: list, conditions: list) -> list:
+    """
+    Returns values from the DB based on the given parameters
+    :param conn: Connection to the DB
+    :param table: Table name
+    :param columns: Specific columns to be returned (SELECT clause parameters)
+    :param conditions: WHERE clause conditions in the form of [ "a = b" , ... ] -> WHERE a = b AND ...
+    :return: list
+    """
+    # Format the fill query
+    sql_str = "SELECT {0} FROM {1} WHERE {2};".format(",".join(columns), table, " AND ".join(conditions))
+
+    # Execute and retrieve rows
+    cursor = conn.cursor()
+    cursor.execute(sql_str)
+    rows = cursor.fetchall()
+    cursor.close()
+    return rows
+
+def get_count(conn: sqlite3.Connection, table: str, conditions: list) -> int:
+    """
+    Get the count of rows returned based on the given conditions
+    :param conn: Connection to the DB
+    :param table: Table name
+    :param conditions: WHERE clause conditions in the form of [ "a = b" , ... ] -> WHERE a = b AND ...
+    :return: Number of rows returned
+    """
+    return get_values(conn, table, ["COUNT(*)"], conditions)[0][0]
