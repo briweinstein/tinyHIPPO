@@ -1,4 +1,7 @@
 class CSVBuilder:
+    """
+    Class used to build a collection of "CSV's" used to bulk insert into the DB
+    """
     def __init__(self):
         self.sql_objects = {}
 

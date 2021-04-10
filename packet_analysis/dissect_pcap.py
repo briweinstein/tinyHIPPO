@@ -1,8 +1,5 @@
-#!/usr/bin/python
-import os
+#!/usr/bin/python3
 import sys
-
-sys.path.insert(0, os.path.abspath(".."))
 import re
 import time
 from pathlib import Path
@@ -17,20 +14,37 @@ from packet_analysis.sql.sql_helper import table_bindings, create_connection, bu
 csv_collection = None
 
 def analyze_pcap_file(path: str):
+    """
+    Method called per PCAP file to collect data
+    :param path: Path to the PCAP file
+    :return: None
+    """
     global csv_collection
     csv_collection = CSVBuilder()
     correct_path = Path(path)
     print("*" * 50)
     print("Sniffing packets of: " + str(correct_path))
-    sniff(offline=str(correct_path), prn=alert_pkt, store=False)
+    sniff(offline=str(correct_path), prn=packet_handler, store=False)
 
 
 def pull_layer(layer):
+    """
+    Pulls string descriptor from layer object of scapy Packet object
+    :param layer: scapy Layer object
+    :return: string
+    """
     class_desc = str(layer).split('.')
     return re.match(r"^[^']*", class_desc[len(class_desc) - 1]).group(0)
 
 
 def deconstruct_packet(pkt_type: str, pkt: Packet) -> sqlObject:
+    """
+    Deconstructs the packet based on its type.
+    :param pkt_type: Type of packet being analyzed
+    :param pkt: The packet object itself
+    :return: sqlObject that can be inserted into the DB
+    """
+    # Switch statement keyed on pkt_type
     switcher = {
         "ARP": lambda p: arp.ARP(p),
         "DHCP": lambda p: dhcp.DHCP(p),
@@ -46,37 +60,40 @@ def deconstruct_packet(pkt_type: str, pkt: Packet) -> sqlObject:
     return switcher[pkt_type](pkt)
 
 
-def alert_pkt(pkt: Packet):
-    # Layer separation
-    pkt_layers = pkt.layers()
-
-    # MAC Address Parsing
-    # TODO: Allow for MAC address filtering (Current PCAPs don't require it since all devices are IOT)
-
+def packet_handler(pkt: Packet):
+    """
+    Handles the basic filtering for the packet, collections information if possible
+    :param pkt: Packet to be analyzed
+    :return: None
+    """
     # Pull out the outer most layer of the PKT
     str_layer = pull_layer(pkt.layers()[-1])
     if str_layer == "Raw":
         str_layer = pull_layer(pkt.layers()[-2])
 
+    # If system can handle to packet, analyze it
     if str_layer in table_bindings.keys():
         sql_dao = deconstruct_packet(str_layer, pkt)
         csv_collection.add_entry(str_layer, sql_dao.csv())
 
 def main(argv):
+    """
+    Entry point for the program, handles arguments as paths to the PCAPs
+    :param argv: Arguments for program
+    :return:
+    """
+    call_info = "\"python(3) dissect_pcap.py Path/to/database.db [Path/to/file.pcap] ... \"."
     first_time = time.time()
     print("*" * 50)
-    conn = create_connection("D:/Semester 6/Capstone/DB/analysis.db")
-
     if len(argv) < 2:
-        paths = []
-        for subdir, dirs, files in os.walk(r'D:\Semester 6\Capstone\routerPCAP\Capstone-pcaps'):
-            for filename in files:
-                filepath = subdir + os.sep + filename
-                if filepath.endswith(".00") or filepath.endswith(".01") or filepath.endswith(".02") or filepath.endswith(".03") or filepath.endswith(".04") or filepath.endswith(".05") or filepath.endswith(".06"):
-                    paths.append(filepath)
-                    print("Found PCAP: " + str(filepath))
+        raise Exception("No path to DB detected. Please specify with: " + call_info)
     else:
-        paths = argv[1:]
+        conn = create_connection(argv[1])
+
+    if len(argv) < 3:
+        raise Exception("No PCAP files specified. Please specify with: " + call_info)
+    else:
+        paths = argv[2:]
 
     for path in paths:
         try:
@@ -94,8 +111,6 @@ def main(argv):
     print("Hours:   " + str((elapsed_time / 3600) % 86400))
     print("Minutes: " + str((elapsed_time / 60) % 3600))
     print("Seconds: " + str(elapsed_time % 60))
-
-    return 1
 
 
 if __name__ == "__main__":

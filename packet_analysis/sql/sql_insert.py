@@ -18,6 +18,11 @@ table_bindings = {
 }
 
 def create_connection(path):
+    """
+    Creates a connection to the DB at the given path
+    :param path: String of the path to the .db file
+    :return: A SQLite connection
+    """
     connection = None
     try:
         connection = sqlite3.connect(path)
@@ -27,6 +32,12 @@ def create_connection(path):
     return connection
 
 def bulk_insert(conn: sqlite3.Connection, csv_collection: dict):
+    """
+    Bulk inserts data in the SQLite database
+    :param conn: The connection object
+    :param csv_collection: The collection of data to be inserted
+    :return: None
+    """
     # Make sure the tables are present
     for table in csv_collection:
         cursor = conn.cursor()

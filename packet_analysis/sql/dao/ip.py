@@ -4,6 +4,10 @@ from packet_analysis.sql.dao.ethernet import Ethernet, table_sql as ethernet_tab
 
 
 def table_sql() -> str:
+    """
+    Constructs the necessary parameters for the table building as a string
+    :return: str
+    """
     return ethernet_table_sql() + \
            """,
               src_ip   STRING (64) NOT NULL,
@@ -11,6 +15,9 @@ def table_sql() -> str:
               v6       BOOLEAN     NOT NULL"""
 
 class IP(sqlObject):
+    """
+    Object holding the information for an IP header
+    """
     def __init__(self, pkt: Packet):
         self.ether = Ethernet(pkt)
         if "IP" in pkt:
@@ -24,4 +31,8 @@ class IP(sqlObject):
         self.dst_ip = pkt[key].dst
 
     def csv(self):
+        """
+        Creates a list of the arguments required for an INSERT statement
+        :return: list
+        """
         return self.ether.csv() + [str(self.src_ip), str(self.dst_ip), str(self.v6)]

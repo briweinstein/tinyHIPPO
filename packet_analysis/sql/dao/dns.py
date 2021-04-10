@@ -4,6 +4,10 @@ from packet_analysis.sql.dao.udp import UDP, table_sql as udp_table_sql
 from packet_analysis.sql.dao.tcp import TCP, table_sql as udp_table_sql
 
 def table_sql() -> str:
+    """
+    Constructs the necessary parameters for the table building as a string
+    :return: str
+    """
     return udp_table_sql() + \
            """,
               is_tcp   BOOLEAN     NOT NULL,
@@ -12,6 +16,9 @@ def table_sql() -> str:
               qclass   STRING (40) NOT NULL"""
 
 class DNS(sqlObject):
+    """
+     Object representing the information for the DNS information of a packet
+    """
     def __init__(self, pkt: Packet):
         if "TCP" in pkt:
             self.udp_tcp = TCP(pkt)
@@ -21,7 +28,6 @@ class DNS(sqlObject):
             self.is_tcp = False
 
         # Get question record
-        # TODO: Separate DNS-QR and DNS-AR
         question_record = pkt["DNS"].qd
         if question_record:
             self.qname = question_record.qname
@@ -33,4 +39,8 @@ class DNS(sqlObject):
             self.qclass = ""
 
     def csv(self):
+        """
+        Creates a list of the arguments required for an INSERT statement
+        :return: list
+        """
         return self.udp_tcp.csv() + [str(self.is_tcp), str(self.qname), str(self.qtype), str(self.qclass)]

@@ -19,4 +19,9 @@ def pull_layer(layer):
 class AbstractTrafficSignature(abc.ABC):
     @abc.abstractmethod
     def __call__(self, packet: Packet):
+        """
+
+        :param packet:
+        :return:
+        """
         raise NotImplementedError
