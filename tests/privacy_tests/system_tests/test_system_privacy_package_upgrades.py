@@ -18,7 +18,7 @@ class TestSystemPrivacyEncryption(unittest.TestCase):
         SystemPrivacyPackageUpgrades()()
         mock_popen.return_value.stdout.close()
 
-        mock_alert.assert_called_once()
+        self.assertEqual(1, mock_alert.call_count)
 
     @um.patch("src.dashboard.alerts.alert.Alert.alert")
     @um.patch("subprocess.Popen")
@@ -29,11 +29,7 @@ class TestSystemPrivacyEncryption(unittest.TestCase):
         SystemPrivacyPackageUpgrades()()
         mock_popen.return_value.stdout.close()
 
-        try:
-            mock_alert.assert_called()
-            self.assertTrue(False)
-        except:
-            self.assertTrue(True)
+        self.assertEqual(0, mock_alert.call_count)
 
     def tearDown(self) -> None:
         self.mock_stdout.close()

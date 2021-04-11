@@ -31,7 +31,6 @@ class PacketPrivacyPort(PacketPrivacy):
                 self.__scan_plaintext(proto_type)
 
             # Monitor suspicious ports
-            print("Monitoring suspicious ports")
             if self.packet[proto_type].dport in suspicious_ports:
                 alert_suspicious_ports = Alert(None, "Suspicious destination port used: " +
                                                str(self.packet[proto_type].dport), ALERT_TYPE.PRIVACY, SEVERITY.WARN)
@@ -66,9 +65,7 @@ class PacketPrivacyPort(PacketPrivacy):
 
     # Scan the plaintext for privacy leaks
     def __regex_alert(self, regex_string, alert_string):
-        print(self.payload)
         if re.search(regex_string, self.payload):
-            print("regex found")
             alert_search_email = Alert(None, alert_string, ALERT_TYPE.PRIVACY, SEVERITY.ALERT)
             alert_search_email.alert()
 
