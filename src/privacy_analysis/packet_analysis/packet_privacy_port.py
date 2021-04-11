@@ -46,8 +46,7 @@ class PacketPrivacyPort(PacketPrivacy):
             return
 
         # Use a regex to look for credit cards
-        self.__regex_alert(r'(?:[0-9]{4}-){3}[0-9]{4}|[0-9]{16}', "Credit card information found in a plaintext "
-                                                                  "packet.")
+        self.__regex_alert("(?:[0-9]{4}-){3}[0-9]{4}|[0-9]{16}", "Credit card information found in a plaintext packet.")
 
         # Use a regex to look for SSNs
         self.__regex_alert(r'^(?!000|.+0{4})(?:\d{9}|\d{3}-\d{2}-\d{4})$', "SSN information found in a plaintext "
@@ -66,8 +65,7 @@ class PacketPrivacyPort(PacketPrivacy):
 
     # Scan the plaintext for privacy leaks
     def __regex_alert(self, regex_string, alert_string):
-        search_results = re.search(regex_string, self.payload)
-        if search_results:
+        if re.search(regex_string, str(self.payload)):
             alert_search_email = Alert(self.packet, alert_string, ALERT_TYPE.PRIVACY, SEVERITY.ALERT)
             alert_search_email.alert()
 
