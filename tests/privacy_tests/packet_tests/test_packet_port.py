@@ -42,6 +42,12 @@ class TestIPSignature(unittest.TestCase):
         self.assertEqual(2, mock_alert.call_count)
 
     @um.patch("src.dashboard.alerts.alert.Alert.alert")
+    def test_port_80_credit_card3(self, mock_alert):
+        # Plaintext data: 1234-1234-1234-1234
+        self.process_pcap_alert("credit_card3.pcap")
+        self.assertEqual(2, mock_alert.call_count)
+
+    @um.patch("src.dashboard.alerts.alert.Alert.alert")
     def test_port_80_credit_card_benign1(self, mock_alert):
         # Plaintext data: Hello World, not-a-credit-card=12-22-1234-1234-55, Hello World
         self.process_pcap_alert("credit_card_benign1.pcap")
@@ -49,8 +55,14 @@ class TestIPSignature(unittest.TestCase):
 
     @um.patch("src.dashboard.alerts.alert.Alert.alert")
     def test_port_80_credit_card_benign2(self, mock_alert):
-        # Plaintext data: Hello World,, Hello World
+        # Plaintext data: Hello World, 123456789012345678901234567890, Hello World
         self.process_pcap_alert("credit_card_benign2.pcap")
+        self.assertEqual(1, mock_alert.call_count)
+
+    @um.patch("src.dashboard.alerts.alert.Alert.alert")
+    def test_port_80_credit_card_benign3(self, mock_alert):
+        # Plaintext data: 123456789012345678901234567890
+        self.process_pcap_alert("credit_card_benign3.pcap")
         self.assertEqual(1, mock_alert.call_count)
 
     @um.patch("src.dashboard.alerts.alert.Alert.alert")
@@ -63,6 +75,12 @@ class TestIPSignature(unittest.TestCase):
     def test_port_80_ssn2(self, mock_alert):
         # Plaintext data: Hello World, 123121234, Hello World
         self.process_pcap_alert("ssn2.pcap")
+        self.assertEqual(2, mock_alert.call_count)
+
+    @um.patch("src.dashboard.alerts.alert.Alert.alert")
+    def test_port_80_ssn3(self, mock_alert):
+        # Plaintext data: 123121234
+        self.process_pcap_alert("ssn3.pcap")
         self.assertEqual(2, mock_alert.call_count)
 
     @um.patch("src.dashboard.alerts.alert.Alert.alert")
