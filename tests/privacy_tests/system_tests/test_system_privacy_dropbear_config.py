@@ -5,7 +5,6 @@ from tests.privacy_tests.system_tests.system_helper import assert_failed
 
 
 class TestSystemPrivacyDropbearConfig(unittest.TestCase):
-
     @um.patch("src.dashboard.alerts.alert.Alert.alert")
     def test_dropbear_config_root_only(self, mock_alert):
         with um.patch("builtins.open", um.mock_open(read_data="GARBAGE DATA\noption RootPasswordAuth 'on'\nGARBAGE "
