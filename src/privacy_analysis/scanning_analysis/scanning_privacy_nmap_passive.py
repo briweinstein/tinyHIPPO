@@ -46,13 +46,11 @@ class ScanningPrivacyNmapPassive(ScanningPrivacy):
         if port_type in results[ip]:
             for port in results[ip][port_type]:
                 if port not in ports_allow:
-                    print(f'Suspicious open {port_type.upper()} port found: {str(port)} on device with MAC address {mac}.')
                     alert_obj = Alert(None, f'Suspicious open {port_type.upper()} port found: {str(port)} on device '
                                             f'with MAC address {mac}. Further investigation recommended.',
                                       ALERT_TYPE.PRIVACY, SEVERITY.INFO)
                     alert_obj.alert()
                 if port in ports_severe_alert:
-                    print(f'Severe open {port_type.upper()} port found: {str(port)} on device with MAC address {mac}.')
                     alert_obj = Alert(None, f'Very suspicious open {port_type.upper()} port found: {str(port)} on '
                                             f'device with MAC address {mac}. Further investigation required.',
                                       ALERT_TYPE.PRIVACY, SEVERITY.ALERT)
