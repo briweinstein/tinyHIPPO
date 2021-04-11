@@ -34,43 +34,45 @@ class PacketPrivacyPort(PacketPrivacy):
             print("Monitoring suspicious ports")
             if self.packet[proto_type].dport in suspicious_ports:
                 alert_suspicious_ports = Alert(None, "Suspicious destination port used: " +
-                                               self.packet[proto_type].dport, ALERT_TYPE.PRIVACY, SEVERITY.WARN)
+                                               str(self.packet[proto_type].dport), ALERT_TYPE.PRIVACY, SEVERITY.WARN)
                 alert_suspicious_ports.alert()
 
     # Scan the plaintext for privacy leaks
     def __scan_plaintext(self, proto_type):
         # Try to get the payload
         try:
-            self.payload = self.packet[proto_type].payload
+            self.payload = str(self.packet[proto_type].payload)
         except:
             return
 
-        # Use a regex to look for credit cards
-        self.__regex_alert(r'(?:[0-9]{4}-){3}[0-9]{4}|[0-9]{16}', "Credit card information found in a plaintext "
-                                                                  "packet.")
+        # TODO: There is a huge chance for false positives with credit cards and SSNs, because they're just numbers
+        # TODO: Should we include them?
+        # Use a regex to look for credit cards, needs a non-number before and after the numbers
+        self.__regex_alert("[\D](?:[0-9]{4}-){3}[0-9]{4}[\D]|[\D][0-9]{16}[\D]", "Credit card information found in a plaintext packet.")
 
-        # Use a regex to look for SSNs
-        self.__regex_alert(r'^(?!000|.+0{4})(?:\d{9}|\d{3}-\d{2}-\d{4})$', "SSN information found in a plaintext "
-                                                                           "packet.")
+        # Use a regex to look for SSNs, needs a non-number before and after the numbers
+        self.__regex_alert("[\D][0-9]{9}[\D]|[\D][0-9]{3}-[0-9]{2}-[0-9]{4}[\D]", "SSN information found in a plaintext packet.")
 
         # Use a regex to look for emails - this is not a huge privacy leak, but still mentionable
         # The email will not be included in the alert for privacy reasons
-        self.__regex_alert(r'(?:[0-9]{4}-){3}[0-9]{4}|[0-9]{16}', "Email information found in a plaintext packet.")
+        self.__regex_alert("[^@]+@[^@]+\.[^@]+", "Email information found in a plaintext packet.")
 
         # Search for specific words to alert on
         for keyword in suspicious_strings:
             if keyword in self.payload:
-                alert_keyword = Alert(self.packet, f'Suspicious keyword found in a plaintext packet: {keyword}',
+                alert_keyword = Alert(None, f'Suspicious keyword found in a plaintext packet: {keyword}',
                                       ALERT_TYPE.PRIVACY, SEVERITY.ALERT)
                 alert_keyword.alert()
 
     # Scan the plaintext for privacy leaks
     def __regex_alert(self, regex_string, alert_string):
-        search_results = re.search(regex_string, self.payload)
-        if search_results:
-            alert_search_email = Alert(self.packet, alert_string, ALERT_TYPE.PRIVACY, SEVERITY.ALERT)
+        print(self.payload)
+        if re.search(regex_string, self.payload):
+            print("regex found")
+            alert_search_email = Alert(None, alert_string, ALERT_TYPE.PRIVACY, SEVERITY.ALERT)
             alert_search_email.alert()
 
 # Sources
 # https://stackoverflow.com/questions/46079770/validate-card-numbers-using-regex-python
 # https://stackoverflow.com/questions/48776006/regex-to-match-ssn-in-python
+# https://stackoverflow.com/questions/8022530/how-to-check-for-valid-email-address
