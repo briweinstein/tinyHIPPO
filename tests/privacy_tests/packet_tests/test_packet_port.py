@@ -29,7 +29,6 @@ class TestIPSignature(unittest.TestCase):
         self.process_pcap_alert("plaintext.pcap")
         self.assertEqual(1, mock_alert.call_count)
 
-    # todo: FAILING bc of an overlap with SSNs, account for this and update test data
     @um.patch("src.dashboard.alerts.alert.Alert.alert")
     def test_port_80_credit_card1(self, mock_alert):
         # Plaintext data: Hello World, credit card=1234123412341234, Hello World
@@ -43,9 +42,15 @@ class TestIPSignature(unittest.TestCase):
         self.assertEqual(2, mock_alert.call_count)
 
     @um.patch("src.dashboard.alerts.alert.Alert.alert")
-    def test_port_80_credit_card_benign(self, mock_alert):
+    def test_port_80_credit_card_benign1(self, mock_alert):
         # Plaintext data: Hello World, not-a-credit-card=12-22-1234-1234-55, Hello World
-        self.process_pcap_alert("credit_card_benign.pcap")
+        self.process_pcap_alert("credit_card_benign1.pcap")
+        self.assertEqual(1, mock_alert.call_count)
+
+    @um.patch("src.dashboard.alerts.alert.Alert.alert")
+    def test_port_80_credit_card_benign2(self, mock_alert):
+        # Plaintext data: Hello World,, Hello World
+        self.process_pcap_alert("credit_card_benign2.pcap")
         self.assertEqual(1, mock_alert.call_count)
 
     @um.patch("src.dashboard.alerts.alert.Alert.alert")

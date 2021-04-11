@@ -47,11 +47,11 @@ class PacketPrivacyPort(PacketPrivacy):
 
         # TODO: There is a huge chance for false positives with credit cards and SSNs, because they're just numbers
         # TODO: Should we include them?
-        # Use a regex to look for credit cards
-        self.__regex_alert("(?:[0-9]{4}-){3}[0-9]{4}|[0-9]{16}", "Credit card information found in a plaintext packet.")
+        # Use a regex to look for credit cards, needs a non-number before and after the numbers
+        self.__regex_alert("[\D](?:[0-9]{4}-){3}[0-9]{4}[\D]|[\D][0-9]{16}[\D]", "Credit card information found in a plaintext packet.")
 
-        # Use a regex to look for SSNs
-        self.__regex_alert("[0-9]{9}|[0-9]{3}-[0-9]{2}-[0-9]{4}", "SSN information found in a plaintext packet.")
+        # Use a regex to look for SSNs, needs a non-number before and after the numbers
+        self.__regex_alert("[\D][0-9]{9}[\D]|[\D][0-9]{3}-[0-9]{2}-[0-9]{4}[\D]", "SSN information found in a plaintext packet.")
 
         # Use a regex to look for emails - this is not a huge privacy leak, but still mentionable
         # The email will not be included in the alert for privacy reasons
