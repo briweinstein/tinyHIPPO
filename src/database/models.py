@@ -19,7 +19,7 @@ class BaseModelMixin:
         """
         conn.session.add(model_object)
         if commit:
-            model_object.safe_commit()
+            model_object.safe_commit(conn=conn)
         else:
             return model_object
 
@@ -59,7 +59,7 @@ class BaseModelMixin:
         """
         conn.session.delete(self)
         if with_commit:
-            self.safe_commit()
+            self.safe_commit(conn=conn)
         return self
 
 
