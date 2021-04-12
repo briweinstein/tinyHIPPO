@@ -3,15 +3,15 @@ def parse_equation(coefficients: str):
     Create a callable function representing an equation
     Function in form of:
 
-        ["a, b, ... , z"] -> f(x) = (a * x) ... (y * x ^ ?) + z
+        "a, b, ... , z" -> f(x) = (a * x) ... (y * x ^ ?) + z
                                  ...
-        ["a, b"]          -> f(x) = (a * x) + b
-        ["a"]             -> f(x) = a
+        "a, b"          -> f(x) = (a * x) + b
+        "a"             -> f(x) = a
 
     :param coefficients: CSV in string form of the coefficients
     :return: A callable function that calculates a polynomial of variable degree, based on given coefficients
     """
-    # Equations exists as coefficients to a len(coefficients) degree polynomial
+    # Equations exists as coefficients to a (len(coefficients) - 1) degree polynomial
     list_of_coefficients = coefficients.replace(" ", "").split(",")
     list_of_expressions = []
     degree = len(list_of_coefficients)

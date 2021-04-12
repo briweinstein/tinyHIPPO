@@ -13,7 +13,7 @@ class TrafficLayerFrequencySignature(AbstractFrequencySignature):
         self.limit_equation = equation
         self.deviation_equation = dev_equation
 
-        # Layer being checked
+        # Layer being checked (Will not increase unless seen)
         self.layer = layer
 
         # Frequency for the window as a whole, and for the segments that make up the sliding window
@@ -73,15 +73,28 @@ class TrafficLayerFrequencySignature(AbstractFrequencySignature):
     def _set_interval_size(self, value: int):
         self.interval_size = value
 
+    def get_current_average(self):
+        return self.current_average
+
+    def _set_current_average(self, value):
+        self.current_average = value
+
+    def get_current_deviation(self):
+        return self.current_deviation
+
+    def _set_current_deviation(self, value):
+        self.current_deviation = value
+
     def __call__(self, packet: Packet):
         if self.layer in packet:
             hour = (packet.time % 86400) / self.window_size
             self.adjust_frequencies(hour)
 
-            if self._current_average + self._current_deviation > self._window_frequency:
+            if self.current_average + self.current_deviation > self.window_frequency:
                 dst = False
                 if packet["Ethernet"].src not in run_config.mac_addrs:
                     dst = True
                 Alert(packet,
-                      "Traffic based anomaly detection shows above usual rates of {0} traffic.".format(self.layer),
+                      "Traffic based anomaly detection shows above usual rates of {0} traffic. {1} packets"
+                      " seen in last {2} seconds".format(self.layer, self.window_frequency, self.window_size),
                       AlertType.ANOMALY, Severity.WARN, dst)

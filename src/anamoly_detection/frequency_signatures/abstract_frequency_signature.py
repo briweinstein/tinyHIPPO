@@ -91,7 +91,7 @@ class AbstractFrequencySignature(abc.ABC):
         ...
 
     @abc.abstractmethod
-    def _set_current_average(self, value: int):
+    def _set_current_average(self, value):
         ...
 
     # The size of each interval used for evaluation in seconds
@@ -102,7 +102,7 @@ class AbstractFrequencySignature(abc.ABC):
         ...
 
     @abc.abstractmethod
-    def _set_current_deviation(self, value: int):
+    def _set_current_deviation(self, value):
         ...
 
     # The size of each interval used for evaluation in seconds
