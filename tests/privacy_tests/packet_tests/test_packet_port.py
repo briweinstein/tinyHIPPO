@@ -127,6 +127,3 @@ class TestIPSignature(unittest.TestCase):
     def tearDown(self) -> None:
         pass
 
-
-if __name__ == '__main__':
-    unittest.main()

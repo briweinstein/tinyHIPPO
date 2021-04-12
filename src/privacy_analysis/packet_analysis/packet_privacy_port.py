@@ -1,5 +1,5 @@
-#! /usr/bin/env python3
 import re
+from src import run_config
 from src.privacy_analysis.packet_analysis.packet_privacy import PacketPrivacy
 from scapy.layers.inet import TCP, UDP
 from scapy.all import Packet
@@ -41,7 +41,8 @@ class PacketPrivacyPort(PacketPrivacy):
         # Try to get the payload
         try:
             self.payload = str(self.packet[proto_type].payload)
-        except:
+        except Exception as e:
+            run_config.log_event.info('Exception raised: ' + str(e))
             return
 
         # TODO: There is a huge chance for false positives with credit cards and SSNs, because they're just numbers

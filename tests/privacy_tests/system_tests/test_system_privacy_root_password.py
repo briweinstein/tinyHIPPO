@@ -16,6 +16,3 @@ class TestSystemPrivacyEncryption(unittest.TestCase):
             SystemPrivacyRootPassword()()
         self.assertEqual(0, mock_alert.call_count)
 
-
-if __name__ == '__main__':
-    unittest.main()

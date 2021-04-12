@@ -35,9 +35,6 @@ class TestSystemPrivacyEncryption(unittest.TestCase):
         self.mock_stdout.close()
 
 
-if __name__ == '__main__':
-    unittest.main()
-
-
 # Source:
 # https://blog.samuel.domains/blog/programming/how-to-mock-stdout-runtime-attribute-of-subprocess-popen-python
+
