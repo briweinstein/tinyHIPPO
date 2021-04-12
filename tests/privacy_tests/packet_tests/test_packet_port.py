@@ -4,7 +4,7 @@ from pathlib import Path
 from scapy.all import rdpcap
 from src.privacy_analysis.packet_analysis.packet_privacy_port import PacketPrivacyPort
 
-root_path_test_data = "../../test_data/"
+root_path_test_data = "tests/test_data/"
 
 
 class TestIPSignature(unittest.TestCase):
