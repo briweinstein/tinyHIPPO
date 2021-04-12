@@ -16,10 +16,10 @@ class ScanningPrivacyNmapPassive(ScanningPrivacy):
     def __call__(self, ip_to_mac):
         ip_list = list(ip_to_mac.keys())
         # Scan
-        nm = nmap.PortScanner()
+        self.nm = nmap.PortScanner()
         try:
-            results_top = nm.scan(hosts=" ".join(ip_list), arguments="-sT -sU -F")
-            results_specific = nm.scan(hosts=" ".join(ip_list), arguments="-sT -p 194")
+            results_top = self.nm.scan(hosts=" ".join(ip_list), arguments="-sT -sU -F")
+            results_specific = self.nm.scan(hosts=" ".join(ip_list), arguments="-sT -p 194")
         except Exception as e:
             run_config.log_event.info("Exception raised, passive nmap scan failed: " + str(e))
             return
@@ -45,13 +45,14 @@ class ScanningPrivacyNmapPassive(ScanningPrivacy):
         """
         if port_type in results[ip]:
             for port in results[ip][port_type]:
-                print(f'Suspicious open {port_type.upper()} port found: {str(port)} on device with MAC address {mac}.')
                 if port not in ports_allow:
-                    alert_obj = Alert(None, f'Suspicious open {port_type.upper()} port found: {str(port)} on device with MAC address {mac}. Further ' +
-                                      'investigation recommended.', ALERT_TYPE.PRIVACY, SEVERITY.INFO)
+                    alert_obj = Alert(None, f'Suspicious open {port_type.upper()} port found: {str(port)} on device '
+                                            f'with MAC address {mac}. Further investigation recommended.',
+                                      ALERT_TYPE.PRIVACY, SEVERITY.INFO)
                     alert_obj.alert()
                 if port in ports_severe_alert:
-                    alert_obj = Alert(None, f'Very suspicious open {port_type.upper()} port found: {str(port)} on device with MAC address {mac}. ' +
-                                      '. Further investigation required.', ALERT_TYPE.PRIVACY, SEVERITY.ALERT)
+                    alert_obj = Alert(None, f'Very suspicious open {port_type.upper()} port found: {str(port)} on '
+                                            f'device with MAC address {mac}. Further investigation required.',
+                                      ALERT_TYPE.PRIVACY, SEVERITY.ALERT)
                     alert_obj.alert()
 

@@ -15,6 +15,6 @@ class SystemPrivacyEncryption(SystemPrivacy):
             return
         for mode in weak_encryption_modes:
             if ("encryption '" + mode) in data:
-                alert_obj = Alert(None, "Weak encryption is in use. Switch to WPA2 from " + mode + ".", ALERT_TYPE.PRIVACY,
-                                  SEVERITY.ALERT)
+                alert_obj = Alert(None, "Weak encryption is in use. Switch to WPA2 from " + mode + ".",
+                                  ALERT_TYPE.PRIVACY, SEVERITY.ALERT)
                 alert_obj.alert()
