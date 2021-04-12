@@ -4,6 +4,8 @@ import scapy.layers.inet as net
 from scapy.all import Packet
 import ipaddress
 
+from ..database.models import DeviceInformation
+
 
 class MACAddressSignature(Signature):
     """
@@ -23,4 +25,4 @@ class MACAddressSignature(Signature):
         ip_layer = packet[net.IP]
         mac_src = ether_layer.src
         ip_src = ipaddress.ip_address(ip_layer.src)
-        return ip_src.is_private and (mac_src not in run_config.mac_addrs)
+        return ip_src.is_private and (mac_src not in DeviceInformation.get_mac_addresses())

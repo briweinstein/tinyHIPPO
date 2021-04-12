@@ -1,155 +1,46 @@
 <style>
     .collapsible {
-      background-color: #777;
-      color: white;
-      cursor: pointer;
-      padding: 18px;
-      width: 100%;
-      border: none;
-      text-align: left;
-      outline: none;
-      font-size: 15px;
+        background-color: #777;
+        color: white;
+        cursor: pointer;
+        padding: 18px;
+        width: 100%;
+        border: none;
+        text-align: left;
+        outline: none;
+        font-size: 15px;
     }
 
     th, td {
-      padding: 8px;
-      text-align: left;
-      border-bottom: 1px solid #ddd;
+        padding: 8px;
+        text-align: left;
+        border-bottom: 1px solid #ddd;
     }
 
     .active, .collapsible:hover {
-      background-color: #555;
+        background-color: #555;
     }
 
     .content {
-      padding: 0 18px;
-      max-height: 0;
-      overflow: hidden;
-      transition: max-height 0.2s ease-out;
-      background-color: #f1f1f1;
+        padding: 0 18px;
+        max-height: 0;
+        overflow: hidden;
+        transition: max-height 0.2s ease-out;
+        background-color: #f1f1f1;
     }
 
     .notification_table {
-      border-collapse: collapse;
-      width: 100%;
+        border-collapse: collapse;
+        width: 100%;
     }
 </style>
 
 <%+header%>
-<%
-    -- Format the JSON formatted alerts into HTML to be inserted into the page
-    function format_alerts()
-        -- Open the alert collection
-        local config_file = io.open("/etc/tinyHIPPO/config.json", 'r')
-        local config_content = config_file:read("*all")
-        local config_json = luci.jsonc.parse(tostring(config_content))
-
-        local alert_collection = io.open(config_json["alert_collection_path"], 'r')
-        local alert_content = nil
-        if alert_collection then
-            alert_content = alert_collection:read("*all")
-            alert_collection:close()
-        end
-
-        -- Format file input as JSON
-        local alerts = nil
-        if (alert_content ~= nil and alert_content ~= "") then
-            alerts = luci.jsonc.parse(tostring(alert_content))
-        end
-        local return_string = ""
-        if alerts == nil then
-            return return_string
-        end
-
-        -- Loops through JSON (Table) and formats contents
-        for k, alert in ipairs(alerts["alerts"]) do
-            if alert["type"] == "Privacy" then
-                return_string = return_string .. "<button class=\"collapsible\">" .. alert["description"] .. "</button>\n"
-                return_string = return_string .. [[
-                    <div class="content">
-                        <table class="notification_table">
-                            <tbody>
-                                <tr>
-                                    <th>Severity</th>
-                                    <th>Time</th>
-                                    <th>MAC</th>
-                                    <th>IP</th>
-                                </tr>
-                                <tr>
-                                    ]]
-                return_string = return_string .. "<td>" .. alert["severity"] .. "</td>\n"
-                return_string = return_string .. "<td>" .. alert["timestamp"] .. "</td>\n"
-                return_string = return_string .. "<td>" .. alert["device_mac"] .. "</td>\n"
-                return_string = return_string .. "<td>" .. alert["device_ip"] .. "</td>\n"
-                return_string = return_string .. [[</tr>
-                                            </tbody>
-                                            <div>
-                                                <h3>Packet Dump:</h3>
-                                                ]]
-                return_string = return_string .. "<p>" .. alert["payload_info"] .. "</p>\n"
-                return_string = return_string .. [[</div>
-                                                </table>
-                                            </div>
-                                            ]]
-            end
-        end
-
-        -- Return the magic
-        return return_string
-    end
-
-
-    -- Variable for ease of use
-    local data = format_alerts()
-
-%>
-<h1><%:Privacy Dashboard%></h1>
-<body>
-    <h2>Alerts</h2>
-    <button class="collapsible"> Sample alert </button>
-    <div class="content">
-        <table class="notification_table">
-            <tbody>
-                <tr>
-                    <th>Severity</th>
-                    <th>Time</th>
-                    <th>MAC</th>
-                    <th>IP</th>
-                </tr>
-                <tr>
-                    <td>High</td>
-                    <td>Someone left the door open</td>
-                    <td>00:AA:BB:CC:DD:00</td>
-                    <td>10.0.0.69</td>
-                </tr>
-            </tbody>
-            <div>
-                <h3>Packet Dump:</h3>
-                <p>0000 0000 0000 0000</p>
-            </div>
-        </table>
-    </div>
-    <%=data %>
-
-
-    <h2>Device Status</h2>
-
-    <script>
-    var coll = document.getElementsByClassName("collapsible");
-    var i;
-
-    for (i = 0; i < coll.length; i++) {
-    coll[i].addEventListener("click", function() {
-        this.classList.toggle("active");
-        var content = this.nextElementSibling;
-        if (content.style.maxHeight){
-        content.style.maxHeight = null;
-        } else {
-        content.style.maxHeight = content.scrollHeight + "px";
-        }
-    });
-    }
-    </script>
+<body style="width: 100%;height: 100%;">
+<iframe id="flask-server" src="//:5000/ids-priv/privacy-alerts/" width="100%" height="100%"></iframe>
 </body>
+<script type="text/javascript">
+    var el = document.getElementById('flask-server');
+    el.src = window.location.origin + el.src.slice(2);
+</script>
 <%+footer%>
-                                                                                                                                               
