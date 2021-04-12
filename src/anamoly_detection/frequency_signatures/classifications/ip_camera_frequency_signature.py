@@ -3,7 +3,7 @@ from collections import deque
 from scapy.packet import Packet
 
 from src import run_config
-from src.dashboard.alerts.alert import Alert, ALERT_TYPE, SEVERITY
+from src.dashboard.alerts.alert import Alert, AlertType, Severity
 from src.anamoly_detection.frequency_signatures.abstract_frequency_signature import AbstractFrequencySignature
 
 
@@ -93,4 +93,4 @@ class IPCameraFrequencySignature(AbstractFrequencySignature):
             dst = False
             if packet["Ethernet"].src not in run_config.mac_addrs:
                 dst = True
-            Alert(packet, "Something happens", ALERT_TYPE.ANOMALY, SEVERITY.WARN, dst)
+            Alert(packet, "Something happens", AlertType.ANOMALY, Severity.WARN, dst)

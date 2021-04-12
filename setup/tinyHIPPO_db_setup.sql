@@ -12,7 +12,10 @@ CREATE TABLE alerts (
 CREATE TABLE anomaly_equations (
 	id                   integer NOT NULL  PRIMARY KEY,
 	average_equation     varchar(256) NOT NULL    ,
-	adjustment_equation  varchar(256) NOT NULL    
+	deviation_equation   varchar(256) NOT NULL    ,
+	layer                varchar(256) NOT NULL    ,
+	window_size          integer      NOT NULL    ,
+	interval_size        integer      NOT NULL
  );
 
 CREATE TABLE email_information ( 
