@@ -16,6 +16,17 @@ class AbstractFrequencySignature(abc.ABC):
     window_frequency = property(get_window_frequency, _set_window_frequency)
 
     @abc.abstractmethod
+    def get_last_interval(self):
+        ...
+
+    @abc.abstractmethod
+    def _set_last_interval(self, value):
+        ...
+
+    # The total frequency of signature matches for a given window
+    last_interval = property(get_last_interval, _set_last_interval)
+
+    @abc.abstractmethod
     def get_intervals(self):
         ...
 
@@ -39,5 +50,19 @@ class AbstractFrequencySignature(abc.ABC):
     limit_equation = property(get_limit_equation, _set_limit_equation)
 
     @abc.abstractmethod
+    def adjust_frequencies(self, hour):
+        """
+
+        :param hour:
+        :return:
+        """
+        raise NotImplementedError
+
+    @abc.abstractmethod
     def __call__(self, packet: Packet):
+        """
+
+        :param packet:
+        :return:
+        """
         raise NotImplementedError

@@ -1,13 +1,12 @@
-import json
 import sqlite3
 import statistics
 import numpy as np
 import matplotlib.pyplot as plt
 from scipy.optimize import curve_fit
-from packet_analysis.sql.sql_helper import get_values, get_count, create_connection
+from packet_analysis.sql.sql_helper import get_values
 
 
-def get_hourly_average(conn: sqlite3.Connection, table: str, adjust_for_zero=False):
+def get_segmented_average(conn: sqlite3.Connection, table: str, adjust_for_zero=False):
     collection = {}
     averaged_data = []
     averaged_deviation = []
@@ -59,15 +58,25 @@ def get_hourly_average(conn: sqlite3.Connection, table: str, adjust_for_zero=Fal
 
 # Fifth degree polynomial function
 def objective(x, a, b, c, d, e, f, g, h):
+    """
+
+    :param x: Input to function
+    :param a, b, c, d, e, f, g, h: Coefficients of sub expressions
+    :return: Value calculated from function
+    """
     return (a * x) + (b * x ** 2) + (c * x ** 3) + (d * x ** 4) + (e * x ** 5) + (f * x ** 6) + (g * x ** 7) + h
 
 def polynomial_fit_function(x_data: list, y_data: list):
     params, params_covariance = curve_fit(objective, x_data, y_data)
+
+    # TODO: Remove lines below once done making equations (Don't need to show each time)
     a, b, c, d, e, f, g, h = params
     plt.scatter(x_data, y_data)
-    x_line = np.arange(min(x_data), max(x_data), 1)
+    x = np.arange(min(x_data), max(x_data), 1)
     # calculate the output for the range
-    y_line = objective(x_line, a, b, c, d, e, f, g, h)
+    y = objective(x, a, b, c, d, e, f, g, h)
     # create a line plot for the mapping function
-    plt.plot(x_line, y_line, '--', color='red')
+    plt.plot(x, y, '--', color='red')
     plt.show()
+
+    return params
