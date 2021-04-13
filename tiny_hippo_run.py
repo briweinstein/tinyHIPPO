@@ -44,7 +44,7 @@ def main():
     print("Capturing IoT packets only")
     # 3) Export packets
     # TODO: Make sure iface is set to the correct interface. May be different in some routers
-    sniff(iface="wlan0", lfilter=lambda packet: (packet.src in mac_addresses) or (packet.dst in mac_addresses),
+    sniff(iface=run_config.sniffing_interface, lfilter=lambda packet: (packet.src in mac_addresses) or (packet.dst in mac_addresses),
           prn=packet_parse, count=num_packets)
 
 

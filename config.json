@@ -1,9 +1,4 @@
 {
-    "email": {
-        "smtp_server": "smtp.example.com",
-        "email_account": "openwrt@example.com",
-        "email_password": "super_secure_password",
-        "recipient_emails": ["homeowner@example.com"]
-    },
-    "virustotal_api_key": "TEMPLATE"
+    "virustotal_api_key": "TEMPLATE",
+    "sniffing_interface": "wlan0"
 }
