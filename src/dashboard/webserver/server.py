@@ -64,7 +64,7 @@ def _device_configuration(form_data: dict, ip_neighbors):
     new_devices = [neigh for neigh in ip_neighbors if neigh.mac in new_devices_macs]
     for item in new_devices:
         d = DeviceInformation(mac_address=item.mac,
-                              name="placeholder",
+                              name="",
                               ip_address=item.ip)
         DeviceInformation.insert_new_object(d)
     # remove devices that were unchecked

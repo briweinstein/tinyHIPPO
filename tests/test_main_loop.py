@@ -22,10 +22,6 @@ class TestMainLoop(unittest.TestCase):
         self.ids_signatures = [IPSignature("192.168.1.0/24"), MACAddressSignature()]
         self.signature_detector = SignatureDetector(self.ids_signatures)
 
-    # TODO: fill this test in
-    def test_pull_and_validate_addrs(self):
-        return True
-
     def test_packet_parse(self):
         self.assertTrue(self.packet_parse(self.dst_malicious_ip_packet))
         self.assertTrue(self.packet_parse(self.src_malicious_ip_packet))

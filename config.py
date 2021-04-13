@@ -25,10 +25,10 @@ class Config:
                             filename=str(self._absolute_path("tinyHIPPO_error.log")))
         with open(config_path) as f:
             config_json = json.load(f)
-        self.db_file = self._absolute_path('tinyHIPPO.db')
+        self.db_file = self._absolute_path("tinyHIPPO.db")
         self.virustotal_api_key = config_json["virustotal_api_key"]
         self.log_event = logging.getLogger()
-        self.sniffing_interface = config_json['sniffing_interface']
+        self.sniffing_interface = config_json["sniffing_interface"]
 
     def _absolute_path(self, relative_path: str) -> Path:
         return self.install_path / relative_path
