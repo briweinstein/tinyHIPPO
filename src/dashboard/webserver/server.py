@@ -30,7 +30,6 @@ def _email_configuration(form_data: dict):
     :param form_data: Form data submitted by the user from the webpage
     :return: nothing
     """
-    # TODO: Add validation of passed settings, query database and check if settings are new or need to be updated
     e = EmailInformation(recipient_addresses=form_data['raddress'],
                          sender_address=form_data['saddress'],
                          sender_email_password=form_data['password'],

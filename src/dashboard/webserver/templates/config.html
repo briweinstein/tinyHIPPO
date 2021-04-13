@@ -92,7 +92,7 @@
                 </tbody>
             </table>
         </div>
-        <input onclick="disableChangesSaveText('device_changes_saved')" name="device-form" type="submit" value="Save" class="save_button">
+        <input name="device-form" type="submit" value="Save" class="save_button">
     </div>
 </form>
 <h1>Email Configuration</h1>
@@ -112,7 +112,18 @@
             <label for="server">SMTP Server</label><br>
             <input type="text" id="server" name="server">
         </div>
-        <input onclick="disableChangesSaveText('email_changes_saved')" name="email-form" type="submit" value="Save" class="save_button"/>
+        <input name="email-form" type="submit" value="Save" class="save_button"/>
+    </div>
+</form>
+<form action="/ids-priv/settings/" method="post">
+    <div>
+        <div class="content">
+            <label for="raddress">Anamoly Equations</label><br>
+            <input type="text" id="aequations" name="aequations"><br>
+            <label for="saddress">Standard Deviation Equations</label><br>
+            <input type="text" id="sdequations" name="sdequations"><br>
+        </div>
+        <input name="equations-form" type="submit" value="Save" class="save_button"/>
     </div>
 </form>
 </body>
