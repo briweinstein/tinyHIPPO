@@ -23,10 +23,14 @@ def parse_equation(coefficients: str):
 
     # Loop through coefficients, assigning them to their respective expressions based on degree
     for coefficient in list_of_coefficients:
+        if coefficient == "0":
+            # No need to waste time with 0 value coefficient
+            continue
         if current_degree == degree:
             # Final value is always a constant (C)
             list_of_expressions.append(lambda x, cof=coefficient: float(cof))
         else:
+            # [0:-2] coefficients are normal polynomials to the power of the current_degree
             list_of_expressions.append(lambda x, cof=coefficient, deg=current_degree: float(cof) * pow(x, deg))
         current_degree += 1
 
