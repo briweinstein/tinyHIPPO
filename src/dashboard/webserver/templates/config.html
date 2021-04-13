@@ -53,12 +53,6 @@
     }
 </style>
 
-<script>
-    function disableChangesSaveText(formId){
-        document.getElementById(formId).style.display="none";
-    }
-</script>
-
 <body>
 <h1>Device Configuration</h1>
 <div class="explanation">
@@ -99,7 +93,6 @@
 <div class="explanation">
     <h2>Please enter the email information you wish to use</h2>
 </div>
-<!--<p id="email_changes_saved" class="save_notification">Changes saved!</p>-->
 <form action="/ids-priv/settings/" method="post">
     <div>
         <div class="content">
@@ -115,10 +108,14 @@
         <input name="email-form" type="submit" value="Save" class="save_button"/>
     </div>
 </form>
+<h1>Anomaly Equation Configuration</h1>
 <form action="/ids-priv/settings/" method="post">
+    <div class="explanation">
+        <h2>Please enter the taylor series coefficients you wish to use in anomaly detection</h2>
+    </div>
     <div>
         <div class="content">
-            <label for="raddress">Anamoly Equations</label><br>
+            <label for="raddress">Anomaly Equations</label><br>
             <input type="text" id="aequations" name="aequations"><br>
             <label for="saddress">Standard Deviation Equations</label><br>
             <input type="text" id="sdequations" name="sdequations"><br>

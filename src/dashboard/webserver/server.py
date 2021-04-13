@@ -1,7 +1,7 @@
 from flask import Flask, render_template, g, request
 from src import run_config
 from src.dashboard.webserver.server_utils import get_db, get_neighboring_devices, get_alerts
-from src.database.models import DeviceInformation, EmailInformation
+from src.database.models import DeviceInformation, EmailInformation, AnomalyEquations
 
 app = Flask(__name__)
 
@@ -18,9 +18,22 @@ def settings():
         _device_configuration(request.form, ip_neighbors)
     elif request.method == 'POST' and 'email-form' in request.form:
         _email_configuration(request.form)
+    elif request.method == 'POST' and 'equations-form' in request.form:
+        _anomaly_configuration(request.form)
     return render_template('config.html',
                            neighboring_devices=ip_neighbors,
                            existing_devices=DeviceInformation.get_mac_addresses(g.db))
+
+
+def _anomaly_configuration(form_data: dict):
+    """
+    Handler for anomaly detection configuration form, updates current anomaly configuration settings used in the database
+    :param form_data: Form data submitted by the user from the webpage
+    :return: nothing
+    """
+    a = AnomalyEquations(average_equation=form_data['aequations'],
+                         adjustment_equation=form_data['sdequations'])
+    AnomalyEquations.insert_new_object(a, conn=g.db)
 
 
 def _email_configuration(form_data: dict):
