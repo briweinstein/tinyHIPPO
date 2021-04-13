@@ -25,7 +25,6 @@ class Config:
                             filename=str(self._absolute_path("tinyHIPPO_error.log")))
         with open(config_path) as f:
             config_json = json.load(f)
-        self.email = ConfigEmail(**config_json["email"])
         self.db_file = self._absolute_path('tinyHIPPO.db')
         self.virustotal_api_key = config_json["virustotal_api_key"]
         self.log_event = logging.getLogger()
