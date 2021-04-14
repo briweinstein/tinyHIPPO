@@ -23,9 +23,14 @@ class TestIPSignature(unittest.TestCase):
         self.assertEqual(len(engine.GetEquationStrings()), len(engine.frequency_signatures))
 
     def test_engine_packet_handling(self):
+        """
+        Test that the signatures load properly and are called upon correctly by the engine
+        :return: None
+        """
         udp_packet = Ether() / IP() / UDP(dport=80)
         tcp_packet = Ether() / IP() / TCP(dport=80)
 
+        # Call the engine using the two packets as parameters
         engine.CheckSignatures(udp_packet)
         engine.CheckSignatures(tcp_packet)
 

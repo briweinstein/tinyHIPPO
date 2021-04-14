@@ -59,7 +59,10 @@ def deconstruct_packet(pkt_type: str, pkt: Packet) -> sqlObject:
         "UDP": lambda p: udp.UDP(p),
     }
 
-    return switcher[pkt_type](pkt)
+    for layer in switcher.keys():
+        if layer in pkt:
+            sql_dao = switcher[layer](pkt)
+            csv_collection.add_entry(layer, sql_dao.csv())
 
 
 def packet_handler(pkt: Packet):
@@ -75,8 +78,7 @@ def packet_handler(pkt: Packet):
 
     # If system can handle to packet, analyze it
     if str_layer in table_bindings.keys():
-        sql_dao = deconstruct_packet(str_layer, pkt)
-        csv_collection.add_entry(str_layer, sql_dao.csv())
+        deconstruct_packet(str_layer, pkt)
 
 def main(argv):
     """
@@ -84,27 +86,22 @@ def main(argv):
     :param argv: Arguments for program
     :return:
     """
-    call_info = "\"python(3) dissect_pcap.py Path/to/database.db [Path/to/file.pcap] ... \"."
+    # Start time for the process
     first_time = time.time()
     print("*" * 50)
+
+    # Handle arguments
     if len(argv) < 2:
         conn = create_connection("D:/Semester 6/Capstone/DB/analysis.db")
     else:
         conn = create_connection(argv[1])
 
-    if len(argv) < 2:
+    if len(argv) < 3:
         paths = []
-        for subdir, dirs, files in os.walk(r'D:\Semester 6\Capstone\routerPCAP\Capstone-pcaps'):
-            for filename in files:
-                filepath = subdir + os.sep + filename
-                if filepath.endswith(".00") or filepath.endswith(".01") or filepath.endswith(
-                        ".02") or filepath.endswith(".03") or filepath.endswith(".04") or filepath.endswith(
-                        ".05") or filepath.endswith(".06"):
-                    paths.append(filepath)
-                    print("Found PCAP: " + str(filepath))
     else:
-        paths = argv[1:]
+        paths = argv[2:]
 
+    # Loop through files, analyze PCAP and insert in bulk into the DB
     for path in paths:
         try:
             analyze_pcap_file(path)
@@ -114,6 +111,7 @@ def main(argv):
             print("Error in processing PCAP, moving forward")
             print("*" * 50)
 
+    # Print out time based information
     elapsed_time = time.time() - first_time
     print("*" * 50)
     print("Elapsed Time:")

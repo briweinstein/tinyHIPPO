@@ -5,7 +5,18 @@ from scapy.all import Packet
 
 
 class AbstractFrequencySignature(abc.ABC):
+    """
+    Abstract class representing any frequency based signature
+    """
     def __init__(self, equation, dev_equation, window_size=3600, interval_size=600):
+        """
+        Super constructor for implementing classes
+        Initializes the signature using the super class, and it's unique information
+        :param equation: function used to evaluate the average
+        :param dev_equation: function used to evaluate the deviation
+        :param window_size: Size of the window to limit (Limit is applied to this time frame, in seconds)
+        :param interval_size: Segmented window size, sets how often windows are adjusted
+        """
         # Lambda function equations
         self._limit_equation = equation
         self._deviation_equation = dev_equation
@@ -14,6 +25,8 @@ class AbstractFrequencySignature(abc.ABC):
         self._window_frequency = 0
         self._interval_frequencies = deque(maxlen=(ceil(window_size / interval_size)))
         self._last_interval = 0
+
+        # Average and deviation calculated for the current window
         self._current_average = -1
         self._current_deviation = -1
 
@@ -49,15 +62,20 @@ class AbstractFrequencySignature(abc.ABC):
         # Check again to make sure newly adjusted window is correct (In case multiple shifts are necessary)
         # Adjust the equation's current totals if necessary (Once per window adjustment, default 10 minutes)
         if within_window_condition:
+            # If no average has been set, or the window has been adjusted
             if calculate_equation or (self._current_average == -1 and self._current_deviation == -1):
+                # Reset average and deviation
                 cumulative_average = 0
                 cumulative_deviation = 0
                 intervals = ceil(self._window_size / self._interval_size)
+
+                # Loop through intervals and re-calculate the averages using the set equations
                 for x in range(intervals):
                     interval = round((self._last_interval + ((x * self._interval_size) / 3600)) % 24, 3)
                     cumulative_average += self._limit_equation(interval)
                     cumulative_deviation += self._deviation_equation(interval)
 
+                # If there are intervals (i.e. any data triggered within time frame), calculate average over this time
                 if intervals > 0:
                     self._current_average = cumulative_average / intervals
                     self._current_deviation = cumulative_deviation / intervals
@@ -70,6 +88,7 @@ class AbstractFrequencySignature(abc.ABC):
                         len(self._interval_frequencies) < ceil(self._window_size / self._interval_size):
                     self._interval_frequencies.append(0)
 
+            # Adjust interval and window frequency
             self._interval_frequencies[-1] += 1
             self._window_frequency += 1
 
