@@ -1,5 +1,7 @@
-#!/usr/bin/python3
 import sys
+import os
+
+sys.path.insert(0, os.path.abspath(".."))
 import re
 import time
 from pathlib import Path
@@ -86,14 +88,22 @@ def main(argv):
     first_time = time.time()
     print("*" * 50)
     if len(argv) < 2:
-        raise Exception("No path to DB detected. Please specify with: " + call_info)
+        conn = create_connection("D:/Semester 6/Capstone/DB/analysis.db")
     else:
         conn = create_connection(argv[1])
 
-    if len(argv) < 3:
-        raise Exception("No PCAP files specified. Please specify with: " + call_info)
+    if len(argv) < 2:
+        paths = []
+        for subdir, dirs, files in os.walk(r'D:\Semester 6\Capstone\routerPCAP\Capstone-pcaps'):
+            for filename in files:
+                filepath = subdir + os.sep + filename
+                if filepath.endswith(".00") or filepath.endswith(".01") or filepath.endswith(
+                        ".02") or filepath.endswith(".03") or filepath.endswith(".04") or filepath.endswith(
+                        ".05") or filepath.endswith(".06"):
+                    paths.append(filepath)
+                    print("Found PCAP: " + str(filepath))
     else:
-        paths = argv[2:]
+        paths = argv[1:]
 
     for path in paths:
         try:

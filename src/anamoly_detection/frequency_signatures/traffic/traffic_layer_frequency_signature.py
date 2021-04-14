@@ -18,12 +18,8 @@ class TrafficLayerFrequencySignature(AbstractFrequencySignature):
     def __call__(self, packet: Packet):
         if self._layer in packet:
             hour = (packet.time % 86400) / self._window_size
-            print("Adjusting...")
+            print("Adjusting: " + self._layer)
             self.adjust_frequencies(hour)
-
-            print("FREQ: " + str(self._interval_frequencies))
-            print("DEV : " + str(self._current_deviation))
-            print("AVG : " + str(self._current_average))
             if self._current_average + self._current_deviation > self._window_frequency:
                 dst = False
                 if packet["Ethernet"].src not in DeviceInformation.get_mac_addresses():

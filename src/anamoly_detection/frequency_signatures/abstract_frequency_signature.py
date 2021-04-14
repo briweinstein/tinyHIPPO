@@ -55,7 +55,6 @@ class AbstractFrequencySignature(abc.ABC):
                 intervals = ceil(self._window_size / self._interval_size)
                 for x in range(intervals):
                     interval = round((self._last_interval + ((x * self._interval_size) / 3600)) % 24, 3)
-                    print("AVG for {0} interval is: {1}".format(interval, self._limit_equation(interval)))
                     cumulative_average += self._limit_equation(interval)
                     cumulative_deviation += self._deviation_equation(interval)
 

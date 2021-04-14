@@ -22,6 +22,11 @@ class TestIPSignature(unittest.TestCase):
 
     @um.patch("src.dashboard.alerts.alert.Alert.alert")
     def test_acceptable_levels(self, mock_alert):
+        """
+        Test the no alert is triggered when within acceptable levels, and that the queue properly flushes and fills
+        :param mock_alert: Mocked alert class
+        :return: None
+        """
         self.trigger_packet.time = 1618185601.00  # Hour 0, Minute 0, Second 1
         self.signature(self.trigger_packet)
 
@@ -49,7 +54,7 @@ class TestIPSignature(unittest.TestCase):
         intervals = list(self.signature._interval_frequencies)
         self.assertEqual(1, intervals[-1])
         self.assertEqual(2, intervals.count(1))
-        self.assertEqual(4, intervals.count(0))
+        self.assertEqual(4, intervals.count(0))  # Queue: 0, 0, 1, 0, 0, 1
 
         self.trigger_packet.time += 79200  # Hour 23, Minute 0, Second 1
         self.signature(self.trigger_packet)
@@ -57,7 +62,7 @@ class TestIPSignature(unittest.TestCase):
         intervals = list(self.signature._interval_frequencies)
         self.assertEqual(1, intervals[-1])
         self.assertEqual(1, intervals.count(1))
-        self.assertEqual(5, intervals.count(0))
+        self.assertEqual(5, intervals.count(0))  # Queue: 0, 0, 0, 0, 0, 1
 
         self.trigger_packet.time += 5400  # Hour 0, Minute 30, Second 1
         self.signature(self.trigger_packet)
@@ -65,7 +70,15 @@ class TestIPSignature(unittest.TestCase):
         intervals = list(self.signature._interval_frequencies)
         self.assertEqual(1, intervals[-1])
         self.assertEqual(1, intervals.count(1))
-        self.assertEqual(5, intervals.count(0))
+        self.assertEqual(5, intervals.count(0))  # Queue: 0, 0, 0, 0, 0, 1
+
+        self.trigger_packet.time += 1800  # Hour 1, Minute 0, Second 1
+        self.signature(self.trigger_packet)
+        self.assertEqual(2, self.signature._window_frequency)
+        intervals = list(self.signature._interval_frequencies)
+        self.assertEqual(1, intervals[-1])
+        self.assertEqual(2, intervals.count(1))
+        self.assertEqual(4, intervals.count(0))  # Queue: 0, 0, 1, 0, 0, 1
 
         # No alert should be triggered
         self.assertEqual(0, mock_alert.call_count)

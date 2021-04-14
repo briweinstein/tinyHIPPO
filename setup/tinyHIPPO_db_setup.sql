@@ -10,7 +10,7 @@ CREATE TABLE alerts (
  );
 
 CREATE TABLE anomaly_equations (
-	id                   integer NOT NULL  PRIMARY KEY,
+	id                   integer NOT NULL  PRIMARY KEY AUTOINCREMENT,
 	average_equation     varchar(256) NOT NULL    ,
 	deviation_equation   varchar(256) NOT NULL    ,
 	layer                varchar(256) NOT NULL    ,

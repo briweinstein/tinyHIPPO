@@ -1,35 +1,33 @@
 from scapy.all import Packet
-from sqlite3 import Connection
 from src.anamoly_detection.equation_parser import parse_equation
+from src.database.models import AnomalyEquations
+from src.database.db_connection import DBConnection
 from src.anamoly_detection.frequency_signatures.traffic.traffic_layer_frequency_signature \
     import TrafficLayerFrequencySignature
 
 
 class AnomalyEngine:
-    @staticmethod
-    def GetEquationStrings(connection: Connection):
-        # Format the fill query
-        table = "anomaly_equations"
-        columns = ["average_equation", "adjustment_equation", "layer", "window_size", "interval_size"]
+    def GetEquationStrings(self):
+        rows = self.connection.session.query(AnomalyEquations)
+        self.connection.session.flush()
+        parsed_rows = []
+        for obj in rows:
+            # Tuple of data from the sql DAO
+            parsed_rows.append((obj.average_equation, obj.deviation_equation,
+                               obj.layer, obj.window_size, obj.interval_size))
+        return parsed_rows
 
-        sql_str = "SELECT {0} FROM {1};".format(",".join(columns), table)
+    def __init__(self, connection, frequency_signatures=[], traffic_signatures=[]):
+        self.connection = connection
+        self.connection.create_session()
 
-        # Execute and retrieve rows
-        cursor = connection.cursor()
-        cursor.execute(sql_str)
-        rows = cursor.fetchall()
-        cursor.close()
-
-        return rows
-
-    def __init__(self, connection: Connection, frequency_signatures=[], traffic_signatures=[]):
         # Lists of signatures that will be used in the engine
         self.frequency_signatures = frequency_signatures
         self.traffic_signatures = traffic_signatures
 
         # Get the equation data from the database
         if connection:
-            limit_data = self.GetEquationStrings(connection)
+            limit_data = self.GetEquationStrings()
 
             # Format equations
             self.FormatEquation(limit_data)
