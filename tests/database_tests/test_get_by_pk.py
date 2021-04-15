@@ -9,7 +9,7 @@ class TestGetByPk(unittest.TestCase):
         self.db = db
         self.alert = Alerts(alert_type='IDS', description='test', severity=1, mac_address='00:00:00:00:00',
                             payload='foobar')
-        self.anamoly_eq = AnomalyEquations(average_equation="test", adjustment_equation="test")
+        self.anomaly_eq = AnomalyEquations(average_equation="test", adjustment_equation="test")
         self.email_info = EmailInformation(recipient_addresses='test@email.com, foo@bar.com',
                                            sender_address='openwrt@alert.com',
                                            sender_email_password='super_secure_password',
@@ -25,9 +25,9 @@ class TestGetByPk(unittest.TestCase):
         self.db.session.delete(result)
 
     def test_get_anomaly_equations_id(self):
-        AnomalyEquations.insert_new_object(self.anamoly_eq)
-        result = AnomalyEquations.get_by_pk(AnomalyEquations.id, self.anamoly_eq.id)
-        self.assertEqual(self.anamoly_eq, result)
+        AnomalyEquations.insert_new_object(self.anomaly_eq)
+        result = AnomalyEquations.get_by_pk(AnomalyEquations.id, self.anomaly_eq.id)
+        self.assertEqual(self.anomaly_eq, result)
         self.db.session.delete(result)
 
     def test_get_email_information_id(self):

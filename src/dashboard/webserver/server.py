@@ -13,6 +13,10 @@ def init_db():
 
 @app.route('/ids-priv/settings/', methods=['GET', 'POST'])
 def settings():
+    """
+    Serves the template for the ids configuration page
+    :return: Rendered jinja-2 template
+    """
     ip_neighbors = get_neighboring_devices()
     if request.method == 'POST' and 'device-form' in request.form:
         _device_configuration(request.form, ip_neighbors)
@@ -78,12 +82,20 @@ def _device_configuration(form_data: dict, ip_neighbors):
 
 @app.route('/ids-priv/ids-alerts/')
 def ids_alerts():
+    """
+    Serves template for the ids alerts page
+    :return: Rendered jinja-2 template
+    """
     all_alerts = get_alerts('IDS', g.db)
     return render_template('alerts.htm', all_alerts=all_alerts, dashboard_title='IDS')
 
 
 @app.route('/ids-priv/privacy-alerts/')
 def privacy_alerts():
+    """
+    Serves template for the privacy alerts page
+    :return: Rendered jinja-2 template
+    """
     all_alerts = get_alerts('Privacy', g.db)
     return render_template('alerts.htm', all_alerts=all_alerts, dashboard_title='Privacy')
 

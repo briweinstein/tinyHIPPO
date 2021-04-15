@@ -18,8 +18,8 @@ class TestInsert(unittest.TestCase):
                                            sender_email_password='super_secure_password',
                                            smtp_server='smtp.test.com')
         self.device_info = DeviceInformation(mac_address='00:00:00:00:00:00',
-                                             device_name='test',
-                                             device_ip_address='192.168.0.1')
+                                             name='test',
+                                             ip_address='192.168.0.1')
 
     def test_insert_alert(self):
         Alerts.insert_new_object(self.alert)
