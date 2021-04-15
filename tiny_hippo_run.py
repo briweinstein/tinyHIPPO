@@ -1,4 +1,5 @@
 #! /usr/bin/env python3
+from time import sleep
 from scapy.all import sniff
 from scapy.packet import Packet
 from scapy.layers.inet import Ether
@@ -35,13 +36,23 @@ def main():
     4. Sniffs packets on "wlan0" and analyzes the packet against signatures and privacy rules
     :return: nothing
     """
-
     # 2) Perform a system configuration security check
     try:
         for rule in rules_system_privacy:
             rule()
     except Exception as e:
         run_config.log_event.info(f"Exception when running system privacy rule {e}")
+
+    # wait until there are mac_addresses to sniff for, max count equates to the maximum time to wait between polls
+    max_count = 7  # 3 minutes
+    count = 0
+    while True:
+        n = (2 ** count) - 1
+        sleep(n)
+        if count != max_count:
+            count += 1
+        if DeviceInformation.get_mac_addresses():
+            break
 
     mac_addresses = DeviceInformation.get_mac_addresses()
     # Note: Steps 2 and 3 happen simultaneously in the "sniff()" call, but are separated for clarity
