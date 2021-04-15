@@ -2,7 +2,7 @@
 
 # This script is run when the cids (capstone ids) is first started. It does the following:
 # 1.) Ensures all necessary dependencies are installed (python3, python3-pip, misc pip packages, etc.)
-# 2.) Checks the config file /etc/capstone-ids/config.json that it is properly setup with email account information and MAC addresses for IoT devices
+# 2.) Call the script to initialize the sqlite database
 # 3.) Start the actual IDS program (probably called cids-main or something similar)
 
 
@@ -13,6 +13,7 @@ opkg update
 pip3 install scapy
 pip3 install dataclasses
 pip3 install requests
+pip3 install python-nmap
 
 # set install path environment variable
 export TINYHIPPO_INSTALL_PATH='/etc/tinyHIPPO'
