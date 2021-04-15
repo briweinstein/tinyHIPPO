@@ -37,20 +37,24 @@ def main():
     """
 
     # 2) Perform a system configuration security check
-    for rule in rules_system_privacy:
-        rule()
+    try:
+        for rule in rules_system_privacy:
+            rule()
+    except Exception as e:
+        run_config.log_event.info(f"Exception when running system privacy rule {e}")
 
     mac_addresses = DeviceInformation.get_mac_addresses()
     # Note: Steps 2 and 3 happen simultaneously in the "sniff()" call, but are separated for clarity
     # 2) Capture IoT packets only with crafted sniff
     # 3) Perform a scanning analysis of the IoT devices
     ip_to_mac = _pair_ip_to_mac(mac_addresses)
-    for rule in rules_scanning_privacy:
-        rule(ip_to_mac)
-
+    try:
+        for rule in rules_scanning_privacy:
+            rule(ip_to_mac)
+    except Exception as e:
+        run_config.log_event.info(f"Exception when running scanning privacy rule {e}")
     # 4) Capture IoT packets only with crafted sniff
     print("Capturing IoT packets only")
-    # TODO: Make sure iface is set to the correct interface. May be different in some routers
     sniff(iface=run_config.sniffing_interface,
           lfilter=lambda packet: (packet.src in mac_addresses) or (packet.dst in mac_addresses),
           prn=packet_parse, count=num_packets)
@@ -66,7 +70,6 @@ def packet_parse(packet: Packet):
         try:
             rule(packet)
         except Exception as e:
-            # TODO: refine so a specific error message can be logged
             run_config.log_event.info('Exception raised in a privacy rule check: ' + str(e))
     # For each triggered signature generate an alert for the user
     try:
@@ -77,7 +80,6 @@ def packet_parse(packet: Packet):
                 alert_object = Alert(packet, triggered_rule.msg, AlertType.IDS, Severity.ALERT, is_dst)
                 alert_object.alert()
     except Exception as e:
-        # TODO: refine so a specific error message can be logged
         run_config.log_event.info('Exception raised in an IDS rule check: ' + str(e))
 
 
