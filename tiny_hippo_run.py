@@ -55,9 +55,12 @@ def main():
         run_config.log_event.info(f"Exception when running scanning privacy rule {e}")
     # 4) Capture IoT packets only with crafted sniff
     print("Capturing IoT packets only")
-    sniff(iface=run_config.sniffing_interface,
-          lfilter=lambda packet: (packet.src in mac_addresses) or (packet.dst in mac_addresses),
-          prn=packet_parse, count=num_packets)
+    sniff(iface=run_config.sniffing_interface, lfilter=_sniff_filter, prn=packet_parse, count=num_packets)
+
+
+def _sniff_filter(packet: Packet):
+    results = DeviceInformation.get_mac_addresses()
+    return packet.src in results or packet.dst in results
 
 
 def packet_parse(packet: Packet):
