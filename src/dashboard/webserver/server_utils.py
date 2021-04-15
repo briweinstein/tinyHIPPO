@@ -37,13 +37,21 @@ def get_neighboring_devices() -> List[NeighboringDevice]:
     return neighboring_devices
 
 
-def get_alerts(alert_type: str, connection) -> List[Alerts]:
+def get_alerts(alert_type: str, connection, limit_num:int) -> List[Alerts]:
     """
     Returns all alerts from the database matching the given alert type ordered by timestamp in descending order
     :param alert_type: Alert type to filter by
+    :param limit_num: Number of alerts to return
     :return: Alerts from the database matching the given alert_type
     """
-    return connection.session.query(Alerts). \
-        filter(Alerts.alert_type == alert_type). \
-        order_by(Alerts.timestamp.desc()). \
-        all()
+    if limit_num == 0:
+        return connection.session.query(Alerts). \
+            filter(Alerts.alert_type == alert_type). \
+            order_by(Alerts.timestamp.desc()). \
+            all()
+    else:
+        return connection.session.query(Alerts). \
+            filter(Alerts.alert_type == alert_type). \
+            limit(limit_num). \
+            order_by(Alerts.timestamp.desc()). \
+            all()

@@ -86,7 +86,7 @@ def ids_alerts():
     Serves template for the ids alerts page
     :return: Rendered jinja-2 template
     """
-    all_alerts = get_alerts('IDS', g.db)
+    all_alerts = get_alerts('IDS', connection=g.db, limit_num=20)
     return render_template('alerts.htm', all_alerts=all_alerts, dashboard_title='IDS')
 
 
@@ -96,7 +96,7 @@ def privacy_alerts():
     Serves template for the privacy alerts page
     :return: Rendered jinja-2 template
     """
-    all_alerts = get_alerts('Privacy', g.db)
+    all_alerts = get_alerts('Privacy', connection=g.db, limit_num=20)
     return render_template('alerts.htm', all_alerts=all_alerts, dashboard_title='Privacy')
 
 
