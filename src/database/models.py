@@ -19,7 +19,7 @@ class BaseModelMixin:
         """
         conn.session.add(model_object)
         if commit:
-            model_object.safe_commit()
+            model_object.safe_commit(conn=conn)
         else:
             return model_object
 
@@ -59,7 +59,7 @@ class BaseModelMixin:
         """
         conn.session.delete(self)
         if with_commit:
-            self.safe_commit()
+            self.safe_commit(conn=conn)
         return self
 
 
@@ -83,7 +83,7 @@ class DeviceInformation(Base, BaseModelMixin):
 class Alerts(Base, BaseModelMixin):
     """Model mapping a row of our Alerts table in our SQLite Database"""
     __tablename__ = "alerts"
-    id = Column(Integer, primary_key=True, nullable=False)
+    id = Column(Integer, primary_key=True, nullable=False, autoincrement=True)
     alert_type = Column(Text, nullable=False)
     timestamp = Column(Text, nullable=False)
     description = Column(Text, nullable=False)

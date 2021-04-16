@@ -1,4 +1,5 @@
 #! /usr/bin/env python3
+from time import sleep
 from scapy.all import sniff
 from scapy.packet import Packet
 from scapy.layers.inet import Ether
@@ -35,18 +36,42 @@ def main():
     4. Sniffs packets on "wlan0" and analyzes the packet against signatures and privacy rules
     :return: nothing
     """
-
     # 2) Perform a system configuration security check
-    for rule in rules_system_privacy:
-        rule()
+    try:
+        for rule in rules_system_privacy:
+            rule()
+    except Exception as e:
+        run_config.log_event.info(f"Exception when running system privacy rule {e}")
+
+    # wait until there are mac_addresses to sniff for, max count equates to the maximum time to wait between polls
+    max_count = 7  # 3 minutes
+    count = 0
+    while True:
+        n = (2 ** count) - 1
+        sleep(n)
+        if count != max_count:
+            count += 1
+        if DeviceInformation.get_mac_addresses():
+            break
 
     mac_addresses = DeviceInformation.get_mac_addresses()
     # Note: Steps 2 and 3 happen simultaneously in the "sniff()" call, but are separated for clarity
     # 2) Capture IoT packets only with crafted sniff
+    # 3) Perform a scanning analysis of the IoT devices
+    ip_to_mac = _pair_ip_to_mac(mac_addresses)
+    try:
+        for rule in rules_scanning_privacy:
+            rule(ip_to_mac)
+    except Exception as e:
+        run_config.log_event.info(f"Exception when running scanning privacy rule {e}")
+    # 4) Capture IoT packets only with crafted sniff
     print("Capturing IoT packets only")
-    # TODO: Make sure iface is set to the correct interface. May be different in some routers
-    sniff(iface="wlan0", lfilter=lambda packet: (packet.src in mac_addresses) or (packet.dst in mac_addresses),
-          prn=packet_parse, count=num_packets)
+    sniff(iface=run_config.sniffing_interface, lfilter=_sniff_filter, prn=packet_parse, count=num_packets)
+
+
+def _sniff_filter(packet: Packet):
+    results = DeviceInformation.get_mac_addresses()
+    return packet.src in results or packet.dst in results
 
 
 def packet_parse(packet: Packet):
@@ -59,7 +84,6 @@ def packet_parse(packet: Packet):
         try:
             rule(packet)
         except Exception as e:
-            # TODO: refine so a specific error message can be logged
             run_config.log_event.info('Exception raised in a privacy rule check: ' + str(e))
     # For each triggered signature generate an alert for the user
     try:
@@ -70,11 +94,10 @@ def packet_parse(packet: Packet):
                 alert_object = Alert(packet, triggered_rule.msg, AlertType.IDS, Severity.ALERT, is_dst)
                 alert_object.alert()
     except Exception as e:
-        # TODO: refine so a specific error message can be logged
         run_config.log_event.info('Exception raised in an IDS rule check: ' + str(e))
 
 
-def __pair_ip_to_mac():
+def _pair_ip_to_mac(mac_addrs):
     """
     Uses the "arp" system call to pair IoT MAC addrs to their current IP addrs
     :return: dict of IPs to MACs
@@ -93,7 +116,8 @@ def __pair_ip_to_mac():
     for ip in ip_to_mac_all.keys():
         if ip_to_mac_all[ip] in mac_addrs:
             ip_to_mac_iot[ip] = ip_to_mac_all[ip]
-    return(ip_to_mac_iot)
+    return ip_to_mac_iot
+
 
 # call main
 if __name__ == '__main__':

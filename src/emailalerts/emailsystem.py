@@ -3,14 +3,11 @@ import smtplib
 from typing import TYPE_CHECKING
 from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
-from src import run_config as CONFIG
+from src import db
+from src.database.models import EmailInformation
+
 if TYPE_CHECKING:
     from src.dashboard.alerts.alert import Alert
-
-SMTP_SERVER = CONFIG.email.smtp_server
-EMAIL_ACCOUNT = CONFIG.email.email_account
-EMAIL_KEY = CONFIG.email.email_password
-RECIPIENT_EMAILS = CONFIG.email.recipient_emails
 
 PORT = 587  # For starttls
 
@@ -18,27 +15,28 @@ PORT = 587  # For starttls
 context = ssl.create_default_context()
 
 
-def send_message(msg):
+def send_message(msg: str):
     """
     This function will send the given message to the appropriate recipient
     :param msg: (String) message to be sent
     :return: None
     """
+    email_config = db.session.query(EmailInformation).first()
     try:
-        server = smtplib.SMTP(SMTP_SERVER, PORT)
+        server = smtplib.SMTP(email_config.smtp_server, PORT)
         server.ehlo()
         server.starttls(context=context)
         server.ehlo()
-        server.login(EMAIL_ACCOUNT, EMAIL_KEY)
+        server.login(email_config.sender_address, email_config.sender_email_password)
         message = MIMEMultipart("alternative")
         message["Subject"] = "Tiny HIPPO IDS - OpenWrt Email Alert"
         message["From"] = 'OpenWrt Alerting System'
-        message["To"] = ",".join(RECIPIENT_EMAILS)
+        message["To"] = email_config.recipient_addresses
         part1 = MIMEText(msg, 'plain')
         part2 = MIMEText(msg, 'html')
         message.attach(part1)
         message.attach(part2)
-        server.sendmail(EMAIL_ACCOUNT, RECIPIENT_EMAILS, message.as_string())
+        server.sendmail(email_config.sender_address, email_config.recpient_addresses, message.as_string())
         server.quit()
         print('Email was sent successfully')
     except Exception as e:
