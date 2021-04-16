@@ -1,7 +1,7 @@
 from scapy.packet import Packet
 
 from src import run_config
-from src.dashboard.alerts.alert import Alert, ALERT_TYPE, SEVERITY
+from src.dashboard.alerts.alert import Alert, AlertType, Severity
 from src.anamoly_detection.traffic_signatures.abstract_traffic_signature import AbstractTrafficSignature, pull_layer
 
 class BannedTraffic(AbstractTrafficSignature):
@@ -21,7 +21,7 @@ class BannedTraffic(AbstractTrafficSignature):
                 if packet["Ethernet"].src not in run_config.mac_addrs:
                     dst = True
                 desc = "Banned traffic found ({0})".format(pull_layer(layer))
-                Alert(packet, desc, ALERT_TYPE.ANOMALY, SEVERITY.WARN, dst).alert()
+                Alert(packet, desc, AlertType.ANOMALY, Severity.WARN, dst).alert()
 
     def add_traffic_types(self, new_traffic: set):
         self._traffic |= new_traffic
