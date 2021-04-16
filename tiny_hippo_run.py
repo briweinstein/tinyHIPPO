@@ -3,7 +3,7 @@ from time import sleep
 from scapy.all import sniff
 from scapy.packet import Packet
 from scapy.layers.inet import Ether
-from src import run_config
+from src import run_config, anomaly_engine
 from src.database.models import DeviceInformation
 from src.privacy_analysis.packet_analysis.packet_privacy_port import PacketPrivacyPort
 from src.privacy_analysis.system_analysis.system_privacy_dropbear_config import SystemPrivacyDropbearConfig
@@ -85,6 +85,7 @@ def packet_parse(packet: Packet):
             rule(packet)
         except Exception as e:
             run_config.log_event.info('Exception raised in a privacy rule check: ' + str(e))
+
     # For each triggered signature generate an alert for the user
     try:
         triggered_rules = signature_detector.check_signatures(packet)
@@ -95,6 +96,13 @@ def packet_parse(packet: Packet):
                 alert_object.alert()
     except Exception as e:
         run_config.log_event.info('Exception raised in an IDS rule check: ' + str(e))
+
+    # For each packet, pass through frequency detection engine
+    try:
+        anomaly_engine.CheckSignatures(packet)
+    except Exception as e:
+        run_config.log_event.info('Exception raised in an Anomaly Engine check: ' + str(e))
+
 
 
 def _pair_ip_to_mac(mac_addrs):
