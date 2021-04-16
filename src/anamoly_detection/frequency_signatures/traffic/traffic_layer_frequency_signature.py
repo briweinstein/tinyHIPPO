@@ -37,7 +37,7 @@ class TrafficLayerFrequencySignature(AbstractFrequencySignature):
             self.adjust_frequencies(hour)
 
             # If the frequency is above the adjusted average, create and Alert
-            if self._current_average + self._current_deviation < self._window_frequency:
+            if self._current_average + self._current_deviation * 2 < self._window_frequency:
                 dst = False
                 if packet["Ethernet"].src not in DeviceInformation.get_mac_addresses():
                     dst = True
