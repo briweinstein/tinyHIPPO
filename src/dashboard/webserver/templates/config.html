@@ -1,0 +1,126 @@
+<style>
+    .collapsible {
+        background-color: #777;
+        color: white;
+        cursor: pointer;
+        padding: 18px;
+        width: 100%;
+        border: none;
+        text-align: left;
+        outline: none;
+        font-size: 15px;
+    }
+
+    th, td {
+        padding: 8px;
+        text-align: left;
+        border-bottom: 1px solid #ddd;
+    }
+
+    .save_button {
+        width: 10%;
+        margin: 10px;
+        padding: 2px 0px 2px 0px;
+        text-align: center;
+    }
+
+    .save_button:hover {
+        box-shadow: 0 3px 3px 0 rgba(0, 0, 0, 0.24), 0 3px 3px 0 rgba(0, 0, 0, 0.19);
+    }
+
+    .save_notification {
+        text-align: center;
+    }
+
+    .explanation {
+        font-size: large;
+        margin-bottom: 40px;
+    }
+
+    .active, .collapsible:hover {
+        background-color: #555;
+    }
+
+    .content {
+        padding: 0 18px;
+        overflow: hidden;
+        background-color: #f1f1f1;
+    }
+
+    .table {
+        border-collapse: collapse;
+        width: 100%;
+    }
+</style>
+
+<body>
+<h1>Device Configuration</h1>
+<div class="explanation">
+    <h2>Select the devices you wish to be monitored using the IDS system</h2>
+</div>
+<form action="/ids-priv/settings/" method="post">
+    <div>
+        <div class="content">
+            <table class="table">
+                <tbody>
+                <tr>
+                    <th></th>
+                    <th>IP Address</th>
+                    <th>MAC Address</th>
+                    <th>Interface</th>
+                </tr>
+                {%for device in neighboring_devices%}
+                <tr>
+                    <td>
+                        {%if device.mac in existing_devices%}
+                        <input type="checkbox" name="{{device.mac}}" checked>
+                        {%else%}
+                        <input type="checkbox" name="{{device.mac}}">
+                        {%endif%}
+                    </td>
+                    <td>{{device.ip}}</td>
+                    <td>{{device.mac}}</td>
+                    <td>{{device.interface}}</td>
+                </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        <input name="device-form" type="submit" value="Save" class="save_button">
+    </div>
+</form>
+<h1>Email Configuration</h1>
+<div class="explanation">
+    <h2>Please enter the email information you wish to use</h2>
+</div>
+<form action="/ids-priv/settings/" method="post">
+    <div>
+        <div class="content">
+            <label for="raddress">Recipient Address</label><br>
+            <input type="text" id="raddress" name="raddress"><br>
+            <label for="saddress">Sender Address</label><br>
+            <input type="text" id="saddress" name="saddress"><br>
+            <label for="password">Email Password</label><br>
+            <input type="text" id="password" name="password"><br>
+            <label for="server">SMTP Server</label><br>
+            <input type="text" id="server" name="server">
+        </div>
+        <input name="email-form" type="submit" value="Save" class="save_button"/>
+    </div>
+</form>
+<h1>Anomaly Equation Configuration</h1>
+<form action="/ids-priv/settings/" method="post">
+    <div class="explanation">
+        <h2>Please enter the taylor series coefficients you wish to use in anomaly detection</h2>
+    </div>
+    <div>
+        <div class="content">
+            <label for="raddress">Anomaly Equations</label><br>
+            <input type="text" id="aequations" name="aequations"><br>
+            <label for="saddress">Standard Deviation Equations</label><br>
+            <input type="text" id="sdequations" name="sdequations"><br>
+        </div>
+        <input name="equations-form" type="submit" value="Save" class="save_button"/>
+    </div>
+</form>
+</body>

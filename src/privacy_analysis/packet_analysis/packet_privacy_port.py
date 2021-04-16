@@ -3,7 +3,7 @@ from src import run_config
 from src.privacy_analysis.packet_analysis.packet_privacy import PacketPrivacy
 from scapy.layers.inet import TCP, UDP
 from scapy.all import Packet
-from src.dashboard.alerts.alert import Alert, ALERT_TYPE, SEVERITY
+from src.dashboard.alerts.alert import Alert, AlertType, Severity
 
 # This list is less comprehensive than the nmap scanning list due to the variability of IoT device protocol
 # implementations. The nmap scanning list will alert on a more strict list of open ports, and here will alert on the
@@ -26,14 +26,14 @@ class PacketPrivacyPort(PacketPrivacy):
 
             # Scan for using port 80 and the plaintext for privacy leaks
             if (self.packet[proto_type].dport == 80) or (self.packet[proto_type].sport == 80):
-                alert_port_80 = Alert(None, "Sending data over unencrypted port.", ALERT_TYPE.PRIVACY, SEVERITY.ALERT)
+                alert_port_80 = Alert(None, "Sending data over unencrypted port.", AlertType.PRIVACY, Severity.ALERT)
                 alert_port_80.alert()
                 self.__scan_plaintext(proto_type)
 
             # Monitor suspicious ports
             if self.packet[proto_type].dport in suspicious_ports:
                 alert_suspicious_ports = Alert(None, "Suspicious destination port used: " +
-                                               str(self.packet[proto_type].dport), ALERT_TYPE.PRIVACY, SEVERITY.WARN)
+                                               str(self.packet[proto_type].dport), AlertType.PRIVACY, Severity.WARN)
                 alert_suspicious_ports.alert()
 
     # Scan the plaintext for privacy leaks
@@ -61,13 +61,13 @@ class PacketPrivacyPort(PacketPrivacy):
         for keyword in suspicious_strings:
             if keyword in self.payload:
                 alert_keyword = Alert(None, f'Suspicious keyword found in a plaintext packet: {keyword}',
-                                      ALERT_TYPE.PRIVACY, SEVERITY.ALERT)
+                                      AlertType.PRIVACY, Severity.ALERT)
                 alert_keyword.alert()
 
     # Scan the plaintext for privacy leaks
     def __regex_alert(self, regex_string, alert_string):
         if re.search(regex_string, self.payload):
-            alert_search_email = Alert(None, alert_string, ALERT_TYPE.PRIVACY, SEVERITY.ALERT)
+            alert_search_email = Alert(None, alert_string, AlertType.PRIVACY, Severity.ALERT)
             alert_search_email.alert()
 
 # Sources
