@@ -98,7 +98,11 @@ class AnomalyEquations(Base, BaseModelMixin):
     __tablename__ = "anomaly_equations"
     id = Column(Integer, primary_key=True, nullable=False, autoincrement=True)
     average_equation = Column(String(256), nullable=False)
-    adjustment_equation = Column(String(256), nullable=False)
+    deviation_equation = Column(String(256), nullable=False)
+    layer = Column(String(256), nullable=False)
+    window_size = Column(Integer, nullable=False)
+    interval_size = Column(Integer, nullable=False)
+
 
 
 class EmailInformation(Base, BaseModelMixin):
