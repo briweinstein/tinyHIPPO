@@ -57,23 +57,6 @@ def bulk_insert(conn: sqlite3.Connection, csv_collection: dict):
         conn.commit()
         cursor.close()
 
-def insert(conn: sqlite3.Connection, table: str, rows: str):
-    """
-
-    :param conn:
-    :param table:
-    :param rows:
-    :return:
-    """
-    # Fill the tables with data
-    sql_query = "INSERT INTO {0} VALUES({1})".format(table, rows)
-    cursor = conn.cursor()
-    print("EXECUTING: " + sql_query)
-    cursor.execute(sql_query)
-    conn.commit()
-    cursor.close()
-
-
 def get_values(conn: sqlite3.Connection, table: str, columns: list, conditions: list) -> list:
     """
     Returns values from the DB based on the given parameters
