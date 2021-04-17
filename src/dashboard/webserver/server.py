@@ -92,15 +92,11 @@ def ids_alerts():
 
 @app.route('/ids-priv/privacy-alerts/')
 def privacy_alerts():
-<<<<<<< HEAD
-    all_alerts = get_alerts('Privacy', g.db)
-=======
     """
     Serves template for the privacy alerts page
     :return: Rendered jinja-2 template
     """
     all_alerts = get_alerts('Privacy', connection=g.db, limit_num=20)
->>>>>>> c5cfbe3c985cfb5e02a328b672dc0b5bd5005138
     return render_template('alerts.htm', all_alerts=all_alerts, dashboard_title='Privacy')
 
 
