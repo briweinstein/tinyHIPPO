@@ -84,21 +84,17 @@ def main(argv):
     """
     Entry point for the program, handles arguments as paths to the PCAPs
     :param argv: Arguments for program
-    :return:
     """
     # Start time for the process
+    call_info_msg = "Format call as: python(3) dissect_pcap.py \"Path/to/db.db\" [\"Path/to/pcap.pcap\"] ... "
     first_time = time.time()
     print("*" * 50)
 
     # Handle arguments
-    if len(argv) < 2:
-        conn = create_connection("D:/Semester 6/Capstone/DB/analysis.db")
+    if len(argv) < 3:
+        raise Exception(call_info_msg)
     else:
         conn = create_connection(argv[1])
-
-    if len(argv) < 3:
-        paths = []
-    else:
         paths = argv[2:]
 
     # Loop through files, analyze PCAP and insert in bulk into the DB

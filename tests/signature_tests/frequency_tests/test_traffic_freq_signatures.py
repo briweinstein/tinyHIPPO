@@ -19,7 +19,7 @@ class TestIPSignature(unittest.TestCase):
         self.no_trigger_packet = Ether() / IP() / TCP(dport=80)
 
     @um.patch("src.dashboard.alerts.alert.Alert.alert")
-    def test_acceptable_levels(self, mock_alert):
+    def test_queue_wrapping(self, mock_alert):
         """
         Test the no alert is triggered when within acceptable levels, and that the queue properly flushes and fills
         :param mock_alert: Mocked alert class

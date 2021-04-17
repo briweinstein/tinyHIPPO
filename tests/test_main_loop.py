@@ -4,7 +4,6 @@ from pathlib import Path
 from scapy.layers.inet import IP
 from unittest.mock import patch
 
-from src.database.models import DeviceInformation
 from src.signature_detection.signature_detector import SignatureDetector
 from src.signature_detection.ip_signature import IPSignature
 from src.signature_detection.mac_address_signature import MACAddressSignature
