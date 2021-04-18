@@ -25,4 +25,5 @@ suspicious ports that are open.
 ## System Flow
 When the tinyHIPPO system is started, the system and scanning analyses are run and alerted accordingly. Since these 
 configurations are less likely to be changed often, the alerting does not need to occur regularly. The individual 
-packet analysis is done on every packet, which occurs at the same time that the IDS inspects the packets.
+packet analysis is done on every packet, which occurs at the same time that the IDS inspects the packets. Alerts are 
+generated as necessary and sent to the dashboard for the user to view.
