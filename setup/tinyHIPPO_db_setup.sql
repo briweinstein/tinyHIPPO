@@ -1,6 +1,6 @@
 CREATE TABLE alerts (
 	id                   integer NOT NULL  PRIMARY KEY,
-	alert_type           text CHECK (alert_type IN ('Privacy', 'IDS', 'System')) NOT NULL,
+	alert_type           text CHECK (alert_type IN ('Anomaly', 'Privacy', 'IDS', 'System')) NOT NULL,
 	timestamp            text NOT NULL,
 	description          text NOT NULL,
 	severity             integer check (severity in (0, 1, 2)) NOT NULL,

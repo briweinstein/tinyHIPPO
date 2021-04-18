@@ -15,6 +15,7 @@ from packet_analysis.sql.sql_helper import table_bindings, create_connection, bu
 
 csv_collection = None
 
+
 def analyze_pcap_file(path: str):
     """
     Method called per PCAP file to collect data
@@ -79,6 +80,7 @@ def packet_handler(pkt: Packet):
     # If system can handle to packet, analyze it
     if str_layer in table_bindings.keys():
         deconstruct_packet(str_layer, pkt)
+
 
 def main(argv):
     """

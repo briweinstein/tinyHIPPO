@@ -6,9 +6,6 @@ from src.anamoly_detection.frequency_signatures.traffic.traffic_layer_frequency_
     import TrafficLayerFrequencySignature
 from src.anamoly_detection.equation_parser import parse_equation
 
-root_path_test_data = "../../test_data/"
-
-
 class TestIPSignature(unittest.TestCase):
     def setUp(self) -> None:
         eq = parse_equation("1,2,3")    # f(x) = x + 2(x ^ 2) + 3
