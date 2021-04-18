@@ -4,7 +4,8 @@ import abc
 
 class SystemPrivacy(abc.ABC):
     """
-    This abstract base class represents a single privacy rule to be checked against the system in our IoT Privacy Protection System
+    This abstract base class represents a single privacy rule to be checked against the system in our IoT Privacy
+    Protection System
     """
 
     @property

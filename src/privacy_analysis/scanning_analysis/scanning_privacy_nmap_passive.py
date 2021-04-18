@@ -14,8 +14,19 @@ ports_severe_alert_udp = [69]
 
 
 class ScanningPrivacyNmapPassive(ScanningPrivacy):
+    """
+    This privacy detection is called once on every startup of tinyHIPPO. It scans the IoT devices with nmap for the
+    top 100 ports and port 194, which is especially suspicious, and it alerts on the results
+    """
+
     def __call__(self, ip_to_mac):
+        """
+        Handles the privacy detection process and alerting
+        :param ip_to_mac: A dict of IPs mapping to their MAC address
+        """
+        # Get the list of IPs
         ip_list = list(ip_to_mac.keys())
+
         # Scan
         self.nm = nmap.PortScanner()
         try:
