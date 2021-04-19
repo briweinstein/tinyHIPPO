@@ -36,7 +36,10 @@ def _anomaly_configuration(form_data: dict):
     :return: nothing
     """
     a = AnomalyEquations(average_equation=form_data['aequations'],
-                         adjustment_equation=form_data['sdequations'])
+                         deviation_equation=form_data['sdequations'],
+                         window_size=3600,
+                         interval_size=600,
+                         layer=form_data['layer'])
     AnomalyEquations.insert_new_object(a, conn=g.db)
 
 
