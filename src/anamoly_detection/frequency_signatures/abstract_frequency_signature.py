@@ -8,6 +8,7 @@ class AbstractFrequencySignature(abc.ABC):
     """
     Abstract class representing any frequency based signature
     """
+
     def __init__(self, equation, dev_equation, window_size=3600, interval_size=600):
         """
         Super constructor for implementing classes

@@ -1,6 +1,7 @@
 from scapy.all import Packet
 from packet_analysis.sql.dao.sqlObject import sqlObject
 
+
 def table_sql() -> str:
     """
     Constructs the necessary parameters for the table building as a string
@@ -16,10 +17,12 @@ def table_sql() -> str:
               src_mac  STRING (40) NOT NULL,
               dst_mac  STRING (40) NOT NULL"""
 
+
 class Ethernet(sqlObject):
     """
     Object holding the information for an Ethernet frame as well as basic packet information
     """
+
     def __init__(self, pkt: Packet):
         self.time = pkt.time
         self.hour = round((self.time % 86400) / 3600, 2)

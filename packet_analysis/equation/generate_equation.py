@@ -3,6 +3,7 @@ import os
 
 sys.path.insert(0, os.path.abspath("../.."))
 import sqlite3
+import argparse
 import statistics
 from scipy.optimize import curve_fit
 from src.database.models import AnomalyEquations
@@ -95,12 +96,22 @@ def polynomial_fit_function(x_data: list, y_data: list):
     return params
 
 
-def main():
+def main(argv):
+    """
+    Entry point for the program, creates equations from the given .db file,
+    sends them to SQLite DB designated in config.py file
+    :param argv: Arguments for program
+    """
+    parser = argparse.ArgumentParser(description="Analyzes PCAP information and stores it in a SQL database")
+    parser.add_argument("database_path", nargs=1, type=str, help="Path for the database file to export data to")
+
+    args = parser.parse_args(argv[1:])
+
     # Layers to create the equations for
     layers = ["ARP", "IP", "UDP", "TCP", "DNS", "DHCP"]  # Not enough data for EAPOL
 
     # Analysis data dump to create equations from
-    analysis_connection = create_connection("D:/Semester 6/Capstone/DB/analysis.db")
+    analysis_connection = create_connection(args.database_path[0])
 
     # Create the average and deviation equations for each layer
     for layer in layers:
@@ -127,4 +138,4 @@ def main():
 
 
 if __name__ == "__main__":
-    main()
+    main(sys.argv)

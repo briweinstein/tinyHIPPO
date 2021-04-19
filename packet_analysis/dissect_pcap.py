@@ -4,6 +4,7 @@ import os
 sys.path.insert(0, os.path.abspath(".."))
 import re
 import time
+import argparse
 from pathlib import Path
 from scapy.all import sniff
 from scapy.all import Packet
@@ -13,21 +14,19 @@ from packet_analysis.sql.dao import sqlObject
 from packet_analysis.sql.csv.csv_builder import CSVBuilder
 from packet_analysis.sql.sql_helper import table_bindings, create_connection, bulk_insert
 
-csv_collection = None
-
 
 def analyze_pcap_file(path: str):
     """
     Method called per PCAP file to collect data
     :param path: Path to the PCAP file
-    :return: None
+    :return: CSVBuilder object
     """
-    global csv_collection
     csv_collection = CSVBuilder()
     correct_path = Path(path)
     print("*" * 50)
     print("Sniffing packets of: " + str(correct_path))
-    sniff(offline=str(correct_path), prn=packet_handler, store=False)
+    sniff(offline=str(correct_path), prn=lambda x: packet_handler(x, csv_collection), store=False)
+    return csv_collection
 
 
 def pull_layer(layer):
@@ -40,11 +39,11 @@ def pull_layer(layer):
     return re.match(r"^[^']*", class_desc[len(class_desc) - 1]).group(0)
 
 
-def deconstruct_packet(pkt_type: str, pkt: Packet) -> sqlObject:
+def deconstruct_packet(pkt: Packet, csv_collection) -> sqlObject:
     """
     Deconstructs the packet based on its type.
-    :param pkt_type: Type of packet being analyzed
     :param pkt: The packet object itself
+    :param csv_collection: Collection of SQLObjects in CSV form
     :return: sqlObject that can be inserted into the DB
     """
     # Switch statement keyed on pkt_type
@@ -66,10 +65,11 @@ def deconstruct_packet(pkt_type: str, pkt: Packet) -> sqlObject:
             csv_collection.add_entry(layer, sql_dao.csv())
 
 
-def packet_handler(pkt: Packet):
+def packet_handler(pkt: Packet, csv_collection):
     """
     Handles the basic filtering for the packet, collections information if possible
     :param pkt: Packet to be analyzed
+    :param csv_collection: Collection of SQLObjects in CSV form
     :return: None
     """
     # Pull out the outer most layer of the PKT
@@ -79,7 +79,7 @@ def packet_handler(pkt: Packet):
 
     # If system can handle to packet, analyze it
     if str_layer in table_bindings.keys():
-        deconstruct_packet(str_layer, pkt)
+        deconstruct_packet(pkt, csv_collection)
 
 
 def main(argv):
@@ -87,26 +87,28 @@ def main(argv):
     Entry point for the program, handles arguments as paths to the PCAPs
     :param argv: Arguments for program
     """
+    parser = argparse.ArgumentParser(description="Analyzes PCAP information and stores it in a SQL database")
+    parser.add_argument("database_path", nargs=1, type=str, help="Path for the database file to export data to")
+    parser.add_argument("pcap_paths", nargs='+', type=str, help="Path for the database file to export data to")
+
+    args = parser.parse_args(argv[1:])
+
     # Start time for the process
-    call_info_msg = "Format call as: python(3) dissect_pcap.py \"Path/to/db.db\" [\"Path/to/pcap.pcap\"] ... "
     first_time = time.time()
     print("*" * 50)
 
     # Handle arguments
-    if len(argv) < 3:
-        raise Exception(call_info_msg)
-    else:
-        conn = create_connection(argv[1])
-        paths = argv[2:]
+    conn = create_connection(args.database_path[0])
+    paths = args.pcap_paths
 
     # Loop through files, analyze PCAP and insert in bulk into the DB
     for path in paths:
         try:
-            analyze_pcap_file(path)
+            csv_collection = analyze_pcap_file(path)
             bulk_insert(conn, csv_collection.sql_objects)
-        except:
+        except Exception as e:
             print("*" * 50)
-            print("Error in processing PCAP, moving forward")
+            print("Error in processing PCAP: {0}\nMoving forward...".format(e))
             print("*" * 50)
 
     # Print out time based information

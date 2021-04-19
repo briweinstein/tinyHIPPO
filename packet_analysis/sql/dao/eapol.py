@@ -19,6 +19,7 @@ class EAPOL(sqlObject):
     """
      Object representing the information for the EAPOL information of a packet
     """
+
     def __init__(self, pkt: Packet):
         self.ether = Ethernet(pkt)
         self.version = pkt["EAPOL"].version

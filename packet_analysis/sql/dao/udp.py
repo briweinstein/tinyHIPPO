@@ -19,6 +19,7 @@ class UDP(sqlObject):
     """
     Object holding the information for an UDP header
     """
+
     def __init__(self, pkt: Packet):
         self.ip = IP(pkt)
         self.src_port = pkt["UDP"].sport

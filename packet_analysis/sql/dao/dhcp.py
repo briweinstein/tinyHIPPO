@@ -2,6 +2,7 @@ from scapy.all import Packet
 from packet_analysis.sql.dao.sqlObject import sqlObject
 from packet_analysis.sql.dao.udp import UDP, table_sql as udp_table_sql
 
+
 def table_sql() -> str:
     """
     Constructs the necessary parameters for the table building as a string
@@ -20,6 +21,7 @@ class BOOTP(sqlObject):
     """
      Object representing the information for the BOOTP portion of packets, paired with the DHCP information
     """
+
     def __init__(self, pkt: Packet):
         self.udp = UDP(pkt)
         self.client_ip = pkt["BOOTP"].ciaddr
@@ -39,6 +41,7 @@ class DHCP(sqlObject):
     """
     Object representing the information for the DHCP portion of packets
     """
+
     def __init__(self, pkt: Packet):
         self.bootp = BOOTP(pkt)
         self.options = pkt["DHCP"].options
@@ -49,4 +52,3 @@ class DHCP(sqlObject):
         :return: list
         """
         return self.bootp.csv() + [str(self.options)]
-

@@ -9,6 +9,7 @@ from src.anamoly_detection.anomaly_engine import AnomalyEngine
 conn = db
 engine = AnomalyEngine(db)
 
+
 class TestIPSignature(unittest.TestCase):
     def test_engine(self):
         """

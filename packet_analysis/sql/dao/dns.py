@@ -3,6 +3,7 @@ from packet_analysis.sql.dao.sqlObject import sqlObject
 from packet_analysis.sql.dao.udp import UDP, table_sql as udp_table_sql
 from packet_analysis.sql.dao.tcp import TCP, table_sql as udp_table_sql
 
+
 def table_sql() -> str:
     """
     Constructs the necessary parameters for the table building as a string
@@ -15,10 +16,12 @@ def table_sql() -> str:
               qtype    STRING (40) NOT NULL,
               qclass   STRING (40) NOT NULL"""
 
+
 class DNS(sqlObject):
     """
      Object representing the information for the DNS information of a packet
     """
+
     def __init__(self, pkt: Packet):
         if "TCP" in pkt:
             self.udp_tcp = TCP(pkt)

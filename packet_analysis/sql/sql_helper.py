@@ -11,11 +11,12 @@ table_bindings = {
     "DNS": "CREATE TABLE IF NOT EXISTS DNS (\n              {0});".format(dns.table_sql()),
     "EAPOL": "CREATE TABLE IF NOT EXISTS EAPOL (\n              {0});".format(eapol.table_sql()),
     "Ethernet": "CREATE TABLE IF NOT EXISTS Ethernet (\n              {0});".format(ethernet.table_sql()),
-    "IP":  "CREATE TABLE IF NOT EXISTS IP (\n              {0});".format(ip.table_sql()),
+    "IP": "CREATE TABLE IF NOT EXISTS IP (\n              {0});".format(ip.table_sql()),
     "NTP": "CREATE TABLE IF NOT EXISTS NTP (\n              {0});".format(ntp.table_sql()),
     "TCP": "CREATE TABLE IF NOT EXISTS TCP (\n              {0});".format(tcp.table_sql()),
     "UDP": "CREATE TABLE IF NOT EXISTS UDP (\n              {0});".format(udp.table_sql()),
 }
+
 
 def create_connection(path):
     """
@@ -30,6 +31,7 @@ def create_connection(path):
     except Error as e:
         print(f"The error '{e}' occurred")
     return connection
+
 
 def bulk_insert(conn: sqlite3.Connection, csv_collection: dict):
     """
@@ -57,6 +59,7 @@ def bulk_insert(conn: sqlite3.Connection, csv_collection: dict):
         conn.commit()
         cursor.close()
 
+
 def get_values(conn: sqlite3.Connection, table: str, columns: list, conditions: list) -> list:
     """
     Returns values from the DB based on the given parameters
@@ -75,6 +78,7 @@ def get_values(conn: sqlite3.Connection, table: str, columns: list, conditions: 
     rows = cursor.fetchall()
     cursor.close()
     return rows
+
 
 def get_count(conn: sqlite3.Connection, table: str, conditions: list) -> int:
     """

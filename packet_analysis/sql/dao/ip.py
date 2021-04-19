@@ -14,10 +14,12 @@ def table_sql() -> str:
               dst_ip   STRING (64) NOT NULL,
               v6       BOOLEAN     NOT NULL"""
 
+
 class IP(sqlObject):
     """
     Object holding the information for an IP header
     """
+
     def __init__(self, pkt: Packet):
         self.ether = Ethernet(pkt)
         if "IP" in pkt:

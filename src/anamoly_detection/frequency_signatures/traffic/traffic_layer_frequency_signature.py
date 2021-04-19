@@ -9,6 +9,7 @@ class TrafficLayerFrequencySignature(AbstractFrequencySignature):
     """
     Signature class for representing traffic layer frequency limits
     """
+
     def __init__(self, equation, dev_equation, layer: str, window_size=3600, interval_size=600):
         """
         Initializes the signature using the super class, and it's unique information

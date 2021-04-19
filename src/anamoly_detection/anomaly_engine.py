@@ -9,6 +9,7 @@ class AnomalyEngine:
     """
     Engine object used to manage anomaly signatures
     """
+
     def __init__(self, connection, frequency_signatures=[], traffic_signatures=[]):
         """
         Creates an engine object using the given connection, defaulting to no signatures present
@@ -43,7 +44,7 @@ class AnomalyEngine:
         for obj in rows:
             # Tuple of data from the sql DAO
             parsed_rows.append((obj.average_equation, obj.deviation_equation,
-                               obj.layer, obj.window_size, obj.interval_size))
+                                obj.layer, obj.window_size, obj.interval_size))
         return parsed_rows
 
     def FormatEquation(self, rows: list):

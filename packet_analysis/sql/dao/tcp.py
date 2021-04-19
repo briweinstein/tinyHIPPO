@@ -14,10 +14,12 @@ def table_sql() -> str:
               dst_port STRING (40) NOT NULL,
               seq      INTEGER     NOT NULL"""
 
+
 class TCP(sqlObject):
     """
     Object holding the information for an TCP segment header
     """
+
     def __init__(self, pkt: Packet):
         self.ip = IP(pkt)
         self.src_port = pkt["TCP"].sport

@@ -6,10 +6,11 @@ from src.anamoly_detection.frequency_signatures.traffic.traffic_layer_frequency_
     import TrafficLayerFrequencySignature
 from src.anamoly_detection.equation_parser import parse_equation
 
+
 class TestIPSignature(unittest.TestCase):
     def setUp(self) -> None:
-        eq = parse_equation("1,2,3")    # f(x) = x + 2(x ^ 2) + 3
-        dev_eq = parse_equation("0")    # f(x) = 0
+        eq = parse_equation("1,2,3")  # f(x) = x + 2(x ^ 2) + 3
+        dev_eq = parse_equation("0")  # f(x) = 0
         layer = "UDP"
         self.signature = TrafficLayerFrequencySignature(eq, dev_eq, layer)
         self.trigger_packet = Ether() / IP() / UDP(dport=80)
@@ -28,12 +29,12 @@ class TestIPSignature(unittest.TestCase):
         # Frequency properly triggers
         self.assertEqual(1, self.signature._window_frequency)
         # Deviation and average calculate correctly for hour 0
-        self.assertEqual(0, self.signature._current_deviation)        # Static 0 constant
+        self.assertEqual(0, self.signature._current_deviation)  # Static 0 constant
         self.assertGreater(0.1, 4 - self.signature._current_average)  # Estimated integral value of equation
         # Interval queue is as expected (Last item is 1, rest are 0) (Length 6)
         intervals = list(self.signature._interval_frequencies)
-        self.assertEqual(1, intervals[-1])          # Expect 1 interval in the queue with 1 value
-        self.assertEqual(0, intervals.count(0))     # Expect no 0's, since this is the first item in the queue
+        self.assertEqual(1, intervals[-1])  # Expect 1 interval in the queue with 1 value
+        self.assertEqual(0, intervals.count(0))  # Expect no 0's, since this is the first item in the queue
 
         self.trigger_packet.time += 1800  # Hour 0, Minute 30, Second 1
         self.signature(self.trigger_packet)
