@@ -92,7 +92,7 @@ def polynomial_fit_function(x_data: list, y_data: list):
     :param y_data: Y values
     :return: Parameter to the function
     """
-    params, params_covariance = curve_fit(objective, x_data, y_data)
+    params = curve_fit(objective, x_data, y_data)[0]
     return params
 
 
