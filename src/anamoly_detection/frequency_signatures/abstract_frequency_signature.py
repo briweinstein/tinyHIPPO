@@ -1,5 +1,5 @@
 import abc
-from math import ceil, floor
+from math import ceil
 from collections import deque
 from scapy.all import Packet
 
