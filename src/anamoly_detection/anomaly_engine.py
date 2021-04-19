@@ -10,13 +10,18 @@ class AnomalyEngine:
     Engine object used to manage anomaly signatures
     """
 
-    def __init__(self, connection, frequency_signatures=[], traffic_signatures=[]):
+    def __init__(self, connection, frequency_signatures=None, traffic_signatures=None):
         """
         Creates an engine object using the given connection, defaulting to no signatures present
         :param connection: DB connection used to retrieve limit information
         :param frequency_signatures: Frequency based signatures (Time based limits)
         :param traffic_signatures: Traffic based signatures (Traffic type based limits)
         """
+        if traffic_signatures is None:
+            traffic_signatures = []
+        if frequency_signatures is None:
+            frequency_signatures = []
+
         # Save connection and create a session if necessary
         self.connection = connection
         if not self.connection.session:
@@ -28,12 +33,12 @@ class AnomalyEngine:
 
         # Get the equation data from the database
         if connection:
-            limit_data = self.GetEquationStrings()
+            limit_data = self.get_equation_strings()
 
             # Format equations
-            self.FormatEquation(limit_data)
+            self.format_equation(limit_data)
 
-    def GetEquationStrings(self) -> list:
+    def get_equation_strings(self) -> list:
         """
         Retrieves the frequency based limit equations from the DB
         :return: List of row information from DB
@@ -47,7 +52,7 @@ class AnomalyEngine:
                                 obj.layer, obj.window_size, obj.interval_size))
         return parsed_rows
 
-    def FormatEquation(self, rows: list):
+    def format_equation(self, rows: list):
         """
         Formats the equation into a callable function within Python
         :param rows: List of lists of information regarding the equation/signature
@@ -65,7 +70,7 @@ class AnomalyEngine:
             self.frequency_signatures.append(TrafficLayerFrequencySignature(avg_eq, dev_eq,
                                                                             layer, window_size, interval_size))
 
-    def CheckSignatures(self, pkt: Packet):
+    def check_signatures(self, pkt: Packet):
         """
         Loop through the signatures to test the packet
         :param pkt: Packet retrieved from sniffing

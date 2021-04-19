@@ -6,6 +6,11 @@ class sqlObject(abc.ABC):
     Abstract class for data access objects. Packets are separated based on most specific layer.
     """
 
+    @staticmethod
+    @abc.abstractmethod
+    def table_sql() -> str:
+        raise NotImplementedError
+
     @abc.abstractmethod
     def csv(self) -> list:
         """

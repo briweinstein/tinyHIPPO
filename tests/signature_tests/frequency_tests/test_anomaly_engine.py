@@ -21,7 +21,7 @@ class TestIPSignature(unittest.TestCase):
         self.assertTrue(engine.traffic_signatures == [])
 
         # Check that the returned rows are all turned into equations
-        self.assertEqual(len(engine.GetEquationStrings()), len(engine.frequency_signatures))
+        self.assertEqual(len(engine.get_equation_strings()), len(engine.frequency_signatures))
 
     def test_engine_packet_handling(self):
         """
@@ -32,8 +32,8 @@ class TestIPSignature(unittest.TestCase):
         tcp_packet = Ether() / IP() / TCP(dport=80)
 
         # Call the engine using the two packets as parameters
-        engine.CheckSignatures(udp_packet)
-        engine.CheckSignatures(tcp_packet)
+        engine.check_signatures(udp_packet)
+        engine.check_signatures(tcp_packet)
 
         # Confirm the signatures regarding IP & TCP/UDP are triggered (3 signatures in total)
         triggered_signatures = list(filter(lambda x: x._window_frequency > 0, engine.frequency_signatures))

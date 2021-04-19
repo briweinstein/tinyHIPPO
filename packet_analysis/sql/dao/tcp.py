@@ -1,18 +1,6 @@
 from scapy.all import Packet
 from packet_analysis.sql.dao.sqlObject import sqlObject
-from packet_analysis.sql.dao.ip import IP, table_sql as ip_table_sql
-
-
-def table_sql() -> str:
-    """
-    Constructs the necessary parameters for the table building as a string
-    :return: str
-    """
-    return ip_table_sql() + \
-           """,
-              src_port STRING (40) NOT NULL,
-              dst_port STRING (40) NOT NULL,
-              seq      INTEGER     NOT NULL"""
+from packet_analysis.sql.dao.ip import IP
 
 
 class TCP(sqlObject):
@@ -25,6 +13,18 @@ class TCP(sqlObject):
         self.src_port = pkt["TCP"].sport
         self.dst_port = pkt["TCP"].dport
         self.seq = pkt["TCP"].seq
+
+    @staticmethod
+    def table_sql() -> str:
+        """
+        Constructs the necessary parameters for the table building as a string
+        :return: str
+        """
+        return IP.table_sql() + \
+               """,
+                  src_port STRING (40) NOT NULL,
+                  dst_port STRING (40) NOT NULL,
+                  seq      INTEGER     NOT NULL"""
 
     def csv(self):
         """

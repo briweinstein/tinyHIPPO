@@ -1,20 +1,7 @@
 from scapy.all import Packet
 from packet_analysis.sql.dao.sqlObject import sqlObject
-from packet_analysis.sql.dao.udp import UDP, table_sql as udp_table_sql
-from packet_analysis.sql.dao.tcp import TCP, table_sql as udp_table_sql
-
-
-def table_sql() -> str:
-    """
-    Constructs the necessary parameters for the table building as a string
-    :return: str
-    """
-    return udp_table_sql() + \
-           """,
-              is_tcp   BOOLEAN     NOT NULL,
-              qname    STRING (40) NOT NULL,
-              qtype    STRING (40) NOT NULL,
-              qclass   STRING (40) NOT NULL"""
+from packet_analysis.sql.dao.udp import UDP
+from packet_analysis.sql.dao.tcp import TCP
 
 
 class DNS(sqlObject):
@@ -40,6 +27,19 @@ class DNS(sqlObject):
             self.qname = ""
             self.qtype = ""
             self.qclass = ""
+
+    @staticmethod
+    def table_sql() -> str:
+        """
+        Constructs the necessary parameters for the table building as a string
+        :return: str
+        """
+        return UDP.table_sql() + \
+               """,
+                  is_tcp   BOOLEAN     NOT NULL,
+                  qname    STRING (40) NOT NULL,
+                  qtype    STRING (40) NOT NULL,
+                  qclass   STRING (40) NOT NULL"""
 
     def csv(self):
         """

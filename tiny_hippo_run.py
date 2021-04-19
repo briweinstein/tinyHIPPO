@@ -101,7 +101,7 @@ def packet_parse(packet: Packet):
 
     # For each packet, pass through frequency detection engine
     try:
-        anomaly_engine.CheckSignatures(packet)
+        anomaly_engine.check_signatures(packet)
     except Exception as e:
         run_config.log_event.info('Exception raised in an Anomaly Engine check: ' + str(e))
 

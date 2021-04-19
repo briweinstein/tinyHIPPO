@@ -1,18 +1,6 @@
 from scapy.all import Packet
 from packet_analysis.sql.dao.sqlObject import sqlObject
-from packet_analysis.sql.dao.udp import UDP, table_sql as udp_table_sql
-
-
-def table_sql() -> str:
-    """
-    Constructs the necessary parameters for the table building as a string
-    :return: str
-    """
-    return udp_table_sql() + \
-           """,
-              ref_id    STRING (64) NOT NULL,
-              id        STRING (64) NOT NULL,
-              npt_ver   STRING (40) NOT NULL"""
+from packet_analysis.sql.dao.udp import UDP
 
 
 class NTPHeader(sqlObject):
@@ -25,6 +13,18 @@ class NTPHeader(sqlObject):
         self.ref_id = pkt["NTPHeader"].ref_id
         self.id = pkt["NTPHeader"].id
         self.version = pkt["NTPHeader"].version
+
+    @staticmethod
+    def table_sql() -> str:
+        """
+        Constructs the necessary parameters for the table building as a string
+        :return: str
+        """
+        return UDP.table_sql() + \
+               """,
+                  ref_id    STRING (64) NOT NULL,
+                  id        STRING (64) NOT NULL,
+                  npt_ver   STRING (40) NOT NULL"""
 
     def csv(self):
         """

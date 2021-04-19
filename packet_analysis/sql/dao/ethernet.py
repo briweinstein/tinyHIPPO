@@ -2,22 +2,6 @@ from scapy.all import Packet
 from packet_analysis.sql.dao.sqlObject import sqlObject
 
 
-def table_sql() -> str:
-    """
-    Constructs the necessary parameters for the table building as a string
-    :return: str
-    """
-    return """id       INTEGER     PRIMARY KEY AUTOINCREMENT
-                                   UNIQUE
-                                   NOT NULL,
-              time     DECIMAL     NOT NULL,
-              hour     INTEGER     NOT NULL,
-              day      INTEGER     NOT NULL,
-              pkt_len  INTEGER     NOT NULL,
-              src_mac  STRING (40) NOT NULL,
-              dst_mac  STRING (40) NOT NULL"""
-
-
 class Ethernet(sqlObject):
     """
     Object holding the information for an Ethernet frame as well as basic packet information
@@ -30,6 +14,22 @@ class Ethernet(sqlObject):
         self.length = len(pkt)
         self.src_mac = pkt["Ethernet"].src
         self.dst_mac = pkt["Ethernet"].dst
+
+    @staticmethod
+    def table_sql() -> str:
+        """
+        Constructs the necessary parameters for the table building as a string
+        :return: str
+        """
+        return """id       INTEGER     PRIMARY KEY AUTOINCREMENT
+                                       UNIQUE
+                                       NOT NULL,
+                  time     DECIMAL     NOT NULL,
+                  hour     INTEGER     NOT NULL,
+                  day      INTEGER     NOT NULL,
+                  pkt_len  INTEGER     NOT NULL,
+                  src_mac  STRING (40) NOT NULL,
+                  dst_mac  STRING (40) NOT NULL"""
 
     def csv(self):
         """

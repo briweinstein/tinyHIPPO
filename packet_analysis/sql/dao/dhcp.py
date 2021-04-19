@@ -1,20 +1,6 @@
 from scapy.all import Packet
 from packet_analysis.sql.dao.sqlObject import sqlObject
-from packet_analysis.sql.dao.udp import UDP, table_sql as udp_table_sql
-
-
-def table_sql() -> str:
-    """
-    Constructs the necessary parameters for the table building as a string
-    :return: str
-    """
-    return udp_table_sql() + \
-           """,
-              client_ip    STRING (40) NOT NULL,
-              assigned_ip  STRING (40) NOT NULL,
-              server_ip    STRING (40) NOT NULL,
-              client_mac   STRING (40) NOT NULL,
-              options      TEXT        NOT NULL"""
+from packet_analysis.sql.dao.udp import UDP
 
 
 class BOOTP(sqlObject):
@@ -28,6 +14,20 @@ class BOOTP(sqlObject):
         self.assigned_ip = pkt["BOOTP"].yiaddr
         self.server_ip = pkt["BOOTP"].siaddr
         self.client_mac = pkt["BOOTP"].chaddr
+
+    @staticmethod
+    def table_sql() -> str:
+        """
+        Constructs the necessary parameters for the table building as a string
+        :return: str
+        """
+        return UDP.table_sql() + \
+               """,
+                  client_ip    STRING (40) NOT NULL,
+                  assigned_ip  STRING (40) NOT NULL,
+                  server_ip    STRING (40) NOT NULL,
+                  client_mac   STRING (40) NOT NULL,
+                  options      TEXT        NOT NULL"""
 
     def csv(self):
         """

@@ -1,14 +1,6 @@
 from scapy.all import Packet
 from packet_analysis.sql.dao.sqlObject import sqlObject
-from packet_analysis.sql.dao.ethernet import Ethernet, table_sql as ethernet_table_sql
-
-
-def table_sql() -> str:
-    """
-    Constructs the necessary parameters for the table building as a string
-    :return: str
-    """
-    return ethernet_table_sql()
+from packet_analysis.sql.dao.ethernet import Ethernet
 
 
 class ARP(sqlObject):
@@ -18,6 +10,14 @@ class ARP(sqlObject):
 
     def __init__(self, pkt: Packet):
         self.ether = Ethernet(pkt)
+
+    @staticmethod
+    def table_sql() -> str:
+        """
+        Constructs the necessary parameters for the table building as a string
+        :return: str
+        """
+        return Ethernet.table_sql()
 
     def csv(self):
         """

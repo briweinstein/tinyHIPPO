@@ -1,18 +1,6 @@
 from scapy.all import Packet
 from packet_analysis.sql.dao.sqlObject import sqlObject
-from packet_analysis.sql.dao.ethernet import Ethernet, table_sql as ethernet_table_sql
-
-
-def table_sql() -> str:
-    """
-    Constructs the necessary parameters for the table building as a string
-    :return: str
-    """
-    return ethernet_table_sql() + \
-           """,
-              eapol_ver  STRING (40) NOT NULL,
-              type       STRING (40) NOT NULL,
-              eapol_len  INTEGER     NOT NULL"""
+from packet_analysis.sql.dao.ethernet import Ethernet
 
 
 class EAPOL(sqlObject):
@@ -25,6 +13,18 @@ class EAPOL(sqlObject):
         self.version = pkt["EAPOL"].version
         self.type = pkt["EAPOL"].type
         self.length = pkt["EAPOL"].len
+
+    @staticmethod
+    def table_sql() -> str:
+        """
+        Constructs the necessary parameters for the table building as a string
+        :return: str
+        """
+        return Ethernet.table_sql() + \
+               """,
+                  eapol_ver  STRING (40) NOT NULL,
+                  type       STRING (40) NOT NULL,
+                  eapol_len  INTEGER     NOT NULL"""
 
     def csv(self):
         """
