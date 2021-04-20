@@ -104,7 +104,6 @@ class AnomalyEquations(Base, BaseModelMixin):
     interval_size = Column(Integer, nullable=False)
 
 
-
 class EmailInformation(Base, BaseModelMixin):
     """Model mapping a row of our EmailInformation table in our SQLite Database"""
     __tablename__ = "email_information"
