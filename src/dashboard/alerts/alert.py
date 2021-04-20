@@ -9,6 +9,7 @@ from src.database.models import Alerts
 class AlertType(Enum):
     PRIVACY = "Privacy"
     IDS = "IDS"
+    ANOMALY = "Anomaly"
     UNKNOWN = "Unknown"
 
 

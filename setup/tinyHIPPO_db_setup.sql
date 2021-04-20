@@ -1,6 +1,6 @@
 CREATE TABLE alerts (
 	id                   integer NOT NULL  PRIMARY KEY,
-	alert_type           text CHECK (alert_type IN ('Privacy', 'IDS', 'System')) NOT NULL,
+	alert_type           text CHECK (alert_type IN ('Anomaly', 'Privacy', 'IDS', 'System')) NOT NULL,
 	timestamp            text NOT NULL,
 	description          text NOT NULL,
 	severity             integer check (severity in (0, 1, 2)) NOT NULL,
@@ -10,9 +10,12 @@ CREATE TABLE alerts (
  );
 
 CREATE TABLE anomaly_equations (
-	id                   integer NOT NULL  PRIMARY KEY,
+	id                   integer NOT NULL  PRIMARY KEY AUTOINCREMENT,
 	average_equation     varchar(256) NOT NULL    ,
-	adjustment_equation  varchar(256) NOT NULL    
+	deviation_equation   varchar(256) NOT NULL    ,
+	layer                varchar(256) NOT NULL    ,
+	window_size          integer      NOT NULL    ,
+	interval_size        integer      NOT NULL
  );
 
 CREATE TABLE email_information ( 

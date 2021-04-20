@@ -7,3 +7,4 @@ try:
     db.create_session()
 except Exception as e:
     run_config.log_event.info(f"Database connection error {e}")
+
