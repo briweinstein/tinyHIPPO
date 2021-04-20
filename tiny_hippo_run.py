@@ -1,4 +1,9 @@
 #! /usr/bin/env python3
+import pathlib
+import click
+from scapy.utils import rdpcap
+import random
+
 from time import sleep
 from scapy.all import sniff
 from scapy.packet import Packet
@@ -28,8 +33,18 @@ signature_detector = SignatureDetector(ids_signatures)
 num_packets = 0
 anomaly_engine = AnomalyEngine(db)
 
+# Testing command line argument values
+percent_malicious_packets = 0
+all_malicious_packets = []
+malicious_packet_count = 0
 
-def main():
+
+@click.command()
+@click.option("--pcap_file_benign", "-b", required=True, type=str)
+@click.option("--pcap_file_malicious", "-m", required=True, type=str)
+@click.option("--percent_malicious_packets", "-p", required=True, type=int)
+def main(arg_pcap_file_benign: str, arg_pcap_file_malicious: str, arg_percent_malicious_packets: int):
+    global all_malicious_packets, percent_malicious_packets
     """
     Main loop of the program, does the following
     1. Validates the users given mac addresses
@@ -38,6 +53,11 @@ def main():
     4. Sniffs packets on "wlan0" and analyzes the packet against signatures and privacy rules
     :return: nothing
     """
+    # Set the global testing command line argument values
+    pcap_file_benign = arg_pcap_file_benign
+    percent_malicious_packets = arg_percent_malicious_packets
+    all_malicious_packets = rdpcap(str(arg_pcap_file_malicious))
+
     # 2) Perform a system configuration security check
     try:
         for rule in rules_system_privacy:
@@ -68,12 +88,29 @@ def main():
         run_config.log_event.info(f"Exception when running scanning privacy rule {e}")
     # 4) Capture IoT packets only with crafted sniff
     print("Capturing IoT packets only")
-    sniff(iface=run_config.sniffing_interface, lfilter=_sniff_filter, prn=packet_parse, count=num_packets)
+    sniff(offline=str(pcap_file_benign), lfilter=_sniff_filter, prn=packet_combo, store=0)
 
 
 def _sniff_filter(packet: Packet):
     results = DeviceInformation.get_mac_addresses()
     return packet.src in results or packet.dst in results
+
+
+def packet_combo(packet_benign: Packet):
+    global all_malicious_packets, malicious_packet_count
+    # Determine if a malicious packet should be sent
+    send_malicious = random.randint(0, 100) <= percent_malicious_packets
+
+    # Send the malicious packet if needed
+    if send_malicious:
+        # Get the next malicious packet
+        curr_malicious_packet = all_malicious_packets[malicious_packet_count]
+        malicious_packet_count = malicious_packet_count + 1
+        # Process the malicious packet
+        packet_parse(curr_malicious_packet)
+
+    # Send the given benign packet
+    packet_parse(packet_benign)
 
 
 def packet_parse(packet: Packet):
