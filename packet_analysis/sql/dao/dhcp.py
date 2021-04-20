@@ -21,13 +21,7 @@ class BOOTP(sqlObject):
         Constructs the necessary parameters for the table building as a string
         :return: str
         """
-        return UDP.table_sql() + \
-               """,
-                  client_ip    STRING (40) NOT NULL,
-                  assigned_ip  STRING (40) NOT NULL,
-                  server_ip    STRING (40) NOT NULL,
-                  client_mac   STRING (40) NOT NULL,
-                  options      TEXT        NOT NULL"""
+        return DHCP.table_sql()
 
     def csv(self):
         """
@@ -45,6 +39,21 @@ class DHCP(sqlObject):
     def __init__(self, pkt: Packet):
         self.bootp = BOOTP(pkt)
         self.options = pkt["DHCP"].options
+
+
+    @staticmethod
+    def table_sql() -> str:
+        """
+        Constructs the necessary parameters for the table building as a string
+        :return: str
+        """
+        return UDP.table_sql() + \
+               """,
+                  client_ip    STRING (40) NOT NULL,
+                  assigned_ip  STRING (40) NOT NULL,
+                  server_ip    STRING (40) NOT NULL,
+                  client_mac   STRING (40) NOT NULL,
+                  options      TEXT        NOT NULL"""
 
     def csv(self):
         """

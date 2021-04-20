@@ -6,15 +6,15 @@ from packet_analysis.sql.dao import *
 
 # Bindings for table creation SQL
 table_bindings = {
-    "ARP": "CREATE TABLE IF NOT EXISTS ARP (\n              {0});".format(arp.table_sql()),
-    "DHCP": "CREATE TABLE IF NOT EXISTS DHCP (\n              {0});".format(dhcp.table_sql()),
-    "DNS": "CREATE TABLE IF NOT EXISTS DNS (\n              {0});".format(dns.table_sql()),
-    "EAPOL": "CREATE TABLE IF NOT EXISTS EAPOL (\n              {0});".format(eapol.table_sql()),
-    "Ethernet": "CREATE TABLE IF NOT EXISTS Ethernet (\n              {0});".format(ethernet.table_sql()),
-    "IP": "CREATE TABLE IF NOT EXISTS IP (\n              {0});".format(ip.table_sql()),
-    "NTP": "CREATE TABLE IF NOT EXISTS NTP (\n              {0});".format(ntp.table_sql()),
-    "TCP": "CREATE TABLE IF NOT EXISTS TCP (\n              {0});".format(tcp.table_sql()),
-    "UDP": "CREATE TABLE IF NOT EXISTS UDP (\n              {0});".format(udp.table_sql()),
+    "ARP": "CREATE TABLE IF NOT EXISTS ARP (\n              {0});".format(arp.ARP.table_sql()),
+    "DHCP": "CREATE TABLE IF NOT EXISTS DHCP (\n              {0});".format(dhcp.DHCP.table_sql()),
+    "DNS": "CREATE TABLE IF NOT EXISTS DNS (\n              {0});".format(dns.DNS.table_sql()),
+    "EAPOL": "CREATE TABLE IF NOT EXISTS EAPOL (\n              {0});".format(eapol.EAPOL.table_sql()),
+    "Ethernet": "CREATE TABLE IF NOT EXISTS Ethernet (\n              {0});".format(ethernet.Ethernet.table_sql()),
+    "IP": "CREATE TABLE IF NOT EXISTS IP (\n              {0});".format(ip.IP.table_sql()),
+    "NTP": "CREATE TABLE IF NOT EXISTS NTP (\n              {0});".format(ntp.NTPHeader.table_sql()),
+    "TCP": "CREATE TABLE IF NOT EXISTS TCP (\n              {0});".format(tcp.TCP.table_sql()),
+    "UDP": "CREATE TABLE IF NOT EXISTS UDP (\n              {0});".format(udp.UDP.table_sql()),
 }
 
 

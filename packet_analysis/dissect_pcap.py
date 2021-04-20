@@ -29,16 +29,6 @@ def analyze_pcap_file(path: str):
     return csv_collection
 
 
-def pull_layer(layer):
-    """
-    Pulls string descriptor from layer object of scapy Packet object
-    :param layer: scapy Layer object
-    :return: string
-    """
-    class_desc = str(layer).split('.')
-    return re.match(r"^[^']*", class_desc[len(class_desc) - 1]).group(0)
-
-
 def deconstruct_packet(pkt: Packet, csv_collection) -> sqlObject:
     """
     Deconstructs the packet based on its type.
@@ -73,9 +63,10 @@ def packet_handler(pkt: Packet, csv_collection):
     :return: None
     """
     # Pull out the outer most layer of the PKT
-    str_layer = pull_layer(pkt.layers()[-1])
+
+    str_layer = pkt.layers()[-1].__name__
     if str_layer == "Raw":
-        str_layer = pull_layer(pkt.layers()[-2])
+        str_layer = pkt.layers()[-2].__name__
 
     # If system can handle to packet, analyze it
     if str_layer in table_bindings.keys():
