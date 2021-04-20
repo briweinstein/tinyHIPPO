@@ -5,7 +5,8 @@ from scapy.all import Packet
 
 class PacketPrivacy(abc.ABC):
     """
-    This abstract base class represents a single privacy rule to be checked against packets in our IoT Privacy Protection System
+    This abstract base class represents a single privacy rule to be checked against packets in ourIoT Privacy
+    Protection System
     """
 
     @property
