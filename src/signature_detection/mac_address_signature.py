@@ -20,7 +20,8 @@ class MACAddressSignature(Signature):
         :return: Whether the packet came from a spoofed MAC Address
         """
         if net.Ether not in packet or net.IP not in packet:
-            raise Exception("Given packet does not have the necessary layers")
+            return False
+            # raise Exception("MACAddressSignature: Given packet does not have the necessary layers")
         ether_layer = packet[net.Ether]
         ip_layer = packet[net.IP]
         mac_src = ether_layer.src

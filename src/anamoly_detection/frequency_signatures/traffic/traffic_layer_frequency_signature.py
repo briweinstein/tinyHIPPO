@@ -38,7 +38,8 @@ class TrafficLayerFrequencySignature(AbstractFrequencySignature):
             self.adjust_frequencies(hour)
 
             # If the frequency is above the adjusted average, create and Alert
-            if self._current_average + self._current_deviation * 2 < self._window_frequency:
+            if self._current_average + self._current_deviation * 2 < self._window_frequency and\
+                    not self._alerted_for_window:
                 dst = False
                 if packet["Ethernet"].src not in DeviceInformation.get_mac_addresses():
                     dst = True
@@ -46,3 +47,4 @@ class TrafficLayerFrequencySignature(AbstractFrequencySignature):
                       "Traffic based anomaly detection shows above usual rates of {0} traffic. {1} packets"
                       " seen in last {2} seconds".format(self._layer, self._window_frequency, self._window_size),
                       AlertType.ANOMALY, Severity.WARN, dst).alert()
+                self._alerted_for_window = True

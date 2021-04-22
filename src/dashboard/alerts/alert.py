@@ -1,8 +1,11 @@
 import hashlib
-from datetime import datetime
+from time import time
 from scapy.utils import raw
-from src.emailalerts import emailsystem
+from datetime import datetime
 from enum import Enum, IntEnum
+
+from src import db
+from src.emailalerts import emailsystem
 from src.database.models import Alerts
 
 
@@ -78,8 +81,19 @@ class Alert:
         if self.device_mac:
             new_alert.mac_address = self.device_mac
             new_alert.payload = self.payload_info
-        Alerts.insert_new_object(new_alert)
-        return new_alert
+
+        # Decide if the alert should be committed
+        commit = db.session_alert_count > 25 or time() - db.session_alert_time >= 3600
+
+        # Adjust session commit information
+        if commit:
+            db.session_alert_time = time()
+            db.session_alert_count = 0
+        else:
+            db.session_alert_count += 1
+
+        # Alert added to session, committed in bulk depending on frequency or time
+        return Alerts.insert_new_object(new_alert, commit=commit)
 
     def alert(self):
         """
@@ -88,7 +102,8 @@ class Alert:
         """
         # Send email if urgent enough
         if self.severity > 1:
-            emailsystem.send_email_alert(self)
+            # emailsystem.send_email_alert(self)
+            print("You've got mail!")
 
         # Save the alert in the SQLite database for frontend use
         self._save_alert()
