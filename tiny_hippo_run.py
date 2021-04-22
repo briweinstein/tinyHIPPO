@@ -40,9 +40,9 @@ malicious_packet_count = 0
 
 
 @click.command()
-@click.option("--pcap_file_benign", "-b", required=True, type=str)
-@click.option("--pcap_file_malicious", "-m", required=True, type=str)
-@click.option("--percent_malicious_packets", "-p", required=True, type=int)
+@click.option("--arg_pcap_file_benign", "-b", required=True, type=str)
+@click.option("--arg_pcap_file_malicious", "-m", required=True, type=str)
+@click.option("--arg_percent_malicious_packets", "-p", required=True, type=int)
 def main(arg_pcap_file_benign: str, arg_pcap_file_malicious: str, arg_percent_malicious_packets: int):
     global all_malicious_packets, percent_malicious_packets
     """
@@ -56,34 +56,27 @@ def main(arg_pcap_file_benign: str, arg_pcap_file_malicious: str, arg_percent_ma
     # Set the global testing command line argument values
     pcap_file_benign = arg_pcap_file_benign
     percent_malicious_packets = arg_percent_malicious_packets
+    print("Going to read: " + str(arg_pcap_file_malicious))
     all_malicious_packets = rdpcap(str(arg_pcap_file_malicious))
+    print("Finished reading: " + str(arg_pcap_file_malicious))
 
     # 2) Perform a system configuration security check
     try:
         for rule in rules_system_privacy:
-            rule()
+            # rule()
+            print("Not running rule: " + str(rule.__name__))
     except Exception as e:
         run_config.log_event.info(f"Exception when running system privacy rule {e}")
-
-    # wait until there are mac_addresses to sniff for, max count equates to the maximum time to wait between polls
-    max_count = 7  # 3 minutes
-    count = 0
-    while True:
-        n = (2 ** count) - 1
-        sleep(n)
-        if count != max_count:
-            count += 1
-        if DeviceInformation.get_mac_addresses():
-            break
 
     mac_addresses = DeviceInformation.get_mac_addresses()
     # Note: Steps 2 and 3 happen simultaneously in the "sniff()" call, but are separated for clarity
     # 2) Capture IoT packets only with crafted sniff
     # 3) Perform a scanning analysis of the IoT devices
-    ip_to_mac = _pair_ip_to_mac(mac_addresses)
+    # ip_to_mac = _pair_ip_to_mac(mac_addresses)
     try:
         for rule in rules_scanning_privacy:
-            rule(ip_to_mac)
+            # rule(ip_to_mac)
+            print("Not running rule: " + str(rule.__name__))
     except Exception as e:
         run_config.log_event.info(f"Exception when running scanning privacy rule {e}")
     # 4) Capture IoT packets only with crafted sniff
@@ -104,8 +97,12 @@ def packet_combo(packet_benign: Packet):
     # Send the malicious packet if needed
     if send_malicious:
         # Get the next malicious packet
+        if malicious_packet_count >= len(all_malicious_packets):
+            malicious_packet_count = 0
         curr_malicious_packet = all_malicious_packets[malicious_packet_count]
         malicious_packet_count = malicious_packet_count + 1
+        curr_malicious_packet["Ethernet"].dst = packet_benign["Ethernet"].dst
+        curr_malicious_packet["Ethernet"].src = packet_benign["Ethernet"].src
         # Process the malicious packet
         packet_parse(curr_malicious_packet)
 
