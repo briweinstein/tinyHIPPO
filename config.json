@@ -1,4 +1,4 @@
 {
     "virustotal_api_key": "TEMPLATE",
-    "sniffing_interface": "wlan0"
+    "sniffing_interface": "br-lan"
 }
