@@ -16,7 +16,7 @@ include $(INCLUDE_DIR)/package.mk
 define Package/tinyHIPPO
 	SECTION:=examples
 	CATEGORY:=Examples
-	DEPENDS:=+python3 +scapy +python3-pip +sqlite3-cli +nmap +python3-sqlalchemy
+	DEPENDS:=+python3 +scapy +python3-pip +sqlite3-cli +nmap +python3-sqlalchemy +python3-flask
 	TITLE:=Capstone IDS Project for CY4930, Northeastern University
 endef
 
@@ -41,10 +41,12 @@ define Package/tinyHIPPO/install
 	$(CP) $(PKG_BUILD_DIR)/src/* $(1)/etc/tinyHIPPO/src/
 	# Install all the setup files
 	$(INSTALL_DIR) $(1)/etc/tinyHIPPO/setup
-	$(INSTALL_BIN) $(PKG_BUILD_DIR)/setup/tinyHIPPO_db_setup.sql $(1)/etc/tinyHIPPO/setup
+	$(INSTALL_BIN) $(PKG_BUILD_DIR)/setup/tinyHIPPO_db_setup.sql $(1)/etc/tinyHIPPO
+	$(INSTALL_BIN) $(PKG_BUILD_DIR)/setup/tinyHIPPO_populate_equations.sql $(1)/etc/tinyHIPPO
 	$(INSTALL_BIN) $(PKG_BUILD_DIR)/setup/tinyHIPPOstart $(1)/etc/tinyHIPPO
 	# Install all the core files and configs
 	$(INSTALL_BIN) $(PKG_BUILD_DIR)/tiny_hippo_run.py $(1)/etc/tinyHIPPO
+	$(INSTALL_BIN) $(PKG_BUILD_DIR)/run_flask.py $(1)/etc/tinyHIPPO
 	$(INSTALL_BIN) $(PKG_BUILD_DIR)/config.py $(1)/etc/tinyHIPPO
 	$(INSTALL_DATA) $(PKG_BUILD_DIR)/config.json $(1)/etc/tinyHIPPO
 	# Install the symbolic
