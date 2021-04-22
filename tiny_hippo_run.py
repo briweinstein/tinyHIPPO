@@ -38,6 +38,7 @@ percent_malicious_packets = 0
 all_malicious_packets = []
 malicious_packet_count = 0
 packet_count = 0
+total_malicious_packet_count = 0
 
 
 @click.command()
@@ -65,7 +66,7 @@ def main(arg_pcap_file_benign: str, arg_pcap_file_malicious: str, arg_percent_ma
     try:
         for rule in rules_system_privacy:
             # rule()
-            print("Not running rule: " + str(rule.__name__))
+            print("Not running rule: " + str(rule))
     except Exception as e:
         run_config.log_event.info(f"Exception when running system privacy rule {e}")
 
@@ -77,13 +78,15 @@ def main(arg_pcap_file_benign: str, arg_pcap_file_malicious: str, arg_percent_ma
     try:
         for rule in rules_scanning_privacy:
             # rule(ip_to_mac)
-            print("Not running rule: " + str(rule.__name__))
+            print("Not running rule: " + str(rule))
     except Exception as e:
         run_config.log_event.info(f"Exception when running scanning privacy rule {e}")
     # 4) Capture IoT packets only with crafted sniff
     print("Capturing IoT packets only")
     sniff(offline=str(pcap_file_benign), lfilter=_sniff_filter, prn=packet_combo, store=0)
     print("Finished Capturing Packets")
+    print("Total Packets: " + str(packet_count))
+    print("Total Malicious Packets: " + str(total_malicious_packet_count))
 
 
 def _sniff_filter(packet: Packet):
@@ -92,12 +95,13 @@ def _sniff_filter(packet: Packet):
 
 
 def packet_combo(packet_benign: Packet):
-    global all_malicious_packets, malicious_packet_count, packet_count
+    global all_malicious_packets, malicious_packet_count, packet_count, total_malicious_packet_count
     # Determine if a malicious packet should be sent
     send_malicious = random.randint(0, 100) <= percent_malicious_packets
     # Send the malicious packet if needed
     packet_count += 1
     if send_malicious:
+        total_malicious_packet_count += 1
         # Get the next malicious packet
         if malicious_packet_count >= len(all_malicious_packets):
             malicious_packet_count = 0
@@ -106,12 +110,12 @@ def packet_combo(packet_benign: Packet):
         curr_malicious_packet["Ethernet"].dst = packet_benign["Ethernet"].dst
         curr_malicious_packet["Ethernet"].src = packet_benign["Ethernet"].src
         curr_malicious_packet.time = packet_benign.time
-        print("Inserting malicious PKT before PKT # " + str(packet_count))
+        print("Inserting malicious PKT instead of PKT # " + str(packet_count))
         # Process the malicious packet
         packet_parse(curr_malicious_packet)
-
-    # Send the given benign packet
-    packet_parse(packet_benign)
+    else:
+        # Send the given benign packet
+        packet_parse(packet_benign)
 
 
 def packet_parse(packet: Packet):
