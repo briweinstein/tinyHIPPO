@@ -17,16 +17,16 @@ class IPSignature(Signature):
         :param subnet: The subnet that this router uses in CIDR form, ex. 192.168.1.0/24
         """
         self.subnet = ipaddress.ip_network(subnet)
+        self.v = VirusTotalChecker(run_config.virustotal_api_key)
 
     def __call__(self, packet: Packet) -> bool:
         if net.IP not in packet:
-            raise Exception
+            raise Exception('IP Layer not present in packet')
         ip_layer = packet[net.IP]
         # check whether source ip is private
         ip_src = ipaddress.ip_address(ip_layer.src)
         ip_dst = ipaddress.ip_address(ip_layer.dst)
-        v = VirusTotalChecker(run_config.virustotal_api_key)
         if not ip_src.is_private:
-            return v.check_ip(ip_src)
+            return self.v.check_ip(ip_src)
         else:
-            return v.check_ip(ip_dst)
+            return self.v.check_ip(ip_dst)
