@@ -88,7 +88,8 @@ class Alert:
         """
         # Send email if urgent enough
         if self.severity > 1:
-            emailsystem.send_email_alert(self)
+            # emailsystem.send_email_alert(self)
+            print("You've got mail!")
 
         # Save the alert in the SQLite database for frontend use
         self._save_alert()

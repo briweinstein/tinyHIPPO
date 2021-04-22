@@ -27,7 +27,7 @@ rules_packet_privacy = [PacketPrivacyPort()]
 rules_system_privacy = [SystemPrivacyDropbearConfig(), SystemPrivacyEncryption(), SystemPrivacyPackageUpgrades(),
                         SystemPrivacyRootPassword()]
 rules_scanning_privacy = [ScanningPrivacyNmapPassive()]
-ids_signatures = [IPSignature("192.168.1.0/24"), MACAddressSignature()]
+ids_signatures = [MACAddressSignature()]
 signature_detector = SignatureDetector(ids_signatures)
 # Number of packets to capture, 0 is infinite
 num_packets = 0
@@ -37,6 +37,7 @@ anomaly_engine = AnomalyEngine(db)
 percent_malicious_packets = 0
 all_malicious_packets = []
 malicious_packet_count = 0
+packet_count = 0
 
 
 @click.command()
@@ -82,6 +83,7 @@ def main(arg_pcap_file_benign: str, arg_pcap_file_malicious: str, arg_percent_ma
     # 4) Capture IoT packets only with crafted sniff
     print("Capturing IoT packets only")
     sniff(offline=str(pcap_file_benign), lfilter=_sniff_filter, prn=packet_combo, store=0)
+    print("Finished Capturing Packets")
 
 
 def _sniff_filter(packet: Packet):
@@ -90,11 +92,11 @@ def _sniff_filter(packet: Packet):
 
 
 def packet_combo(packet_benign: Packet):
-    global all_malicious_packets, malicious_packet_count
+    global all_malicious_packets, malicious_packet_count, packet_count
     # Determine if a malicious packet should be sent
     send_malicious = random.randint(0, 100) <= percent_malicious_packets
-
     # Send the malicious packet if needed
+    packet_count += 1
     if send_malicious:
         # Get the next malicious packet
         if malicious_packet_count >= len(all_malicious_packets):
@@ -103,6 +105,8 @@ def packet_combo(packet_benign: Packet):
         malicious_packet_count = malicious_packet_count + 1
         curr_malicious_packet["Ethernet"].dst = packet_benign["Ethernet"].dst
         curr_malicious_packet["Ethernet"].src = packet_benign["Ethernet"].src
+        curr_malicious_packet.time = packet_benign.time
+        print("Inserting malicious PKT before PKT # " + str(packet_count))
         # Process the malicious packet
         packet_parse(curr_malicious_packet)
 

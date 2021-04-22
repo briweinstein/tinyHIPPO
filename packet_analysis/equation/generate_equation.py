@@ -125,8 +125,8 @@ def main(argv):
         y_dev = [val[1] for val in dev]
 
         # Fit a polynomial equation to the data
-        avg_coefficients = list(map(lambda x: "%f" % round(x, 5), polynomial_fit_function(x_avg, y_avg)))
-        dev_coefficients = list(map(lambda x: "%f" % round(x, 5), polynomial_fit_function(x_dev, y_dev)))
+        avg_coefficients = list(map(lambda x: "%f" % x, polynomial_fit_function(x_avg, y_avg)))
+        dev_coefficients = list(map(lambda x: "%f" % x, polynomial_fit_function(x_dev, y_dev)))
 
         # Create rows for DB insertion, default window and interval size
         object = AnomalyEquations(average_equation=", ".join(avg_coefficients),
