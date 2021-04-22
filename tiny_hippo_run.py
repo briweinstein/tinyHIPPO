@@ -32,20 +32,19 @@ anomaly_engine = AnomalyEngine(db)
 def main():
     """
     Main loop of the program, does the following
-    1. Validates the users given mac addresses
-    2. Runs system privacy checks
-    3. Runs scanning analysis of the IoT devices
-    4. Sniffs packets on "wlan0" and analyzes the packet against signatures and privacy rules
+    1. Runs system privacy checks
+    2. Runs scanning analysis of the IoT devices
+    3. Sniffs packets on "br-lan" and analyzes the packet against signatures and privacy rules
     :return: nothing
     """
-    # 2) Perform a system configuration security check
+    # 1) Perform a system configuration security check
     try:
         for rule in rules_system_privacy:
             rule()
     except Exception as e:
         run_config.log_event.info(f"Exception when running system privacy rule {e}")
 
-    # wait until there are mac_addresses to sniff for, max count equates to the maximum time to wait between polls
+    # Wait until there are mac_addresses to sniff for, max count equates to the maximum time to wait between polls
     max_count = 7  # 3 minutes
     count = 0
     while True:
@@ -56,17 +55,16 @@ def main():
         if DeviceInformation.get_mac_addresses():
             break
 
+    # 2) Run a scanning analysis of the IoT devices
     mac_addresses = DeviceInformation.get_mac_addresses()
-    # Note: Steps 2 and 3 happen simultaneously in the "sniff()" call, but are separated for clarity
-    # 2) Capture IoT packets only with crafted sniff
-    # 3) Perform a scanning analysis of the IoT devices
     ip_to_mac = _pair_ip_to_mac(mac_addresses)
     try:
         for rule in rules_scanning_privacy:
             rule(ip_to_mac)
     except Exception as e:
         run_config.log_event.info(f"Exception when running scanning privacy rule {e}")
-    # 4) Capture IoT packets only with crafted sniff
+
+    # 3) Capture IoT packets only with crafted sniff and analyze the packet against signatures and privacy rules
     print("Capturing IoT packets only")
     sniff(iface=run_config.sniffing_interface, lfilter=_sniff_filter, prn=packet_parse, count=num_packets, store=0)
 
@@ -104,7 +102,6 @@ def packet_parse(packet: Packet):
         anomaly_engine.check_signatures(packet)
     except Exception as e:
         run_config.log_event.info('Exception raised in an Anomaly Engine check: ' + str(e))
-
 
 
 def _pair_ip_to_mac(mac_addrs):
