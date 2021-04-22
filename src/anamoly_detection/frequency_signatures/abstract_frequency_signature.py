@@ -34,6 +34,7 @@ class AbstractFrequencySignature(abc.ABC):
         # Sizes used to evaluate when to shift the window
         self._window_size = window_size
         self._interval_size = interval_size
+        self._alerted_for_window = False
 
     def adjust_frequencies(self, hour, calculate_equation=False):
         """
@@ -55,6 +56,9 @@ class AbstractFrequencySignature(abc.ABC):
                 self._window_frequency -= interval_freq
             else:
                 self._interval_frequencies.append(0)
+
+            # Reset window alert
+            self._alerted_for_window = False
 
             # Loop through until interval is caught up, in case of extremely rare traffic
             self.adjust_frequencies(hour, calculate_equation=True)
