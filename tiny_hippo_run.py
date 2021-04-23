@@ -27,7 +27,7 @@ rules_packet_privacy = [PacketPrivacyPort()]
 rules_system_privacy = [SystemPrivacyDropbearConfig(), SystemPrivacyEncryption(), SystemPrivacyPackageUpgrades(),
                         SystemPrivacyRootPassword()]
 rules_scanning_privacy = [ScanningPrivacyNmapPassive()]
-ids_signatures = [MACAddressSignature()]
+ids_signatures = [IPSignature("192.168.1.0/24"), MACAddressSignature()]
 signature_detector = SignatureDetector(ids_signatures)
 # Number of packets to capture, 0 is infinite
 num_packets = 0
@@ -59,7 +59,7 @@ def main(arg_pcap_file_benign: str, arg_pcap_file_malicious: str, arg_percent_ma
     pcap_file_benign = arg_pcap_file_benign
     percent_malicious_packets = arg_percent_malicious_packets
     print("Going to read: " + str(arg_pcap_file_malicious))
-    all_malicious_packets = rdpcap(str(arg_pcap_file_malicious))
+    all_malicious_packets = sniff(offline=str(arg_pcap_file_malicious))
     print("Finished reading: " + str(arg_pcap_file_malicious))
 
     # 2) Perform a system configuration security check
@@ -97,22 +97,31 @@ def _sniff_filter(packet: Packet):
 def packet_combo(packet_benign: Packet):
     global all_malicious_packets, malicious_packet_count, packet_count, total_malicious_packet_count
     # Determine if a malicious packet should be sent
-    send_malicious = random.randint(0, 100) <= percent_malicious_packets
+    send_malicious = random.randint(1, 100) <= percent_malicious_packets
     # Send the malicious packet if needed
     packet_count += 1
     if send_malicious:
-        total_malicious_packet_count += 1
-        # Get the next malicious packet
-        if malicious_packet_count >= len(all_malicious_packets):
-            malicious_packet_count = 0
-        curr_malicious_packet = all_malicious_packets[malicious_packet_count]
-        malicious_packet_count = malicious_packet_count + 1
-        curr_malicious_packet["Ethernet"].dst = packet_benign["Ethernet"].dst
-        curr_malicious_packet["Ethernet"].src = packet_benign["Ethernet"].src
-        curr_malicious_packet.time = packet_benign.time
-        print("Inserting malicious PKT instead of PKT # " + str(packet_count))
-        # Process the malicious packet
-        packet_parse(curr_malicious_packet)
+        try:
+            total_malicious_packet_count += 1
+            # Get the next malicious packet
+            if malicious_packet_count >= len(all_malicious_packets):
+                malicious_packet_count = 0
+            curr_malicious_packet = all_malicious_packets[malicious_packet_count]
+            malicious_packet_count = malicious_packet_count + 1
+            if "Ethernet" in curr_malicious_packet and "Ethernet" in packet_benign:
+                curr_malicious_packet["Ethernet"].dst = packet_benign["Ethernet"].dst
+                curr_malicious_packet["Ethernet"].src = packet_benign["Ethernet"].src
+            elif "Ethernet" in curr_malicious_packet and "EAPOL" in packet_benign:
+                curr_malicious_packet["Ethernet"].dst = packet_benign["EAPOL"].dst
+                curr_malicious_packet["Ethernet"].src = packet_benign["EAPOL"].src
+            else:
+                curr_malicious_packet.show()
+                packet_benign.show()
+            curr_malicious_packet.time = packet_benign.time
+            # Process the malicious packet
+            packet_parse(curr_malicious_packet)
+        except:
+            print("error parsing packet, woopsies")
     else:
         # Send the given benign packet
         packet_parse(packet_benign)
@@ -139,7 +148,8 @@ def packet_parse(packet: Packet):
                 alert_object = Alert(packet, triggered_rule.msg, AlertType.IDS, Severity.ALERT, is_dst)
                 alert_object.alert()
     except Exception as e:
-        run_config.log_event.info('Exception raised in an IDS rule check: ' + str(e))
+        # run_config.log_event.info('Exception raised in an IDS rule check: ' + str(e))
+        ...
 
     # For each packet, pass through frequency detection engine
     try:

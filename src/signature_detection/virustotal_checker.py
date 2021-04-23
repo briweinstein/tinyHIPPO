@@ -1,5 +1,6 @@
 import ipaddress
 import requests
+import json
 
 
 class VirusTotalChecker:
@@ -19,9 +20,12 @@ class VirusTotalChecker:
                                 headers={'x-apikey': self.api_key}).json()
         if not response:
             raise Exception('Virustotal API Request failed')
-        results = response['data']['attributes']['last_analysis_stats']
-        is_malicious = results['malicious'] > 0 or results['suspicious'] > 0
+        is_malicious = False
+        if 'data' in response:
+            results = response['data']['attributes']['last_analysis_stats']
+            is_malicious = results['malicious'] > 0 or results['suspicious'] > 0
         if is_malicious:
+            print("Malicious IP: " + str(ip_address))
             self.malicious_results.append(str(ip_address))
         else:
             self.benign_results.append(str(ip_address))
