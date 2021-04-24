@@ -25,7 +25,7 @@ def analyze_pcap_file(path: str):
     correct_path = Path(path)
     print("*" * 50)
     print("Sniffing packets of: " + str(correct_path))
-    sniff(offline=str(correct_path), prn=lambda x: packet_handler(x, csv_collection), store=False)
+    sniff(offline=str(correct_path), prn=lambda x: deconstruct_packet(x, csv_collection), store=False)
     return csv_collection
 
 
@@ -53,24 +53,6 @@ def deconstruct_packet(pkt: Packet, csv_collection) -> sqlObject:
         if layer in pkt:
             sql_dao = switcher[layer](pkt)
             csv_collection.add_entry(layer, sql_dao.csv())
-
-
-def packet_handler(pkt: Packet, csv_collection):
-    """
-    Handles the basic filtering for the packet, collections information if possible
-    :param pkt: Packet to be analyzed
-    :param csv_collection: Collection of SQLObjects in CSV form
-    :return: None
-    """
-    # Pull out the outer most layer of the PKT
-
-    str_layer = pkt.layers()[-1].__name__
-    if str_layer == "Raw":
-        str_layer = pkt.layers()[-2].__name__
-
-    # If system can handle to packet, analyze it
-    if str_layer in table_bindings.keys():
-        deconstruct_packet(pkt, csv_collection)
 
 
 def main(argv):
