@@ -23,7 +23,7 @@ class NTPHeader(sqlObject):
         return UDP.table_sql() + \
                """,
                   ref_id    STRING (64) NOT NULL,
-                  id        STRING (64) NOT NULL,
+                  ntp_id    STRING (64) NOT NULL,
                   npt_ver   STRING (40) NOT NULL"""
 
     def csv(self):
