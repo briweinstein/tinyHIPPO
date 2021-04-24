@@ -12,7 +12,7 @@ table_bindings = {
     "EAPOL": "CREATE TABLE IF NOT EXISTS EAPOL (\n              {0});".format(eapol.EAPOL.table_sql()),
     "Ethernet": "CREATE TABLE IF NOT EXISTS Ethernet (\n              {0});".format(ethernet.Ethernet.table_sql()),
     "IP": "CREATE TABLE IF NOT EXISTS IP (\n              {0});".format(ip.IP.table_sql()),
-    "NTP": "CREATE TABLE IF NOT EXISTS NTP (\n              {0});".format(ntp.NTPHeader.table_sql()),
+    "NTPHeader": "CREATE TABLE IF NOT EXISTS NTPHeader (\n              {0});".format(ntp.NTPHeader.table_sql()),
     "TCP": "CREATE TABLE IF NOT EXISTS TCP (\n              {0});".format(tcp.TCP.table_sql()),
     "UDP": "CREATE TABLE IF NOT EXISTS UDP (\n              {0});".format(udp.UDP.table_sql()),
 }
