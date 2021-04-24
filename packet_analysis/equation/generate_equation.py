@@ -74,15 +74,15 @@ def get_segmented_average(conn: sqlite3.Connection, table: str, adjust_for_zero=
     return averaged_data, averaged_deviation
 
 
-# Seventh degree polynomial function
-def objective(x, a, b, c, d, e, f, g, h):
+# Fifth degree polynomial function
+def objective(x, a, b, c, d, e, f):
     """
     Objective function for the curve_fit to use
     :param x: Input to function
-    :param a, b, c, d, e, f, g, h: Coefficients of sub expressions
+    :param a, b, c, d, e, f: Coefficients of sub expressions
     :return: Value calculated from function
     """
-    return (a * x) + (b * x ** 2) + (c * x ** 3) + (d * x ** 4) + (e * x ** 5) + (f * x ** 6) + (g * x ** 7) + h
+    return (a * x) + (b * x ** 2) + (c * x ** 3) + (d * x ** 4) + (e * x ** 5) + f
 
 
 def polynomial_fit_function(x_data: list, y_data: list):
@@ -125,8 +125,8 @@ def main(argv):
         y_dev = [val[1] for val in dev]
 
         # Fit a polynomial equation to the data
-        avg_coefficients = list(map(lambda x: "%f" % x, polynomial_fit_function(x_avg, y_avg)))
-        dev_coefficients = list(map(lambda x: "%f" % x, polynomial_fit_function(x_dev, y_dev)))
+        avg_coefficients = list(map(lambda x: "%.12f" % x, polynomial_fit_function(x_avg, y_avg)))
+        dev_coefficients = list(map(lambda x: "%.12f" % x, polynomial_fit_function(x_dev, y_dev)))
 
         # Create rows for DB insertion, default window and interval size
         object = AnomalyEquations(average_equation=", ".join(avg_coefficients),
