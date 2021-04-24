@@ -3,6 +3,7 @@ import pathlib
 import click
 from scapy.utils import rdpcap
 import random
+import math
 
 from time import sleep
 from scapy.all import sniff
@@ -35,18 +36,23 @@ anomaly_engine = AnomalyEngine(db)
 
 # Testing command line argument values
 percent_malicious_packets = 0
-all_malicious_packets = []
+malicious_packets_plaintext = []
+malicious_packets_port = []
 malicious_packet_count = 0
 packet_count = 0
 total_malicious_packet_count = 0
+total_malicious_port_count = 0
+total_malicious_plaintext_count = 0
 
 
 @click.command()
 @click.option("--arg_pcap_file_benign", "-b", required=True, type=str)
-@click.option("--arg_pcap_file_malicious", "-m", required=True, type=str)
+@click.option("--arg_pcap_file_malicious_plaintext", "-mplain", required=True, type=str)
+@click.option("--arg_pcap_file_malicious_port_only", "-mport", required=True, type=str)
 @click.option("--arg_percent_malicious_packets", "-p", required=True, type=int)
-def main(arg_pcap_file_benign: str, arg_pcap_file_malicious: str, arg_percent_malicious_packets: int):
-    global all_malicious_packets, percent_malicious_packets
+def main(arg_pcap_file_benign: str, arg_pcap_file_malicious_plaintext: str, arg_pcap_file_malicious_port_only: str,
+         arg_percent_malicious_packets: int):
+    global malicious_packets_plaintext, malicious_packets_port, percent_malicious_packets
     """
     Main loop of the program, does the following
     1. Validates the users given mac addresses
@@ -58,9 +64,10 @@ def main(arg_pcap_file_benign: str, arg_pcap_file_malicious: str, arg_percent_ma
     # Set the global testing command line argument values
     pcap_file_benign = arg_pcap_file_benign
     percent_malicious_packets = arg_percent_malicious_packets
-    print("Going to read: " + str(arg_pcap_file_malicious))
-    all_malicious_packets = sniff(offline=str(arg_pcap_file_malicious))
-    print("Finished reading: " + str(arg_pcap_file_malicious))
+    print("Going to read")
+    malicious_packets_plaintext = sniff(offline=str(arg_pcap_file_malicious_plaintext))
+    malicious_packets_port = sniff(offline=str(arg_pcap_file_malicious_port_only))
+    print("Finished reading")
 
     # 2) Perform a system configuration security check
     try:
@@ -87,6 +94,8 @@ def main(arg_pcap_file_benign: str, arg_pcap_file_malicious: str, arg_percent_ma
     print("Finished Capturing Packets")
     print("Total Packets: " + str(packet_count))
     print("Total Malicious Packets: " + str(total_malicious_packet_count))
+    print("Total Malicious Packets Plaintext: " + str(total_malicious_plaintext_count))
+    print("Total Malicious Packets Ports: " + str(total_malicious_port_count))
 
 
 def _sniff_filter(packet: Packet):
@@ -95,7 +104,8 @@ def _sniff_filter(packet: Packet):
 
 
 def packet_combo(packet_benign: Packet):
-    global all_malicious_packets, malicious_packet_count, packet_count, total_malicious_packet_count
+    global malicious_packets_plaintext, malicious_packets_port, packet_count, total_malicious_packet_count
+    global total_malicious_port_count, total_malicious_plaintext_count
     # Determine if a malicious packet should be sent
     send_malicious = random.randint(1, 100) <= percent_malicious_packets
     # Send the malicious packet if needed
@@ -104,20 +114,36 @@ def packet_combo(packet_benign: Packet):
         try:
             total_malicious_packet_count += 1
             # Get the next malicious packet
-            if malicious_packet_count >= len(all_malicious_packets):
-                malicious_packet_count = 0
-            curr_malicious_packet = all_malicious_packets[malicious_packet_count]
-            malicious_packet_count = malicious_packet_count + 1
-            if "Ethernet" in curr_malicious_packet and "Ethernet" in packet_benign:
-                curr_malicious_packet["Ethernet"].dst = packet_benign["Ethernet"].dst
-                curr_malicious_packet["Ethernet"].src = packet_benign["Ethernet"].src
-            elif "Ethernet" in curr_malicious_packet and "EAPOL" in packet_benign:
-                curr_malicious_packet["Ethernet"].dst = packet_benign["EAPOL"].dst
-                curr_malicious_packet["Ethernet"].src = packet_benign["EAPOL"].src
+            send_plaintext = random.randint(1, 100) <= 50
+            if send_plaintext:
+                curr_malicious_packet = get_next_malicious_packet(packet_benign, malicious_packets_plaintext)
+                if "uname=username-hello&pass=helloworld" in curr_malicious_packet:
+                    total_malicious_plaintext_count += 1
+                elif "uname=tinyHIPPO&pass=password123" in curr_malicious_packet:
+                    total_malicious_plaintext_count += 1
+                elif "uname=tinyHIPPO1234567890123&pass=password" in curr_malicious_packet:
+                    total_malicious_plaintext_count += 1
+                elif "uname=username&pass=root" in curr_malicious_packet:
+                    total_malicious_plaintext_count += 1
+                elif "urname=tinyHIPPO&ucc=2111312216&uemail=user%40gmail.com&uphone=%28555%29555-5555&uaddress=address+to+home&update=update" in curr_malicious_packet:
+                    total_malicious_plaintext_count += 1
+                elif "urname=Frank+Router&ucc=1234900933448867&uemail=router%40hotmail.org&uphone=%28555%291115555&uaddress=address+to+home&update=update" in curr_malicious_packet:
+                    total_malicious_plaintext_count += 2
+                elif "urname=Frank+Router2&ucc=1234900933448867&uemail=router%40org&uphone=5551115555&uaddress=address+to+home&update=update" in curr_malicious_packet:
+                    total_malicious_plaintext_count += 1
+                elif "name=test&text=My+password+is+test%21&submit=add+message" in curr_malicious_packet:
+                    total_malicious_plaintext_count += 1
+                elif "Social+Security+Number" in curr_malicious_packet:
+                    total_malicious_plaintext_count += 1
+                elif "name=test&text=I+love+having+an+api_token&submit=add+message" in curr_malicious_packet:
+                    total_malicious_plaintext_count += 1
+                elif "name=test&text=Looking+forward+to+sharing+my+e-mail+with+the+whole+world%21&submit=add+message" in curr_malicious_packet:
+                    total_malicious_plaintext_count += 1
+                curr_malicious_packet.time = packet_benign.time
             else:
-                curr_malicious_packet.show()
-                packet_benign.show()
-            curr_malicious_packet.time = packet_benign.time
+                curr_malicious_packet = get_next_malicious_packet(packet_benign, malicious_packets_port)
+                curr_malicious_packet.time = packet_benign.time
+                total_malicious_port_count += 1
             # Process the malicious packet
             packet_parse(curr_malicious_packet)
         except:
@@ -125,6 +151,26 @@ def packet_combo(packet_benign: Packet):
     else:
         # Send the given benign packet
         packet_parse(packet_benign)
+
+
+def get_next_malicious_packet(packet_benign: Packet, malicious_packets):
+    global malicious_packet_count, total_malicious_plaintext_count
+    if malicious_packet_count >= len(malicious_packets):
+        malicious_packet_count = 0
+    curr_malicious_packet = malicious_packets[malicious_packet_count]
+    malicious_packet_count = malicious_packet_count + 1
+    if "Ethernet" in curr_malicious_packet and "Ethernet" in packet_benign:
+        curr_malicious_packet["Ethernet"].dst = packet_benign["Ethernet"].dst
+        curr_malicious_packet["Ethernet"].src = packet_benign["Ethernet"].src
+    elif "Ethernet" in curr_malicious_packet and "EAPOL" in packet_benign:
+        curr_malicious_packet["Ethernet"].dst = packet_benign["EAPOL"].dst
+        curr_malicious_packet["Ethernet"].src = packet_benign["EAPOL"].src
+    """
+    else:
+        curr_malicious_packet.show()
+        packet_benign.show()
+    """
+    return curr_malicious_packet
 
 
 def packet_parse(packet: Packet):
