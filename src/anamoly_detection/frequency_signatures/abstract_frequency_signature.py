@@ -82,8 +82,9 @@ class AbstractFrequencySignature(abc.ABC):
 
                 # If there are intervals (i.e. any data triggered within time frame), calculate average over this time
                 if intervals > 0:
-                    self._current_average = cumulative_average / intervals
-                    self._current_deviation = cumulative_deviation / intervals
+                    divisor = max(1, 1800 // self._interval_size)
+                    self._current_average = cumulative_average / divisor
+                    self._current_deviation = cumulative_deviation / divisor
 
             # Check to make sure the queue is caught up
             # (Only done during first window, makes sure to populate correctly)
