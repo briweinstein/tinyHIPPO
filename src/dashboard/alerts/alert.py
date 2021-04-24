@@ -81,19 +81,8 @@ class Alert:
         if self.device_mac:
             new_alert.mac_address = self.device_mac
             new_alert.payload = self.payload_info
-
-        # Decide if the alert should be committed
-        commit = db.session_alert_count > 25 or time() - db.session_alert_time >= 3600
-
-        # Adjust session commit information
-        if commit:
-            db.session_alert_time = time()
-            db.session_alert_count = 0
-        else:
-            db.session_alert_count += 1
-
-        # Alert added to session, committed in bulk depending on frequency or time
-        return Alerts.insert_new_object(new_alert, commit=commit)
+        Alerts.insert_new_object(new_alert)
+        return new_alert
 
     def alert(self):
         """
