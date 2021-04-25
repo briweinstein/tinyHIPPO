@@ -8,7 +8,7 @@ import math
 from time import sleep
 from scapy.all import sniff
 from scapy.packet import Packet
-from scapy.layers.inet import Ether
+from scapy.layers.inet import Ether, TCP
 from src import run_config, db
 from src.database.models import DeviceInformation
 from src.privacy_analysis.packet_analysis.packet_privacy_port import PacketPrivacyPort
@@ -117,27 +117,27 @@ def packet_combo(packet_benign: Packet):
             send_plaintext = random.randint(1, 100) <= 50
             if send_plaintext:
                 curr_malicious_packet = get_next_malicious_packet(packet_benign, malicious_packets_plaintext)
-                if "uname=username-hello&pass=helloworld" in curr_malicious_packet:
+                if "uname=username-hello&pass=helloworld" in str(curr_malicious_packet[TCP].payload):
                     total_malicious_plaintext_count += 1
-                elif "uname=tinyHIPPO&pass=password123" in curr_malicious_packet:
+                elif "uname=tinyHIPPO&pass=password123" in str(curr_malicious_packet[TCP].payload):
                     total_malicious_plaintext_count += 1
-                elif "uname=tinyHIPPO1234567890123&pass=password" in curr_malicious_packet:
+                elif "uname=tinyHIPPO1234567890123&pass=password" in str(curr_malicious_packet[TCP].payload):
                     total_malicious_plaintext_count += 1
-                elif "uname=username&pass=root" in curr_malicious_packet:
+                elif "uname=username&pass=root" in str(curr_malicious_packet[TCP].payload):
                     total_malicious_plaintext_count += 1
-                elif "urname=tinyHIPPO&ucc=2111312216&uemail=user%40gmail.com&uphone=%28555%29555-5555&uaddress=address+to+home&update=update" in curr_malicious_packet:
+                elif "urname=tinyHIPPO&ucc=2111312216&uemail=user%40gmail.com&uphone=%28555%29555-5555&uaddress=address+to+home&update=update" in str(curr_malicious_packet[TCP].payload):
                     total_malicious_plaintext_count += 1
-                elif "urname=Frank+Router&ucc=1234900933448867&uemail=router%40hotmail.org&uphone=%28555%291115555&uaddress=address+to+home&update=update" in curr_malicious_packet:
+                elif "urname=Frank+Router&ucc=1234900933448867&uemail=router%40hotmail.org&uphone=%28555%291115555&uaddress=address+to+home&update=update" in str(curr_malicious_packet[TCP].payload):
                     total_malicious_plaintext_count += 2
-                elif "urname=Frank+Router2&ucc=1234900933448867&uemail=router%40org&uphone=5551115555&uaddress=address+to+home&update=update" in curr_malicious_packet:
+                elif "urname=Frank+Router2&ucc=1234900933448867&uemail=router%40org&uphone=5551115555&uaddress=address+to+home&update=update" in str(curr_malicious_packet[TCP].payload):
                     total_malicious_plaintext_count += 1
-                elif "name=test&text=My+password+is+test%21&submit=add+message" in curr_malicious_packet:
+                elif "name=test&text=My+password+is+test%21&submit=add+message" in str(curr_malicious_packet[TCP].payload):
                     total_malicious_plaintext_count += 1
-                elif "Social+Security+Number" in curr_malicious_packet:
+                elif "Social+Security+Number" in str(curr_malicious_packet[TCP].payload):
                     total_malicious_plaintext_count += 1
-                elif "name=test&text=I+love+having+an+api_token&submit=add+message" in curr_malicious_packet:
+                elif "name=test&text=I+love+having+an+api_token&submit=add+message" in str(curr_malicious_packet[TCP].payload):
                     total_malicious_plaintext_count += 1
-                elif "name=test&text=Looking+forward+to+sharing+my+e-mail+with+the+whole+world%21&submit=add+message" in curr_malicious_packet:
+                elif "name=test&text=Looking+forward+to+sharing+my+e-mail+with+the+whole+world%21&submit=add+message" in str(curr_malicious_packet[TCP].payload):
                     total_malicious_plaintext_count += 1
                 curr_malicious_packet.time = packet_benign.time
             else:
