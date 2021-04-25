@@ -1,8 +1,11 @@
 import hashlib
-from datetime import datetime
+from time import time
 from scapy.utils import raw
-from src.emailalerts import emailsystem
+from datetime import datetime
 from enum import Enum, IntEnum
+
+from src import db
+from src.emailalerts import emailsystem
 from src.database.models import Alerts
 
 
